@@ -1,0 +1,14 @@
+[{
+    "modid": "ESM",
+    "name": "Epic Siege Mod",
+    "description": "Makes Minecraft's Mobs Extremely difficult and dangerous.",
+    "version": "9.0",
+    "mcversion": "1.6.4",
+    "url": "",
+    "updateUrl": "",
+    "authors": ["Funwayguy"],
+    "credits": "BETA tested by ninja_assin23 and jcant26",
+    "logoFile": "title.png",
+    "screenshots": [],
+    "dependencies": ["mod_MinecraftForge"]
+}]
