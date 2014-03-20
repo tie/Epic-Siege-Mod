@@ -3,7 +3,6 @@ package funwayguy.esm.handlers;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
-
 import cpw.mods.fml.common.FMLCommonHandler;
 import funwayguy.esm.core.ESM_Settings;
 import funwayguy.esm.handlers.entities.ESM_BlazeHandler;
@@ -15,7 +14,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIArrowAttack;
-import net.minecraft.entity.ai.EntityAIAttackOnCollide;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAITaskEntry;
 import net.minecraft.entity.monster.EntityBlaze;
@@ -41,7 +39,6 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import net.minecraftforge.event.world.WorldEvent.Unload;
 
@@ -323,7 +320,7 @@ public class ESM_EventManager
 			return;
 		}
 		
-		this.updateEntityAwareness(event.entityLiving);
+		updateEntityAwareness(event.entityLiving);
 		
 		if(event.entityLiving instanceof EntityCreeper && ESM_Settings.CreeperBreaching)
 		{

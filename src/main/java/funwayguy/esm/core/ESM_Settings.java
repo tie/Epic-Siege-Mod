@@ -2,18 +2,15 @@ package funwayguy.esm.core;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.Configuration;
 
 public class ESM_Settings
 {
 	//Mod Data
-	public static final String Version = "9.0";
+	public static final String Version = "9.0.2";
 	public static final String ID = "ESM";
 	public static final String Channel = "ESM";
 	public static final String Name = "Epic Siege Mod";
@@ -66,7 +63,7 @@ public class ESM_Settings
     public static boolean SpawnForts;
     
     //Non-configurables
-    public static ArrayList FortDB;
+    public static ArrayList<String> FortDB;
     public static WorldServer[] currentWorlds = null;
     public static File currentWorldConfig = null;
 	

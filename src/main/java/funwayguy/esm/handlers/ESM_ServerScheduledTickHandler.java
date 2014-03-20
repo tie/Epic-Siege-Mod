@@ -4,17 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.EnumSet;
-
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingData;
 import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.monster.EntitySkeleton;
-import net.minecraft.entity.monster.EntitySpider;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.src.ModLoader;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
 import funwayguy.esm.core.ESM_Settings;
@@ -128,7 +119,7 @@ public class ESM_ServerScheduledTickHandler implements ITickHandler
 					int timeRemaining = details[0];
 					if(timeRemaining <= 0)
 					{
-						System.out.println("Detonating at (" + new String().valueOf(details[1]) + "," + new String().valueOf(details[2]) + "," + new String().valueOf(details[3]) + ")");
+						System.out.println("Detonating at (" + String.valueOf(details[1]) + "," + String.valueOf(details[2]) + "," + String.valueOf(details[3]) + ")");
 						ESM_Settings.currentWorlds[details[6]].newExplosion((Entity)null, details[1], details[2], details[3], details[5], ESM_Settings.CreeperNapalm, ESM_Settings.currentWorlds[details[6]].getGameRules().getGameRuleBooleanValue("mobGriefing"));
 						iterator.remove();
 					} else
