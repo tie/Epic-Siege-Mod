@@ -1,4 +1,4 @@
-package funwayguy.esm;
+package funwayguy.esm.core;
 
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.Mod;
@@ -9,6 +9,8 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
+import funwayguy.esm.core.proxies.CommonProxy;
+import funwayguy.esm.handlers.ESM_EventManager;
 
 @Mod(modid = ESM_Settings.ID, name = ESM_Settings.Name, version = ESM_Settings.Version)
 @NetworkMod(channels = {ESM_Settings.Channel}, clientSideRequired = false, serverSideRequired = false)

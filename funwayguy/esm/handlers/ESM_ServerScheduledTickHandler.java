@@ -1,4 +1,4 @@
-package funwayguy.esm;
+package funwayguy.esm.handlers;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,10 +14,10 @@ import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.src.ModLoader;
-
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
+import funwayguy.esm.core.ESM_Settings;
 
 public class ESM_ServerScheduledTickHandler implements ITickHandler
 {

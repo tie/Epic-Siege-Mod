@@ -1,4 +1,4 @@
-package funwayguy.esm;
+package funwayguy.esm.handlers;
 
 import java.util.EnumSet;
 

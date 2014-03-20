@@ -1,4 +1,4 @@
-package funwayguy.esm;
+package funwayguy.esm.core;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ public class ESM_Settings
 	public static final String ID = "ESM";
 	public static final String Channel = "ESM";
 	public static final String Name = "Epic Siege Mod";
-	public static final String Proxy = "funwayguy.esm";
+	public static final String Proxy = "funwayguy.esm.core.proxies";
 	
 	//Main
 	public static int Awareness; //50%
@@ -37,7 +37,7 @@ public class ESM_Settings
 	//Blaze
 	public static boolean BlazeSpawn; //DONE
 	public static int BlazeRarity; //DONE
-	public static int BlazeFireballs;
+	public static int BlazeFireballs; //DONE
 	
 	//Ghast
 	public static boolean GhastSpawn; //DONE
@@ -48,7 +48,7 @@ public class ESM_Settings
 	public static int SkeletonAccuracy; //DONE
 	
 	//Zombie
-	public static boolean ZombieInfectious;
+	public static boolean ZombieInfectious; //DONE
 	
 	//Enderman
 	public static String EndermanMode;

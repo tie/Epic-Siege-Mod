@@ -1,10 +1,12 @@
-package funwayguy.esm;
+package funwayguy.esm.handlers;
 
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 
 import cpw.mods.fml.common.FMLCommonHandler;
+import funwayguy.esm.core.ESM_Settings;
+import funwayguy.esm.handlers.entities.ESM_BlazeHandler;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -27,6 +29,7 @@ import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EnumStatus;
 import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.projectile.EntitySmallFireball;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
@@ -177,6 +180,7 @@ public class ESM_EventManager
 						event.setCanceled(true);
 						EntityBlaze newBlaze = new EntityBlaze(event.world);
 						newBlaze.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
+						newBlaze.getEntityData().setBoolean("ESM_MODIFIED", true);
 						event.world.spawnEntityInWorld(newBlaze);
 					} else if(ESM_Settings.BlazeSpawn && ESM_Settings.BlazeRarity > 0)
 					{
@@ -185,6 +189,7 @@ public class ESM_EventManager
 							event.setCanceled(true);
 							EntityBlaze newBlaze = new EntityBlaze(event.world);
 							newBlaze.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
+							newBlaze.getEntityData().setBoolean("ESM_MODIFIED", true);
 							event.world.spawnEntityInWorld(newBlaze);
 						}
 					}
@@ -200,6 +205,16 @@ public class ESM_EventManager
 				EntityLivingBase target = shooter.getAttackTarget();
 				replaceArrowAttack(shooter, target, arrow.getDamage());
 				event.setCanceled(true);
+			}
+		} else if(event.entity instanceof EntityBlaze)
+		{
+			ESM_BlazeHandler.onEntityJoinWorld((EntityBlaze)event.entity);
+		} else if(event.entity instanceof EntitySmallFireball)
+		{
+			EntitySmallFireball fireball = (EntitySmallFireball)event.entity;
+			if(fireball.shootingEntity instanceof EntityBlaze)
+			{
+				fireball.shootingEntity.getEntityData().setInteger("ESM_FIREBALLS", fireball.shootingEntity.getEntityData().getInteger("ESM_FIREBALLS") + 1);
 			}
 		}
 	}
@@ -379,6 +394,11 @@ public class ESM_EventManager
 					}
 				}
 			}
+		} else if(event.entity instanceof EntityBlaze)
+		{
+			EntityBlaze blaze = (EntityBlaze)event.entity;
+			
+			ESM_BlazeHandler.onLivingUpdate(blaze);
 		}
 		return;
 	}
