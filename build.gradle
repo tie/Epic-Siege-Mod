@@ -18,7 +18,7 @@ sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
 
 group = 'funwayguy.esm'
-version = "9.0"
+version = "$System.env.DRONE_BUILD_NUMBER"
 archivesBaseName = 'EpicSiegeMod'
  
 logger.lifecycle ""+version
