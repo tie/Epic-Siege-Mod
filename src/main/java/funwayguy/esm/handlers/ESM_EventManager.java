@@ -3,9 +3,11 @@ package funwayguy.esm.handlers;
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import funwayguy.esm.core.ESM_Settings;
 import funwayguy.esm.handlers.entities.ESM_BlazeHandler;
+import funwayguy.esm.handlers.entities.ESM_CreeperHandler;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -72,21 +74,7 @@ public class ESM_EventManager
 		
 		if(event.entity instanceof EntityCreeper)
 		{
-			if(ESM_Settings.CreeperPowered && ESM_Settings.CreeperPoweredRarity <= 0)
-			{
-				((EntityCreeper)event.entity).getDataWatcher().updateObject(17, Byte.valueOf((byte)1));
-				return;
-			} else if(ESM_Settings.CreeperPowered && ESM_Settings.CreeperPoweredRarity > 0)
-			{
-				if(event.world.rand.nextInt(ESM_Settings.CreeperPoweredRarity) == 0)
-				{
-					((EntityCreeper)event.entity).getDataWatcher().updateObject(17, Byte.valueOf((byte)1));
-					return;
-				} else
-				{
-					return;
-				}
-			}
+			ESM_CreeperHandler.onEntityJoinWorld((EntityCreeper)event.entity);
 		} else if(event.entity instanceof EntitySpider)
 		{
 			if(event.entity.riddenByEntity == null)
@@ -322,54 +310,9 @@ public class ESM_EventManager
 		
 		updateEntityAwareness(event.entityLiving);
 		
-		if(event.entityLiving instanceof EntityCreeper && ESM_Settings.CreeperBreaching)
+		if(event.entityLiving instanceof EntityCreeper)
 		{
-			EntityCreeper creeper = (EntityCreeper)event.entity;
-			double detDist = 3.0D;
-			if(creeper.getPowered())
-			{
-				detDist = 6.0D;
-			}
-			
-			List targetList = creeper.worldObj.getEntitiesWithinAABB(EntityPlayer.class, AxisAlignedBB.getAABBPool().getAABB(creeper.posX - detDist, creeper.posY - detDist, creeper.posZ - detDist, creeper.posX + detDist, creeper.posY + detDist, creeper.posZ + detDist));
-			
-			if(!targetList.isEmpty())
-			{
-				Iterator targets = targetList.iterator();
-				EntityPlayer closestTarget = null;
-				float dist = 6.0F;
-				
-				while(targets.hasNext())
-				{
-					EntityPlayer testing = (EntityPlayer)targets.next();
-					if(creeper.getAttackTarget() == testing && !creeper.canEntityBeSeen(testing))
-					{
-						closestTarget = testing;
-					}
-					/*EntityPlayer testing = (EntityPlayer)targets.next();
-					if(testing.capabilities.isCreativeMode)
-					{
-						continue;
-					} else if(closestTarget == null && !creeper.canEntityBeSeen(testing))
-					{
-						closestTarget = testing;
-						dist = creeper.getDistanceToEntity(testing);
-					} else
-					{
-						if(creeper.getDistanceSqToEntity(testing) < dist && !creeper.canEntityBeSeen(testing))
-						{
-							closestTarget = testing;
-							dist = creeper.getDistanceToEntity(testing);
-						}
-					}*/
-				}
-				
-				if(closestTarget != null && dist < (float)detDist)
-				{
-					ESM_ServerScheduledTickHandler.registerNewBreach(creeper);
-					
-				}
-			}
+			ESM_CreeperHandler.onLivingUpdate((EntityCreeper)event.entityLiving);
 		} else if(event.entityLiving instanceof EntitySkeleton)
 		{
 			EntitySkeleton skeleton = (EntitySkeleton)event.entityLiving;
