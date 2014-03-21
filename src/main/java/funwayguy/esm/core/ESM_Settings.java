@@ -10,7 +10,7 @@ import net.minecraftforge.common.Configuration;
 public class ESM_Settings
 {
 	//Mod Data
-	public static final String Version = "9.0.2";
+	public static final String Version = "FWG_ESM_VER";
 	public static final String ID = "ESM";
 	public static final String Channel = "ESM";
 	public static final String Name = "Epic Siege Mod";
