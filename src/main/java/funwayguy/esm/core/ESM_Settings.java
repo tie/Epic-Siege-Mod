@@ -27,7 +27,7 @@ public class ESM_Settings
 	
 	//Creeper
 	public static boolean CreeperBreaching; //DONE
-	public static boolean CreeperNapalm; //50%
+	public static boolean CreeperNapalm; //DONE
 	public static boolean CreeperPowered; //DONE
 	public static int CreeperPoweredRarity; //DONE
 	
@@ -48,8 +48,8 @@ public class ESM_Settings
 	public static boolean ZombieInfectious; //DONE
 	
 	//Enderman
-	public static String EndermanMode;
-	public static boolean EndermanPlayerTele;
+	public static String EndermanMode; //DONE
+	public static boolean EndermanPlayerTele; //DONE
 	
 	//Advanced
 	public static boolean SpiderBombs; //DONE

@@ -37,11 +37,11 @@ public class ESM_BlazeHandler
 		} catch(NoSuchFieldException e)
 		{
 			e.printStackTrace();
-			return -1;
+			return fireballs;
 		} catch(SecurityException e)
 		{
 			e.printStackTrace();
-			return -1;
+			return fireballs;
 		}
 		
 		field.setAccessible(true);
@@ -52,11 +52,11 @@ public class ESM_BlazeHandler
 		} catch(IllegalArgumentException e)
 		{
 			e.printStackTrace();
-			return -1;
+			return fireballs;
 		} catch(IllegalAccessException e)
 		{
 			e.printStackTrace();
-			return -1;
+			return fireballs;
 		}
 		
 		return fireballs;

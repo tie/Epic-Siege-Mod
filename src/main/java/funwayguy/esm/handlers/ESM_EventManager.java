@@ -8,6 +8,8 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import funwayguy.esm.core.ESM_Settings;
 import funwayguy.esm.handlers.entities.ESM_BlazeHandler;
 import funwayguy.esm.handlers.entities.ESM_CreeperHandler;
+import funwayguy.esm.handlers.entities.ESM_EndermanHandler;
+import funwayguy.esm.handlers.entities.ESM_SkeletonHandler;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -66,9 +68,6 @@ public class ESM_EventManager
 			if(event.entity.getEntityData().getBoolean("ESM_MODIFIED"))
 			{
 				return;
-			} else
-			{
-				event.entity.getEntityData().setBoolean("ESM_MODIFIED", true);
 			}
 		}
 		
@@ -97,42 +96,10 @@ public class ESM_EventManager
 						passenger.mountEntity(event.entity);
 					}
 				}
-	            return;
 			}
 		} else if(event.entity instanceof EntitySkeleton)
 		{
-			if(((EntitySkeleton)event.entity).getSkeletonType() == 0)
-			{
-				if(ESM_Settings.WitherSkeletons && ESM_Settings.WitherSkeletonRarity <= 0)
-				{
-					event.setCanceled(true);
-					EntitySkeleton newSkeleton = new EntitySkeleton(event.world);
-					newSkeleton.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
-					newSkeleton.setSkeletonType(1);
-					newSkeleton.setCurrentItemOrArmor(0, new ItemStack(Item.swordStone));
-					newSkeleton.getEntityAttribute(SharedMonsterAttributes.attackDamage).setAttribute(4.0D);
-					newSkeleton.setCombatTask();
-					newSkeleton.getEntityData().setBoolean("ESM_MODIFIED", true);
-					event.world.spawnEntityInWorld(newSkeleton);
-				} else if(ESM_Settings.WitherSkeletons && ESM_Settings.WitherSkeletonRarity > 0)
-				{
-					if(event.world.rand.nextInt(ESM_Settings.WitherSkeletonRarity) == 0)
-					{
-						event.setCanceled(true);
-						EntitySkeleton newSkeleton = new EntitySkeleton(event.world);
-						newSkeleton.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
-						newSkeleton.setSkeletonType(1);
-						newSkeleton.setCurrentItemOrArmor(0, new ItemStack(Item.swordStone));
-						newSkeleton.getEntityAttribute(SharedMonsterAttributes.attackDamage).setAttribute(4.0D);
-						newSkeleton.setCombatTask();
-						newSkeleton.getEntityData().setBoolean("ESM_MODIFIED", true);
-						event.world.spawnEntityInWorld(newSkeleton);
-					}
-				} else
-				{
-					event.entity.getEntityData().setString("ESM_TASK_ID", event.entity.getUniqueID().toString() + ",NULL");
-				}
-			}
+			ESM_SkeletonHandler.onEntityJoinWorld((EntitySkeleton)event.entity);
 		} else if(event.entity instanceof EntityZombie && !ESM_Settings.Apocalypse)
 		{
 			switch(event.world.rand.nextInt(3))
@@ -201,7 +168,12 @@ public class ESM_EventManager
 			{
 				fireball.shootingEntity.getEntityData().setInteger("ESM_FIREBALLS", fireball.shootingEntity.getEntityData().getInteger("ESM_FIREBALLS") + 1);
 			}
+		} else if(event.entity instanceof EntityEnderman)
+		{
+			ESM_EndermanHandler.onEntityJoinWorld((EntityEnderman)event.entity);
 		}
+		
+		event.entity.getEntityData().setBoolean("ESM_MODIFIED", true);
 	}
 	
 	public static void replaceArrowAttack(EntitySkeleton shooter, EntityLivingBase par1EntityLivingBase, double par2)
@@ -315,30 +287,13 @@ public class ESM_EventManager
 			ESM_CreeperHandler.onLivingUpdate((EntityCreeper)event.entityLiving);
 		} else if(event.entityLiving instanceof EntitySkeleton)
 		{
-			EntitySkeleton skeleton = (EntitySkeleton)event.entityLiving;
-			
-			List<EntityAITaskEntry> taskList = skeleton.tasks.taskEntries;
-			
-			if(!skeleton.getEntityData().getString("ESM_TASK_ID").equals(skeleton.getUniqueID().toString() + "," + ESM_Settings.SkeletonDistance) && skeleton.getSkeletonType() == 0)
-			{
-				for(int i = 0; i < taskList.size(); i++)
-				{
-					EntityAIBase entry = taskList.get(i).action;
-					if(entry instanceof EntityAIArrowAttack)
-					{
-						//taskList.remove(i);
-						skeleton.tasks.removeTask(entry);
-						skeleton.tasks.addTask(4, new EntityAIArrowAttack(skeleton, 1.0D, 20, 60, (float)ESM_Settings.SkeletonDistance));
-						skeleton.getEntityData().setString("ESM_TASK_ID", skeleton.getUniqueID().toString() + "," + ESM_Settings.SkeletonDistance);
-						break;
-					}
-				}
-			}
-		} else if(event.entity instanceof EntityBlaze)
+			ESM_SkeletonHandler.onLivingUpdate((EntitySkeleton)event.entityLiving);
+		} else if(event.entityLiving instanceof EntityBlaze)
 		{
-			EntityBlaze blaze = (EntityBlaze)event.entity;
-			
-			ESM_BlazeHandler.onLivingUpdate(blaze);
+			ESM_BlazeHandler.onLivingUpdate((EntityBlaze)event.entityLiving);
+		} else if(event.entityLiving instanceof EntityEnderman)
+		{
+			ESM_EndermanHandler.onLivingUpdate((EntityEnderman)event.entityLiving);
 		}
 		return;
 	}
