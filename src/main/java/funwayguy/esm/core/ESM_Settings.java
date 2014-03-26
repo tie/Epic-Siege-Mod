@@ -58,8 +58,10 @@ public class ESM_Settings
 	public static int WitherSkeletonRarity; //DONE
 	
 	//Generation
-    public static int EndType;
-    public static int NetherType;
+    public static int EndType; //50%
+    public static int SpaceDimID; //DONE
+    public static int NetherType; //50%
+    public static int HellDimID; //DONE
     public static boolean SpawnForts;
     
     //Non-configurables
@@ -122,7 +124,9 @@ public class ESM_Settings
         
         //World
         EndType = config.get("World", "End Type", 0).getInt(0);
+        SpaceDimID = config.get("World", "Space ID", 2).getInt(2);
         NetherType = config.get("World", "Nether Type", 0).getInt(0);
+        HellDimID = config.get("World", "New Hell ID", -2).getInt(-2);
         SpawnForts = config.get("World", "Spawn Forts", false).getBoolean(false);
         
         config.save();

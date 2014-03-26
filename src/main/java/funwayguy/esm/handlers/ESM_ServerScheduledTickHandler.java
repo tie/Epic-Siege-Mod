@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.EnumSet;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityCreeper;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
 import funwayguy.esm.core.ESM_Settings;
+import funwayguy.esm.handlers.entities.ESM_CreeperHandler;
 
 public class ESM_ServerScheduledTickHandler implements ITickHandler
 {
@@ -27,20 +29,6 @@ public class ESM_ServerScheduledTickHandler implements ITickHandler
 	
 	@Override public void tickEnd(EnumSet<TickType> type, Object... tickData)
 	{
-		/*final MinecraftServer mc = MinecraftServer.getServer();
-
-        if (mc.getWorldName() != null && ESM_Settings.currentWorld == null)
-        {
-        	if(!mc.theWorld.isRemote)
-        	{
-        		ESM_Settings.OnWorldLoad(mc);
-        		ESM_Settings.currentWorld = mc.theWorld;
-        	}
-        } else if(mc.theWorld == null && ESM_Settings.currentWorld != null)
-        {
-        	ESM_Settings.OnWorldUnload(mc);
-        	ESM_Settings.currentWorld = null;
-        }*/
 	}
 	
 	@Override public EnumSet<TickType> ticks()
@@ -55,13 +43,9 @@ public class ESM_ServerScheduledTickHandler implements ITickHandler
 	
 	public static void registerNewBreach(EntityCreeper creeper)
 	{
-		if(ESM_Settings.currentWorlds != null)
+		if(creeper.worldObj.isRemote || ESM_Settings.currentWorlds == null)
 		{
-			if(ESM_Settings.currentWorlds[0].isRemote)
-			{
-				System.out.println("Attempted to register in a remote world!");
-				return;
-			}
+			return;
 		}
 		
 		if(!breachSchedule.isEmpty())
@@ -79,7 +63,7 @@ public class ESM_ServerScheduledTickHandler implements ITickHandler
 					}
 				} else
 				{
-					System.out.println("breachSchedule contained illegal details! Removing...");
+					System.out.println("Scheduled breach contained illegal details! Removing...");
 					iterator.remove();
 				}
 			}
@@ -91,12 +75,10 @@ public class ESM_ServerScheduledTickHandler implements ITickHandler
 		entry[2] = (int)creeper.posY;
 		entry[3] = (int)creeper.posZ;
 		entry[4] = creeper.entityId;
-		entry[5] = creeper.getPowered()? 6 : 3;
+		entry[5] = ESM_CreeperHandler.getCreeperRadius(creeper);
 		entry[6] = creeper.worldObj.provider.dimensionId;
 		breachSchedule.add(entry);
 		creeper.setDead();
-
-		System.out.println("Registered new scheduled breach");
 		
 		if(ESM_Settings.currentWorlds[entry[6]] != creeper.worldObj)
 		{
@@ -119,7 +101,6 @@ public class ESM_ServerScheduledTickHandler implements ITickHandler
 					int timeRemaining = details[0];
 					if(timeRemaining <= 0)
 					{
-						System.out.println("Detonating at (" + String.valueOf(details[1]) + "," + String.valueOf(details[2]) + "," + String.valueOf(details[3]) + ")");
 						ESM_Settings.currentWorlds[details[6]].newExplosion((Entity)null, details[1], details[2], details[3], details[5], ESM_Settings.CreeperNapalm, ESM_Settings.currentWorlds[details[6]].getGameRules().getGameRuleBooleanValue("mobGriefing"));
 						iterator.remove();
 					} else
@@ -135,7 +116,7 @@ public class ESM_ServerScheduledTickHandler implements ITickHandler
 					}
 				} else
 				{
-					System.out.println("breachSchedule contained illegal details!");
+					System.out.println("Scheduled breach contained illegal details! Removing...");
 					iterator.remove();
 				}
 			}

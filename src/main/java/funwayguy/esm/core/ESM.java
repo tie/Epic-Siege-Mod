@@ -1,5 +1,6 @@
 package funwayguy.esm.core;
 
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -9,8 +10,11 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
+import cpw.mods.fml.common.registry.GameRegistry;
 import funwayguy.esm.core.proxies.CommonProxy;
 import funwayguy.esm.handlers.ESM_EventManager;
+import funwayguy.esm.world.dimensions.WorldProviderNewHell;
+import funwayguy.esm.world.dimensions.WorldProviderSpace;
 
 @Mod(modid = ESM_Settings.ID, name = ESM_Settings.Name, version = ESM_Settings.Version)
 @NetworkMod(channels = {ESM_Settings.Channel}, clientSideRequired = false, serverSideRequired = false)
@@ -33,6 +37,10 @@ public class ESM
 	{
 		proxy.registerTickHandlers();
 		RegisterESMHandlers();
+		DimensionManager.registerProviderType(/*ESM_Settings.SpaceDimID*/2, WorldProviderSpace.class, false);
+		DimensionManager.registerDimension(/*ESM_Settings.SpaceDimID*/2, /*ESM_Settings.SpaceDimID*/2);
+		DimensionManager.registerProviderType(/*ESM_Settings.HellDimID*/-2, WorldProviderNewHell.class, false);
+		DimensionManager.registerDimension(/*ESM_Settings.HellDimID*/-2, /*ESM_Settings.HellDimID*/-2);
 		System.out.print("Registering TickHandlers for ESM");
 	}
 

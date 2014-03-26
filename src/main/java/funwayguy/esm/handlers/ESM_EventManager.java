@@ -6,6 +6,7 @@ import java.util.List;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import funwayguy.esm.core.ESM_Settings;
+import funwayguy.esm.core.ESM_Utils;
 import funwayguy.esm.handlers.entities.ESM_BlazeHandler;
 import funwayguy.esm.handlers.entities.ESM_CreeperHandler;
 import funwayguy.esm.handlers.entities.ESM_EndermanHandler;
@@ -56,9 +57,14 @@ public class ESM_EventManager
 			return;
 		}
 		
-		if(event.world.provider.worldObj == null || (ESM_Settings.Apocalypse && !(event.entity instanceof EntityZombie || event.entity instanceof EntityPlayer || (event.entity instanceof EntityEnderman && ESM_Settings.EndermanMode == "Slender"))))
+		if(ESM_Settings.Apocalypse && !(event.entity instanceof EntityZombie || event.entity instanceof EntityPlayer || (event.entity instanceof EntityEnderman && ESM_Settings.EndermanMode == "Slender")))
 		{
 			event.setCanceled(true);
+			return;
+		}
+		
+		if(event.world == null)
+		{
 			return;
 		}
 		
@@ -151,12 +157,16 @@ public class ESM_EventManager
 		} else if(event.entity instanceof EntityArrow)
 		{
 			EntityArrow arrow = (EntityArrow)event.entity;
-			if(arrow.shootingEntity instanceof EntitySkeleton && !arrow.getEntityData().getBoolean("ESM_TAGGED"))
+			if(arrow.shootingEntity instanceof EntitySkeleton)
 			{
 				EntitySkeleton shooter = (EntitySkeleton)arrow.shootingEntity;
 				EntityLivingBase target = shooter.getAttackTarget();
-				replaceArrowAttack(shooter, target, arrow.getDamage());
-				event.setCanceled(true);
+				
+				if(target != null)
+				{
+					replaceArrowAttack(shooter, target, arrow.getDamage());
+					event.setCanceled(true);
+				}
 			}
 		} else if(event.entity instanceof EntityBlaze)
 		{
@@ -188,8 +198,6 @@ public class ESM_EventManager
     	{
     		entityarrow = new EntityArrow(shooter.worldObj, shooter, par1EntityLivingBase, (float)((0.00013*(targetDist)*(targetDist)) + (0.02*targetDist) + 1.25), ESM_Settings.SkeletonAccuracy);
     	}
-    	
-    	entityarrow.getEntityData().setBoolean("ESM_TAGGED", true);
     	
         //EntityArrow entityarrow = new EntityArrow(shooter.worldObj, shooter, par1EntityLivingBase, 1.6F, (float)(14 - shooter.worldObj.difficultySetting * 4));
         int i = EnchantmentHelper.getEnchantmentLevel(Enchantment.power.effectId, shooter.getHeldItem());
@@ -269,6 +277,21 @@ public class ESM_EventManager
 	@ForgeSubscribe
 	public void onLivingUpdate(LivingUpdateEvent event)
 	{
+		if(event.entity instanceof EntityPlayer)
+		{
+			if(event.entity.worldObj.provider.dimensionId != ESM_Settings.SpaceDimID && ((EntityPlayer)event.entity).isPlayerSleeping())
+			{
+				//((EntityPlayer)event.entity).wakeUpPlayer(false, false, false);
+				//ESM_Utils.transferDimensions(ESM_Settings.HellDimID, event.entityLiving, false);
+			}
+		}
+		
+		if(event.entityLiving.posY < 0 && event.entityLiving.worldObj.provider.dimensionId == ESM_Settings.SpaceDimID)
+		{
+			event.entityLiving.setPosition(event.entityLiving.posX, 255D, event.entityLiving.posZ);
+			ESM_Utils.transferDimensions(0, event.entityLiving, false);
+		}
+		
 		if(event.entity.worldObj.isRemote)
 		{
 			return;
@@ -295,6 +318,7 @@ public class ESM_EventManager
 		{
 			ESM_EndermanHandler.onLivingUpdate((EntityEnderman)event.entityLiving);
 		}
+		
 		return;
 	}
 
