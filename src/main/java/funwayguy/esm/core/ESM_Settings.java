@@ -2,6 +2,9 @@ package funwayguy.esm.core;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.logging.Level;
+
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.WorldServer;
@@ -59,24 +62,37 @@ public class ESM_Settings
 	
 	//Generation
     public static int EndType; //50%
-    public static int SpaceDimID; //DONE
+    public static int SpaceDimID = 2; //DONE
     public static int NetherType; //50%
-    public static int HellDimID; //DONE
+    public static int HellDimID = -2; //DONE
     public static boolean SpawnForts;
     
     //Non-configurables
     public static ArrayList<String> FortDB;
     public static WorldServer[] currentWorlds = null;
     public static File currentWorldConfig = null;
+
+	public static void LoadMainConfig(File file)
+	{
+		Configuration config = new Configuration(file);
+		ESM.log.log(Level.INFO, "Loading ESM Global Config");
+		
+        config.load();
+        
+        SpaceDimID = config.get("World", "Space ID", 2).getInt(2);
+        HellDimID = config.get("World", "New Hell ID", -2).getInt(-2);
+
+        config.save();
+	}
 	
-	public static void LoadConfig()
+	public static void LoadWorldConfig()
 	{
 		if(currentWorldConfig == null)
 		{
 			return;
 		}
 		Configuration config = new Configuration(currentWorldConfig);
-		System.out.println("Loaded ESM Config: " + currentWorldConfig.getAbsolutePath());
+		ESM.log.log(Level.INFO, "Loaded ESM Config: " + currentWorldConfig.getAbsolutePath());
 		
         config.load();
         
@@ -124,14 +140,12 @@ public class ESM_Settings
         
         //World
         EndType = config.get("World", "End Type", 0).getInt(0);
-        SpaceDimID = config.get("World", "Space ID", 2).getInt(2);
+        //SpaceDimID = config.get("World", "Space ID", 2).getInt(2);
         NetherType = config.get("World", "Nether Type", 0).getInt(0);
-        HellDimID = config.get("World", "New Hell ID", -2).getInt(-2);
+        //HellDimID = config.get("World", "New Hell ID", -2).getInt(-2);
         SpawnForts = config.get("World", "Spawn Forts", false).getBoolean(false);
         
         config.save();
-        
-        System.out.println("Successfully loaded ESM configs");
 	}
 
 	public static EntityLivingBase GetNearestValidTarget(EntityLiving entityLiving)

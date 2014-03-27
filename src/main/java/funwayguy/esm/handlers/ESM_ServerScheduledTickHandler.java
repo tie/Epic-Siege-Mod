@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.EnumSet;
+import java.util.logging.Level;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityCreeper;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
+import funwayguy.esm.core.ESM;
 import funwayguy.esm.core.ESM_Settings;
 import funwayguy.esm.handlers.entities.ESM_CreeperHandler;
 
@@ -63,7 +65,7 @@ public class ESM_ServerScheduledTickHandler implements ITickHandler
 					}
 				} else
 				{
-					System.out.println("Scheduled breach contained illegal details! Removing...");
+					ESM.log.log(Level.WARNING, "Scheduled breach contained illegal details! Removing...");
 					iterator.remove();
 				}
 			}
@@ -82,7 +84,7 @@ public class ESM_ServerScheduledTickHandler implements ITickHandler
 		
 		if(ESM_Settings.currentWorlds[entry[6]] != creeper.worldObj)
 		{
-			System.out.println("[WARNING] Scheduled breach is in a different world to source entity!");
+			ESM.log.log(Level.WARNING, "Scheduled breach is in a different world to source entity!");
 		}
 	}
 	
@@ -116,7 +118,7 @@ public class ESM_ServerScheduledTickHandler implements ITickHandler
 					}
 				} else
 				{
-					System.out.println("Scheduled breach contained illegal details! Removing...");
+					ESM.log.log(Level.WARNING, "Scheduled breach contained illegal details! Removing...");
 					iterator.remove();
 				}
 			}

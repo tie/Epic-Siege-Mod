@@ -2,9 +2,11 @@ package funwayguy.esm.core;
 
 import java.lang.reflect.Field;
 import java.util.Iterator;
+import java.util.logging.Level;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.monster.EntityBlaze;
@@ -51,7 +53,7 @@ public class ESM_Utils
 
                 par1 = 1;
             }
-            else if(par1 == -1)
+            else if(par1 == -1 || par1 == ESM_Settings.HellDimID)
             {
             	player.triggerAchievement(AchievementList.portal);
             }
@@ -148,17 +150,10 @@ public class ESM_Utils
                 chunkcoordinates = par4WorldServer.getEntrancePortalLocation();
             }
             
-            if(!forceLoc)
-            {
-            	d0 = (double)chunkcoordinates.posX;
-            	par1Entity.posY = (double)chunkcoordinates.posY;
-	            d1 = (double)chunkcoordinates.posZ;
-	            par1Entity.setLocationAndAngles(d0, par1Entity.posY, d1, 90.0F, 0.0F);
-            } else
-            {
-            	d0 = (double)chunkcoordinates.posX;
-	            d1 = (double)chunkcoordinates.posZ;
-            }
+        	d0 = (double)chunkcoordinates.posX;
+        	par1Entity.posY = (double)chunkcoordinates.posY;
+            d1 = (double)chunkcoordinates.posZ;
+            par1Entity.setLocationAndAngles(d0, par1Entity.posY, d1, 90.0F, 0.0F);
 
             if (par1Entity.isEntityAlive())
             {
@@ -168,7 +163,7 @@ public class ESM_Utils
 
         par3WorldServer.theProfiler.endSection();
 
-        if (par2 != 1)
+        if (!(par2 == 1 && par1Entity.dimension == 0))
         {
             par3WorldServer.theProfiler.startSection("placing");
             d0 = (double)MathHelper.clamp_int((int)d0, -29999872, 29999872);
@@ -180,14 +175,28 @@ public class ESM_Utils
                 par1Entity.setLocationAndAngles(d0, par1Entity.posY, d1, par1Entity.rotationYaw, par1Entity.rotationPitch);
                 par4WorldServer.updateEntityWithOptionalForce(par1Entity, false);
                 
-                if(par2 == ESM_Settings.SpaceDimID && par1Entity.worldObj.isAirBlock(MathHelper.floor_double(d3), MathHelper.floor_double(d4), MathHelper.floor_double(d5)))
+                if(!forceLoc)
                 {
-                	par1Entity.worldObj.setBlock(MathHelper.floor_double(d3), MathHelper.floor_double(d4), MathHelper.floor_double(d5), Block.obsidian.blockID);
+	                if(par1Entity.dimension == ESM_Settings.SpaceDimID)
+	                {
+	                	ESM.log.log(Level.INFO, "Building spawn pad...");
+	                    int i2 = MathHelper.floor_double(par1Entity.posX);
+	                    int j2 = MathHelper.floor_double(par1Entity.posY);
+	                    int k2 = MathHelper.floor_double(par1Entity.posZ);
+	                    
+	                	for(int i = -1; i <= 1; i++)
+	                	{
+	                		for(int j = -1; j <= 1; j++)
+	                		{
+	                			par4WorldServer.setBlock(i2 + i, j2 - 1, k2 + j, Block.obsidian.blockID);
+	                		}
+	                	}
+	                } else/* if(par1Entity.dimension == -1 || par1Entity.dimension == ESM_Settings.HellDimID || par1Entity.dimension == 0)*/
+	                {
+	                	teleporter.placeInPortal(par1Entity, d3, d4, d5, f);
+	                }
+	                //teleporter.placeInPortal(par1Entity, d3, d4, d5, f);
                 }
-                //teleporter.placeInPortal(par1Entity, d3, d4, d5, f);
-
-                par1Entity.setLocationAndAngles(d3, d4, d5, par1Entity.rotationYaw, 0.0F);
-                par1Entity.motionX = par1Entity.motionY = par1Entity.motionZ = 0.0D;
             }
 
             par3WorldServer.theProfiler.endSection();

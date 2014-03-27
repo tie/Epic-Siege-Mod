@@ -1,16 +1,19 @@
 package funwayguy.esm.handlers;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.List;
 
 import cpw.mods.fml.common.FMLCommonHandler;
+import funwayguy.esm.core.ESM;
 import funwayguy.esm.core.ESM_Settings;
 import funwayguy.esm.core.ESM_Utils;
 import funwayguy.esm.handlers.entities.ESM_BlazeHandler;
 import funwayguy.esm.handlers.entities.ESM_CreeperHandler;
 import funwayguy.esm.handlers.entities.ESM_EndermanHandler;
 import funwayguy.esm.handlers.entities.ESM_SkeletonHandler;
+import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -39,6 +42,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.MathHelper;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -241,8 +245,6 @@ public class ESM_EventManager
 				zombie.setCustomNameTag(event.entity.getEntityName());
 				zombie.getEntityData().setBoolean("ESM_MODIFIED", true);
 				event.entity.worldObj.spawnEntityInWorld(zombie);
-				
-				System.out.println(event.entity.getEntityName() + " was infected!");
 			}
 		}
 	}
@@ -277,19 +279,40 @@ public class ESM_EventManager
 	@ForgeSubscribe
 	public void onLivingUpdate(LivingUpdateEvent event)
 	{
-		if(event.entity instanceof EntityPlayer)
+		if(event.entityLiving instanceof EntityPlayer)
 		{
-			if(event.entity.worldObj.provider.dimensionId != ESM_Settings.SpaceDimID && ((EntityPlayer)event.entity).isPlayerSleeping())
+			if(event.entityLiving.dimension != ESM_Settings.SpaceDimID)
 			{
-				//((EntityPlayer)event.entity).wakeUpPlayer(false, false, false);
-				//ESM_Utils.transferDimensions(ESM_Settings.HellDimID, event.entityLiving, false);
+				int x = MathHelper.floor_double(event.entityLiving.posX);
+				int y = MathHelper.floor_double(event.entityLiving.posY);
+				int z = MathHelper.floor_double(event.entityLiving.posZ);
+				
+				if(getPortalTime(event.entityLiving) >= event.entityLiving.getMaxInPortalTime()-1 && event.entityLiving.worldObj.getBlockId(x, y, z) == Block.portal.blockID && event.entityLiving.timeUntilPortal <= 0)
+				{
+					if(event.entityLiving.dimension != ESM_Settings.HellDimID)
+					{
+						event.entityLiving.timeUntilPortal = event.entityLiving.getPortalCooldown();
+						ESM_Utils.transferDimensions(ESM_Settings.HellDimID, event.entityLiving, false);
+					} else
+					{
+						event.entityLiving.timeUntilPortal = event.entityLiving.getPortalCooldown();
+						ESM_Utils.transferDimensions(0, event.entityLiving, false);
+					}
+				}
 			}
 		}
 		
-		if(event.entityLiving.posY < 0 && event.entityLiving.worldObj.provider.dimensionId == ESM_Settings.SpaceDimID)
+		if(event.entityLiving.posY < 0)
 		{
-			event.entityLiving.setPosition(event.entityLiving.posX, 255D, event.entityLiving.posZ);
-			ESM_Utils.transferDimensions(0, event.entityLiving, false);
+			if(event.entityLiving.dimension == ESM_Settings.SpaceDimID)
+			{
+				event.entityLiving.setPosition(event.entityLiving.posX, 255D, event.entityLiving.posZ);
+				ESM_Utils.transferDimensions(0, event.entityLiving, true);
+			} else if(event.entityLiving.dimension == 1)
+			{
+				event.entityLiving.setPosition(event.entityLiving.posX, 64D, event.entityLiving.posZ);
+				ESM_Utils.transferDimensions(ESM_Settings.SpaceDimID, event.entityLiving, false);
+			}
 		}
 		
 		if(event.entity.worldObj.isRemote)
@@ -379,14 +402,64 @@ public class ESM_EventManager
 		{
 			MinecraftServer mc = MinecraftServer.getServer();
 			ESM_Settings.currentWorlds = mc.worldServers;
-			ESM_Settings.currentWorldConfig = new File(mc.getFile("ESM_Options").getAbsolutePath(), mc.getFolderName() + ".ESM.cfg");
-			ESM_Settings.LoadConfig();
+			if(ESM.proxy.isClient())
+			{
+				ESM_Settings.currentWorldConfig = new File(mc.getFile("saves/" + mc.getFolderName()).getAbsolutePath(), "ESM_Options.cfg");
+			} else
+			{
+				ESM_Settings.currentWorldConfig = new File(mc.getFile(mc.getFolderName()).getAbsolutePath(), "ESM_Options.cfg");
+			}
+			ESM_Settings.LoadWorldConfig();
 		}
 	}
 	
 	@ForgeSubscribe
 	public void onWorldUnload(Unload event)
 	{
-		ESM_Settings.currentWorlds = null;
+		if(!event.world.isRemote)
+		{
+			MinecraftServer mc = MinecraftServer.getServer();
+			
+			if(mc.worldServers == null || mc.isServerStopped())
+			{
+				ESM_Settings.currentWorlds = null;
+			}
+		}
+	}
+	
+	public static int getPortalTime(Entity entity)
+	{
+		int time = -1;
+		
+		Field field = null;
+		try
+		{
+			field = Entity.class.getDeclaredField("portalCounter");
+		} catch(NoSuchFieldException e)
+		{
+			e.printStackTrace();
+			return time;
+		} catch(SecurityException e)
+		{
+			e.printStackTrace();
+			return time;
+		}
+		
+		field.setAccessible(true);
+		
+		try
+		{
+			time = (int)field.getInt(entity);
+		} catch(IllegalArgumentException e)
+		{
+			e.printStackTrace();
+			return time;
+		} catch(IllegalAccessException e)
+		{
+			e.printStackTrace();
+			return time;
+		}
+		
+		return time;
 	}
 }
