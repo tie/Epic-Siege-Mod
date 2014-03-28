@@ -20,7 +20,7 @@ public class WorldProviderNewHell extends WorldProvider
      */
     public void registerWorldChunkManager()
     {
-        this.worldChunkMgr = new WorldChunkManagerHell(BiomeGenBase.hell, 1.0F, 0.0F);
+        this.worldChunkMgr = terrainType.getChunkManager(worldObj);//new WorldChunkManagerHell(BiomeGenBase.hell, 1.0F, 0.0F);
         this.isHellWorld = true;
         this.hasNoSky = true;
         this.dimensionId = ESM_Settings.HellDimID;

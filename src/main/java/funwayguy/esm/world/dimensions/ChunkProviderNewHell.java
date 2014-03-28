@@ -59,7 +59,7 @@ import net.minecraftforge.event.terraingen.TerrainGen;
 
 public class ChunkProviderNewHell implements IChunkProvider
 {
-	public double heightMult = 5D;//9.5D;
+	public double heightMult = 1D;//5D;
 	public byte seaDepth = 63;
 	
 	public byte topBlock = (byte)Block.netherrack.blockID;
@@ -263,6 +263,19 @@ public class ChunkProviderNewHell implements IChunkProvider
                 int j1 = -1;
                 byte b1 = topBlock;//biomegenbase.topBlock;
                 byte b2 = fillerBlock;//biomegenbase.fillerBlock;
+                
+                if(biomegenbase.topBlock == (byte)Block.sand.blockID || biomegenbase.topBlock == (byte)Block.gravel.blockID)
+                {
+                	b1 = sandBlock;
+                }
+                
+                if(biomegenbase.fillerBlock == (byte)Block.sand.blockID || biomegenbase.topBlock == (byte)Block.gravel.blockID)
+                {
+                	b2 = sandBlock;
+                }
+                
+                byte origTB = b1;
+                byte origFB = b2;
 
                 for (int k1 = 127; k1 >= 0; --k1)
                 {
@@ -291,8 +304,8 @@ public class ChunkProviderNewHell implements IChunkProvider
                                 }
                                 else if (k1 >= b0 - 4 && k1 <= b0 + 1)
                                 {
-                                    b1 = topBlock;//biomegenbase.topBlock;
-                                    b2 = fillerBlock;//biomegenbase.fillerBlock;
+                                    b1 = origTB;//biomegenbase.topBlock;
+                                    b2 = origFB;//biomegenbase.fillerBlock;
                                 }
 
                                 if (k1 < b0 && b1 == 0)
@@ -364,7 +377,7 @@ public class ChunkProviderNewHell implements IChunkProvider
 
         for (int k = 0; k < abyte1.length; ++k)
         {
-            abyte1[k] = (byte)this.biomesForGeneration[k].biomeID;
+            abyte1[k] = (byte)BiomeGenBase.hell.biomeID;//(byte)this.biomesForGeneration[k].biomeID;
         }
 
         chunk.generateSkylightMap();
@@ -619,23 +632,6 @@ public class ChunkProviderNewHell implements IChunkProvider
             i2 = this.rand.nextInt(108) + 10;
             j2 = l + this.rand.nextInt(16);
             worldgenminable.generate(this.worldObj, this.rand, l1, i2, j2);
-        }
-
-        for (k1 = 0; k1 < 16; ++k1)
-        {
-            l1 = k + this.rand.nextInt(16);
-            i2 = this.rand.nextInt(108) + 10;
-            j2 = l + this.rand.nextInt(16);
-            (new WorldGenHellLava(Block.lavaMoving.blockID, true)).generate(this.worldObj, this.rand, l1, i2, j2);
-        }
-        
-        if(this.rand.nextInt(4) != 0)
-        {
-            k1 = k + this.rand.nextInt(16) + 8;
-            i2 = l + this.rand.nextInt(16) + 8;
-            l1 = this.provideChunk(k1, i2).getHeightValue(Math.abs(k1%16), Math.abs(i2%16));
-
-            (new WorldGenLakes((int)sandBlock)).generate(this.worldObj, this.rand, k1, l1, i2);
         }
 
         MinecraftForge.EVENT_BUS.post(new DecorateBiomeEvent.Post(worldObj, rand, k, l));

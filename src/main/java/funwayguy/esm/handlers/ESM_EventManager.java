@@ -287,7 +287,7 @@ public class ESM_EventManager
 				int y = MathHelper.floor_double(event.entityLiving.posY);
 				int z = MathHelper.floor_double(event.entityLiving.posZ);
 				
-				if(getPortalTime(event.entityLiving) >= event.entityLiving.getMaxInPortalTime()-1 && event.entityLiving.worldObj.getBlockId(x, y, z) == Block.portal.blockID && event.entityLiving.timeUntilPortal <= 0)
+				if(getPortalTime(event.entityLiving) >= event.entityLiving.getMaxInPortalTime()-1 && getInPortal(event.entityLiving) && event.entityLiving.timeUntilPortal <= 0)
 				{
 					if(event.entityLiving.dimension != ESM_Settings.HellDimID)
 					{
@@ -461,5 +461,41 @@ public class ESM_EventManager
 		}
 		
 		return time;
+	}
+	
+	public static boolean getInPortal(Entity entity)
+	{
+		boolean flag = false;
+		
+		Field field = null;
+		try
+		{
+			field = Entity.class.getDeclaredField("inPortal");
+		} catch(NoSuchFieldException e)
+		{
+			e.printStackTrace();
+			return flag;
+		} catch(SecurityException e)
+		{
+			e.printStackTrace();
+			return flag;
+		}
+		
+		field.setAccessible(true);
+		
+		try
+		{
+			flag = (boolean)field.getBoolean(entity);
+		} catch(IllegalArgumentException e)
+		{
+			e.printStackTrace();
+			return flag;
+		} catch(IllegalAccessException e)
+		{
+			e.printStackTrace();
+			return flag;
+		}
+		
+		return flag;
 	}
 }
