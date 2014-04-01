@@ -6,7 +6,6 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.WorldProvider;
-import net.minecraft.world.WorldProviderHell;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.WorldChunkManagerHell;

@@ -1,7 +1,6 @@
 package funwayguy.esm.handlers.entities;
 
 import java.util.List;
-
 import funwayguy.esm.core.ESM_Settings;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIArrowAttack;

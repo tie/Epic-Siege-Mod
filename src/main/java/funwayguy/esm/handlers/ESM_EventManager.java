@@ -2,10 +2,7 @@ package funwayguy.esm.handlers;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.util.Iterator;
 import java.util.List;
-
-import cpw.mods.fml.common.FMLCommonHandler;
 import funwayguy.esm.core.ESM;
 import funwayguy.esm.core.ESM_Settings;
 import funwayguy.esm.core.ESM_Utils;
@@ -13,7 +10,6 @@ import funwayguy.esm.handlers.entities.ESM_BlazeHandler;
 import funwayguy.esm.handlers.entities.ESM_CreeperHandler;
 import funwayguy.esm.handlers.entities.ESM_EndermanHandler;
 import funwayguy.esm.handlers.entities.ESM_SkeletonHandler;
-import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -21,9 +17,6 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIArrowAttack;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.ai.EntityAITaskEntry;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityGhast;
@@ -36,13 +29,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EnumStatus;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntitySmallFireball;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.MathHelper;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -56,29 +46,27 @@ public class ESM_EventManager
 	@ForgeSubscribe
 	public void onEntityJoinWorld(EntityJoinWorldEvent event)
 	{
-		if(!FMLCommonHandler.instance().getEffectiveSide().isServer())
+		if(event.world.isRemote)
 		{
 			return;
 		}
 		
-		if(ESM_Settings.Apocalypse && !(event.entity instanceof EntityZombie || event.entity instanceof EntityPlayer || (event.entity instanceof EntityEnderman && ESM_Settings.EndermanMode == "Slender")))
+		if(ESM_Settings.Apocalypse && event.entity instanceof EntityLivingBase && !(event.entity instanceof EntityZombie || event.entity instanceof EntityPlayer || (event.entity instanceof EntityEnderman && ESM_Settings.EndermanMode.equalsIgnoreCase("Slender"))))
 		{
+			event.entity.setDead();
 			event.setCanceled(true);
-			return;
-		}
-		
-		if(event.world == null)
-		{
 			return;
 		}
 		
 		if(event.entity instanceof EntityLiving)
 		{
 			updateEntityAwareness((EntityLiving)event.entity);
-			if(event.entity.getEntityData().getBoolean("ESM_MODIFIED"))
-			{
-				return;
-			}
+			ESM_Utils.replaceAI((EntityLiving)event.entity);
+		}
+		
+		if(event.entity.getEntityData().getBoolean("ESM_MODIFIED"))
+		{
+			return;
 		}
 		
 		if(event.entity instanceof EntityCreeper)
@@ -224,6 +212,7 @@ public class ESM_EventManager
         }
 
         shooter.playSound("random.bow", 1.0F, 1.0F / (shooter.getRNG().nextFloat() * 0.4F + 0.8F));
+        entityarrow.getEntityData().setBoolean("ESM_MODIFIED", true);
         shooter.worldObj.spawnEntityInWorld(entityarrow);
 	}
 	
@@ -234,6 +223,8 @@ public class ESM_EventManager
 		{
 			return;
 		}
+		
+		ESM_PathCapHandler.RemoveTarget(event.entityLiving);
 		
 		if(event.entity instanceof EntityPlayer)
 		{
@@ -279,30 +270,22 @@ public class ESM_EventManager
 	@ForgeSubscribe
 	public void onLivingUpdate(LivingUpdateEvent event)
 	{
-		if(event.entityLiving instanceof EntityPlayer)
+		if(getPortalTime(event.entityLiving) >= event.entityLiving.getMaxInPortalTime()-1 && getInPortal(event.entityLiving) && ESM_Settings.NewHell)
 		{
-			if(event.entityLiving.dimension != ESM_Settings.SpaceDimID)
+			if(event.entityLiving.dimension != ESM_Settings.HellDimID)
 			{
-				int x = MathHelper.floor_double(event.entityLiving.posX);
-				int y = MathHelper.floor_double(event.entityLiving.posY);
-				int z = MathHelper.floor_double(event.entityLiving.posZ);
-				
-				if(getPortalTime(event.entityLiving) >= event.entityLiving.getMaxInPortalTime()-1 && getInPortal(event.entityLiving) && event.entityLiving.timeUntilPortal <= 0)
-				{
-					if(event.entityLiving.dimension != ESM_Settings.HellDimID)
-					{
-						event.entityLiving.timeUntilPortal = event.entityLiving.getPortalCooldown();
-						ESM_Utils.transferDimensions(ESM_Settings.HellDimID, event.entityLiving, false);
-					} else
-					{
-						event.entityLiving.timeUntilPortal = event.entityLiving.getPortalCooldown();
-						ESM_Utils.transferDimensions(0, event.entityLiving, false);
-					}
-				}
+				event.entityLiving.timeUntilPortal = event.entityLiving.getPortalCooldown();
+				setInPortal(event.entityLiving, false);
+				ESM_Utils.transferDimensions(ESM_Settings.HellDimID, event.entityLiving, false);
+			} else
+			{
+				event.entityLiving.timeUntilPortal = event.entityLiving.getPortalCooldown();
+				setInPortal(event.entityLiving, false);
+				ESM_Utils.transferDimensions(0, event.entityLiving, false);
 			}
 		}
 		
-		if(event.entityLiving.posY < 0)
+		if(event.entityLiving.posY < 0 && ESM_Settings.NewEnd)
 		{
 			if(event.entityLiving.dimension == ESM_Settings.SpaceDimID)
 			{
@@ -311,6 +294,7 @@ public class ESM_EventManager
 			} else if(event.entityLiving.dimension == 1)
 			{
 				event.entityLiving.setPosition(event.entityLiving.posX, 64D, event.entityLiving.posZ);
+				event.entityLiving.motionX = event.entityLiving.motionY = event.entityLiving.motionZ = 0.0F;
 				ESM_Utils.transferDimensions(ESM_Settings.SpaceDimID, event.entityLiving, false);
 			}
 		}
@@ -320,10 +304,18 @@ public class ESM_EventManager
 			return;
 		}
 		
-		if(ESM_Settings.Apocalypse && !(event.entityLiving instanceof EntityPlayer || event.entityLiving instanceof EntityZombie || (event.entityLiving instanceof EntityEnderman && ESM_Settings.EndermanMode.equals("Slender"))))
+		if(ESM_Settings.Apocalypse && !(event.entityLiving instanceof EntityPlayer || event.entityLiving instanceof EntityZombie || (event.entityLiving instanceof EntityEnderman && ESM_Settings.EndermanMode.equalsIgnoreCase("Slender"))))
 		{
 			event.entityLiving.setDead();
 			return;
+		}
+		
+		if(event.entityLiving instanceof EntityLiving)
+		{
+			if(((EntityLiving)event.entityLiving).getAttackTarget() != null)
+			{
+				ESM_PathCapHandler.AddNewAttack(event.entityLiving, ((EntityLiving)event.entityLiving).getAttackTarget());
+			}
 		}
 		
 		updateEntityAwareness(event.entityLiving);
@@ -420,7 +412,7 @@ public class ESM_EventManager
 		{
 			MinecraftServer mc = MinecraftServer.getServer();
 			
-			if(mc.worldServers == null || mc.isServerStopped())
+			if(mc.worldServers == null || !mc.isServerRunning())
 			{
 				ESM_Settings.currentWorlds = null;
 			}
@@ -497,5 +489,37 @@ public class ESM_EventManager
 		}
 		
 		return flag;
+	}
+	
+	public static void setInPortal(Entity entity, boolean value)
+	{
+		Field field = null;
+		try
+		{
+			field = Entity.class.getDeclaredField("inPortal");
+		} catch(NoSuchFieldException e)
+		{
+			e.printStackTrace();
+			return;
+		} catch(SecurityException e)
+		{
+			e.printStackTrace();
+			return;
+		}
+		
+		field.setAccessible(true);
+		
+		try
+		{
+			field.setBoolean(entity, value);
+		} catch(IllegalArgumentException e)
+		{
+			e.printStackTrace();
+			return;
+		} catch(IllegalAccessException e)
+		{
+			e.printStackTrace();
+			return;
+		}
 	}
 }

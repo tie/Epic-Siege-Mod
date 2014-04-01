@@ -7,11 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Map.Entry;
-
-import net.minecraft.entity.monster.EntityWitch;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.biome.BiomeGenBase;
-import net.minecraft.world.biome.SpawnListEntry;
 import net.minecraft.world.gen.structure.ComponentScatteredFeatureSwampHut;
 import net.minecraft.world.gen.structure.MapGenStructure;
 import net.minecraft.world.gen.structure.StructureComponent;

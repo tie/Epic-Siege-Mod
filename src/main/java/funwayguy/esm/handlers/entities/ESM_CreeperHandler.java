@@ -1,16 +1,9 @@
 package funwayguy.esm.handlers.entities;
 
 import java.lang.reflect.Field;
-import java.util.Iterator;
-import java.util.List;
-
 import funwayguy.esm.core.ESM_Settings;
-import funwayguy.esm.handlers.ESM_ServerScheduledTickHandler;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.AxisAlignedBB;
 
 public class ESM_CreeperHandler
 {
@@ -50,31 +43,6 @@ public class ESM_CreeperHandler
 				creeper.worldObj.newExplosion(creeper, creeper.posX, creeper.posY, creeper.posZ, (float)radius, true, flag);
 			}
 			creeper.setDead();
-		}
-		
-		if(ESM_Settings.CreeperBreaching)
-		{
-			float detDist = (float)radius;
-			
-			if(creeper.getPowered())
-			{
-				detDist *= 2;
-			}
-			
-			EntityLivingBase target = creeper.getAttackTarget();
-			
-			float dist = -1;
-			
-			if(target != null && !creeper.canEntityBeSeen(target))
-			{
-				dist = creeper.getDistanceToEntity(target);
-			}
-			
-			if(target != null && dist != -1 && dist < detDist && creeper.getNavigator().noPath())
-			{
-				ESM_ServerScheduledTickHandler.registerNewBreach(creeper);
-				
-			}
 		}
 	}
 	

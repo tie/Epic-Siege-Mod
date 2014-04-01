@@ -3,8 +3,6 @@ package funwayguy.esm.core;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.logging.Level;
-
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.WorldServer;
@@ -20,12 +18,12 @@ public class ESM_Settings
 	public static final String Proxy = "funwayguy.esm.core.proxies";
 	
 	//Main
-	public static int Awareness; //50%
-	public static boolean Xray;
-	public static int TargetCap;
-	public static boolean VillagerTarget;
-	public static boolean Apocalypse; //NEEDS FIXING
-	public static boolean Chaos;
+	public static int Awareness; //NEEDS FIXING: Non-pathing entities don't work
+	public static boolean Xray; //DONE
+	public static int TargetCap; //DONE
+	public static boolean VillagerTarget; //DONE
+	public static boolean Apocalypse; //DONE
+	public static boolean Chaos; //DONE
 	public static boolean AllowSleep; //DONE
 	
 	//Creeper
@@ -61,9 +59,9 @@ public class ESM_Settings
 	public static int WitherSkeletonRarity; //DONE
 	
 	//Generation
-    public static int EndType; //50%
+    public static boolean NewEnd; //50% (Requires alternative access methods)
     public static int SpaceDimID = 2; //DONE
-    public static int NetherType; //50%
+    public static boolean NewHell; //DONE
     public static int HellDimID = -2; //DONE
     public static boolean SpawnForts;
     
@@ -139,9 +137,9 @@ public class ESM_Settings
         WitherSkeletonRarity = config.get("Advanced Mobs", "Wither Skeleton Rarity", 9).getInt(9);
         
         //World
-        EndType = config.get("World", "End Type", 0).getInt(0);
+        NewEnd = config.get("World", "Use New End", false).getBoolean(false);
         //SpaceDimID = config.get("World", "Space ID", 2).getInt(2);
-        NetherType = config.get("World", "Nether Type", 0).getInt(0);
+        NewHell = config.get("World", "Use New Nether", false).getBoolean(false);
         //HellDimID = config.get("World", "New Hell ID", -2).getInt(-2);
         SpawnForts = config.get("World", "Spawn Forts", false).getBoolean(false);
         

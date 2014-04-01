@@ -2,14 +2,25 @@ package funwayguy.esm.core;
 
 import java.lang.reflect.Field;
 import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
-
 import cpw.mods.fml.common.registry.GameRegistry;
+import funwayguy.esm.ai.ESM_EntityAICreeperSwell;
+import funwayguy.esm.ai.ESM_EntityAINearestAttackableTarget;
+import funwayguy.esm.handlers.ESM_PathCapHandler;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
-import net.minecraft.entity.monster.EntityBlaze;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityAICreeperSwell;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.ai.EntityAITaskEntry;
+import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.passive.EntityVillager;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.packet.Packet41EntityEffect;
 import net.minecraft.network.packet.Packet70GameEvent;
@@ -21,6 +32,7 @@ import net.minecraft.stats.AchievementList;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.Teleporter;
+import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldServer;
 
@@ -191,6 +203,8 @@ public class ESM_Utils
 	                			par4WorldServer.setBlock(i2 + i, j2 - 1, k2 + j, Block.obsidian.blockID);
 	                		}
 	                	}
+	                	
+	                	par1Entity.motionX = par1Entity.motionY = par1Entity.motionZ = 0.0F;
 	                } else/* if(par1Entity.dimension == -1 || par1Entity.dimension == ESM_Settings.HellDimID || par1Entity.dimension == 0)*/
 	                {
 	                	teleporter.placeInPortal(par1Entity, d3, d4, d5, f);
@@ -278,5 +292,102 @@ public class ESM_Utils
 		}
 		
 		return;
+	}
+
+	public static int getAIPathCount(World world, EntityLivingBase targetEntity)
+	{
+		ESM_PathCapHandler.UpdateAttackers(targetEntity);
+		List<EntityLivingBase> attackerList = ESM_PathCapHandler.attackMap.get(targetEntity);
+		
+		if(attackerList == null)
+		{
+			return 0;
+		} else
+		{
+			return attackerList.size();
+		}
+	}
+	
+	public static boolean isCloserThanOtherAttackers(World world, EntityLivingBase attacker, EntityLivingBase target)
+	{
+		ESM_PathCapHandler.UpdateAttackers(target);
+		List<EntityLivingBase> attackerList = ESM_PathCapHandler.attackMap.get(target);
+		
+		if(attackerList == null || attackerList.size() <= 0)
+		{
+			return true;
+		}
+		
+		EntityLivingBase furthest = attacker;
+		
+		for (int iteration = 0; iteration < attackerList.size(); ++iteration)
+		{
+			EntityLivingBase subject = attackerList.get(iteration);
+
+			if(target.getDistanceToEntity(subject) > target.getDistanceSqToEntity(furthest))
+			{
+				furthest = (EntityLiving)subject;
+			}
+		}
+		
+		if(furthest != attacker)
+		{
+			return true;
+		} else
+		{
+			return false;
+		}
+	}
+	
+	public static void replaceAI(EntityLiving entityLiving)
+	{
+		boolean replaceNAT = false;
+		boolean replaceCS = false;
+		
+		if(entityLiving.targetTasks.taskEntries.size() >= 1)
+		{
+			List<EntityAITaskEntry> taskList = entityLiving.targetTasks.taskEntries;
+			
+			for(int i = taskList.size()-1; i >= 0; i--)
+			{
+				if(taskList.get(i).action instanceof EntityAINearestAttackableTarget && entityLiving instanceof EntityCreature)
+				{
+					entityLiving.targetTasks.removeTask(taskList.get(i).action);
+					replaceNAT = true;
+				}
+			}
+		}
+		
+		if(entityLiving.tasks.taskEntries.size() >= 1)
+		{
+			List<EntityAITaskEntry> taskList = entityLiving.tasks.taskEntries;
+			
+			for(int i = taskList.size()-1; i >= 0; i--)
+			{
+				if(taskList.get(i).action instanceof EntityAICreeperSwell && entityLiving instanceof EntityCreeper)
+				{
+					entityLiving.tasks.removeTask(taskList.get(i).action);
+					replaceCS = true;
+				}
+			}
+		}
+		
+		if(replaceNAT)
+		{
+			entityLiving.targetTasks.addTask(2, new ESM_EntityAINearestAttackableTarget((EntityCreature)entityLiving, EntityPlayer.class, 0, true));
+			if(entityLiving instanceof EntityZombie)
+			{
+				entityLiving.targetTasks.addTask(2, new ESM_EntityAINearestAttackableTarget((EntityCreature)entityLiving, EntityVillager.class, 0, false));
+			} else
+			{
+				entityLiving.targetTasks.addTask(2, new ESM_EntityAINearestAttackableTarget((EntityCreature)entityLiving, EntityVillager.class, 0, true));
+			}
+			entityLiving.targetTasks.addTask(2, new ESM_EntityAINearestAttackableTarget((EntityCreature)entityLiving, EntityCreature.class, 0, true));
+		}
+		
+		if(replaceCS)
+		{
+			entityLiving.tasks.addTask(2, new ESM_EntityAICreeperSwell((EntityCreeper)entityLiving));
+		}
 	}
 }
