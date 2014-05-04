@@ -1,14 +1,18 @@
 package funwayguy.esm.core;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import cpw.mods.fml.common.registry.GameRegistry;
 import funwayguy.esm.ai.ESM_EntityAICreeperSwell;
 import funwayguy.esm.ai.ESM_EntityAINearestAttackableTarget;
+import funwayguy.esm.blocks.ESM_BlockEnderPortal;
 import funwayguy.esm.handlers.ESM_PathCapHandler;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockEndPortal;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
@@ -17,6 +21,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAICreeperSwell;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAITaskEntry;
+import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityVillager;
@@ -44,7 +49,7 @@ public class ESM_Utils
      */
     public static void transferPlayerMPToDimension(EntityPlayerMP player, int par1, boolean forceLoc)
     {
-        if (player.dimension == 1 && par1 == 1)
+        if ((player.dimension == 1 && par1 == 1) || (player.dimension == ESM_Settings.SpaceDimID && par1 == ESM_Settings.SpaceDimID))
         {
         	player.triggerAchievement(AchievementList.theEnd2);
         	player.worldObj.removeEntity(player);
@@ -53,7 +58,7 @@ public class ESM_Utils
         }
         else
         {
-            if (player.dimension == 0 && par1 == 1)
+            if(player.dimension == 0 && (par1 == 1 || par1 == ESM_Settings.SpaceDimID))
             {
             	player.triggerAchievement(AchievementList.theEnd);
                 ChunkCoordinates chunkcoordinates = player.mcServer.worldServerForDimension(par1).getEntrancePortalLocation();
@@ -63,7 +68,13 @@ public class ESM_Utils
                 	player.playerNetServerHandler.setPlayerLocation((double)chunkcoordinates.posX, (double)chunkcoordinates.posY, (double)chunkcoordinates.posZ, 0.0F, 0.0F);
                 }
 
-                par1 = 1;
+                if(par1 == ESM_Settings.SpaceDimID)
+                {
+                	par1 = ESM_Settings.SpaceDimID;
+                } else
+                {
+                	par1 = 1;
+                }
             }
             else if(par1 == -1 || par1 == ESM_Settings.HellDimID)
             {
@@ -92,7 +103,7 @@ public class ESM_Utils
             WorldServer worldserver1 = minecraftserver.worldServerForDimension(par1);
             par2.dimension = par1;
 
-            if (j == 1 && par1 == 1)
+            if((j == 1 && par1 == 1) || (j == ESM_Settings.SpaceDimID && par1 == ESM_Settings.SpaceDimID))
             {
                 worldserver1 = minecraftserver.worldServerForDimension(0);
                 par2.dimension = 0;
@@ -110,7 +121,7 @@ public class ESM_Utils
             {
                 entity.copyDataFrom(par2, true);
 
-                if (j == 1 && par1 == 1)
+                if((j == 1 && par1 == 1) || (j == ESM_Settings.SpaceDimID && par1 == ESM_Settings.SpaceDimID))
                 {
                     ChunkCoordinates chunkcoordinates = worldserver1.getSpawnPoint();
                     chunkcoordinates.posY = par2.worldObj.getTopSolidOrLiquidBlock(chunkcoordinates.posX, chunkcoordinates.posZ);
@@ -171,6 +182,20 @@ public class ESM_Utils
             {
                 par3WorldServer.updateEntityWithOptionalForce(par1Entity, false);
             }
+        } else if((par1Entity.dimension == ESM_Settings.SpaceDimID || (par1Entity.dimension == 0 && !forceLoc)) && par2 == ESM_Settings.SpaceDimID)
+        {
+            ChunkCoordinates chunkcoordinates = par4WorldServer.getSpawnPoint();
+            
+        	d0 = (double)chunkcoordinates.posX;
+        	par1Entity.posY = getSuitableSpawnHeight(par4WorldServer, chunkcoordinates.posX, chunkcoordinates.posZ);
+            d1 = (double)chunkcoordinates.posZ;
+            
+            par1Entity.setLocationAndAngles(d0 + 0.5D, par1Entity.posY, d1 + 0.5D, 90.0F, 0.0F);
+
+            if (par1Entity.isEntityAlive())
+            {
+                par3WorldServer.updateEntityWithOptionalForce(par1Entity, false);
+            }
         }
 
         par3WorldServer.theProfiler.endSection();
@@ -184,28 +209,28 @@ public class ESM_Utils
             if (par1Entity.isEntityAlive())
             {
                 par4WorldServer.spawnEntityInWorld(par1Entity);
-                par1Entity.setLocationAndAngles(d0, par1Entity.posY, d1, par1Entity.rotationYaw, par1Entity.rotationPitch);
+                par1Entity.setLocationAndAngles(d0, MathHelper.floor_double(par1Entity.posY), d1, par1Entity.rotationYaw, par1Entity.rotationPitch);
                 par4WorldServer.updateEntityWithOptionalForce(par1Entity, false);
                 
                 if(!forceLoc)
                 {
 	                if(par1Entity.dimension == ESM_Settings.SpaceDimID)
 	                {
-	                	ESM.log.log(Level.INFO, "Building spawn pad...");
 	                    int i2 = MathHelper.floor_double(par1Entity.posX);
-	                    int j2 = MathHelper.floor_double(par1Entity.posY);
+	                    int j2 = 64;
 	                    int k2 = MathHelper.floor_double(par1Entity.posZ);
 	                    
-	                	for(int i = -1; i <= 1; i++)
+	                	for(int i = -2; i <= 2; i++)
 	                	{
-	                		for(int j = -1; j <= 1; j++)
+	                		for(int j = -2; j <= 2; j++)
 	                		{
 	                			par4WorldServer.setBlock(i2 + i, j2 - 1, k2 + j, Block.obsidian.blockID);
 	                		}
 	                	}
 	                	
 	                	par1Entity.motionX = par1Entity.motionY = par1Entity.motionZ = 0.0F;
-	                } else/* if(par1Entity.dimension == -1 || par1Entity.dimension == ESM_Settings.HellDimID || par1Entity.dimension == 0)*/
+	                	par1Entity.setPosition(i2, j2, k2);
+	                } else if(par2 != ESM_Settings.SpaceDimID)/* if(par1Entity.dimension == -1 || par1Entity.dimension == ESM_Settings.HellDimID || par1Entity.dimension == 0)*/
 	                {
 	                	teleporter.placeInPortal(par1Entity, d3, d4, d5, f);
 	                }
@@ -251,6 +276,19 @@ public class ESM_Utils
 
         GameRegistry.onPlayerChangedDimension(par1EntityPlayerMP);
     }
+    
+    public static int getSuitableSpawnHeight(World world, int par1, int par2)
+    {
+        int k;
+
+        for (k = 63; !world.isAirBlock(par1, k, par2) || !world.isAirBlock(par1, k + 1, par2); ++k)
+        {
+        }
+        
+        ESM.log.log(Level.INFO, "Suitable spawn at " + par1 + ", " + k + ", " + par2);
+
+        return k;
+    }
 	
 	public static void resetPlayerMPStats(EntityPlayerMP player)
 	{
@@ -262,12 +300,18 @@ public class ESM_Utils
 			fXP = EntityPlayerMP.class.getDeclaredField("lastExperience");
 			fHP = EntityPlayerMP.class.getDeclaredField("lastHealth");
 			fFD = EntityPlayerMP.class.getDeclaredField("lastFoodLevel");
-		} catch(NoSuchFieldException e)
+		} catch(NoSuchFieldException | SecurityException e)
 		{
-			e.printStackTrace();
-			return;
-		} catch(SecurityException e)
-		{
+			try
+			{
+				fXP = EntityPlayerMP.class.getDeclaredField("field_71144_ck");
+				fHP = EntityPlayerMP.class.getDeclaredField("field_71149_ch");
+				fFD = EntityPlayerMP.class.getDeclaredField("field_71146_ci");
+			} catch(NoSuchFieldException | SecurityException e1)
+			{
+				e1.printStackTrace();
+				return;
+			}
 			e.printStackTrace();
 			return;
 		}
@@ -389,5 +433,90 @@ public class ESM_Utils
 		{
 			entityLiving.tasks.addTask(2, new ESM_EntityAICreeperSwell((EntityCreeper)entityLiving));
 		}
+	}
+
+	public static EntityLivingBase GetNearestValidTarget(EntityLiving entityLiving)
+	{
+		return entityLiving.worldObj.getClosestVulnerablePlayerToEntity(entityLiving, ESM_Settings.Awareness);
+	}
+	
+	public static boolean isFortAt(World world, int x, int z, int size)
+	{
+		int dimension = world.provider.dimensionId;
+		
+		if(ESM_Settings.fortDistance - x%Math.abs(ESM_Settings.fortDistance) < size || ESM_Settings.fortDistance - z%Math.abs(ESM_Settings.fortDistance) < size)
+		{
+			return true;
+		}
+		
+		int fGridX = x - (x%Math.abs(ESM_Settings.fortDistance));
+		int fGridZ = z - (z%Math.abs(ESM_Settings.fortDistance));
+		
+		if(ESM_Settings.fortDB.contains((new StringBuilder()).append(dimension).append(",").append(fGridX).append(",").append(fGridZ).toString()))
+		{
+			return true;
+		}
+		return false;
+	}
+	
+	public static void addFortToDB(World world, int x, int z)
+	{
+		int dimension = world.provider.dimensionId;
+		
+		int fGridX = x - (x%Math.abs(ESM_Settings.fortDistance));
+		int fGridZ = z - (z%Math.abs(ESM_Settings.fortDistance));
+		
+		ESM_Settings.fortDB.add((new StringBuilder()).append(dimension).append(",").append(fGridX).append(",").append(fGridZ).toString());
+		ESM_Settings.saveFortDB();
+	}
+	
+	public static void replaceEndPortal()
+	{
+		Block.blocksList[Block.endPortal.blockID] = null;
+		
+		Field field = null;
+		Field modifiers = null;
+
+		try
+		{
+			field = Block.class.getDeclaredField("endPortal");
+			modifiers = Field.class.getDeclaredField("modifiers");
+		} catch(NoSuchFieldException | SecurityException e)
+		{
+			try
+			{
+				field = Block.class.getDeclaredField("field_72102_bH");
+				modifiers = Field.class.getDeclaredField("modifiers");
+			} catch(NoSuchFieldException | SecurityException e1)
+			{
+				e1.printStackTrace();
+				return;
+			}
+			e.printStackTrace();
+			return;
+		}
+		
+		modifiers.setAccessible(true);
+		
+		try
+		{
+			modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+		} catch(IllegalArgumentException | IllegalAccessException e1)
+		{
+			e1.printStackTrace();
+			return;
+		}
+		
+		field.setAccessible(true);
+		try
+		{
+			field.set(null, (new ESM_BlockEnderPortal(119, Material.portal)).setHardness(-1.0F).setResistance(6000000.0F));
+		} catch(IllegalArgumentException | IllegalAccessException e2)
+		{
+			e2.printStackTrace();
+			return;
+		}
+		
+		ESM.log.log(Level.INFO, "Successfully replaced BlockEndPortal");
 	}
 }

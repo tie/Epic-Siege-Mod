@@ -1,10 +1,15 @@
 package funwayguy.esm.core;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.logging.Level;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.Configuration;
 
@@ -64,9 +69,11 @@ public class ESM_Settings
     public static boolean NewHell; //DONE
     public static int HellDimID = -2; //DONE
     public static boolean SpawnForts;
+    public static int fortRarity = 2;
+    public static int fortDistance = 16;
     
     //Non-configurables
-    public static ArrayList<String> FortDB;
+    public static ArrayList<String> fortDB = new ArrayList<String>();
     public static WorldServer[] currentWorlds = null;
     public static File currentWorldConfig = null;
 
@@ -142,12 +149,69 @@ public class ESM_Settings
         NewHell = config.get("World", "Use New Nether", false).getBoolean(false);
         //HellDimID = config.get("World", "New Hell ID", -2).getInt(-2);
         SpawnForts = config.get("World", "Spawn Forts", false).getBoolean(false);
+        fortRarity = config.get("World", "Fort Rarity", 100).getInt(100);
+        fortDistance = config.get("World", "Fort Distance", 1024).getInt(1024);
         
         config.save();
+        
+        fortDB = loadFortDB();
 	}
-
-	public static EntityLivingBase GetNearestValidTarget(EntityLiving entityLiving)
+	
+	public static ArrayList<String> loadFortDB()
 	{
-		return entityLiving.worldObj.getClosestVulnerablePlayerToEntity(entityLiving, ESM_Settings.Awareness);
+		File fileFortDB = new File(currentWorldConfig.getAbsolutePath().replaceAll(currentWorldConfig.getName(), "ESM_fortDB"));
+		ESM.log.log(Level.INFO, "Loading fortDB from " + fileFortDB.getAbsolutePath());
+		
+		if(!fileFortDB.exists())
+		{
+			return new ArrayList<String>();
+		} else
+		{
+			try
+			{
+				FileInputStream fileIn = new FileInputStream(fileFortDB);
+				BufferedInputStream buffer = new BufferedInputStream(fileIn);
+				ObjectInputStream objIn = new ObjectInputStream(buffer);
+				
+				ArrayList<String> savedDB = (ArrayList<String>)objIn.readObject();
+				
+				objIn.close();
+				buffer.close();
+				fileIn.close();
+				
+				return savedDB;
+			} catch(IOException | ClassNotFoundException | ClassCastException e)
+			{
+				return new ArrayList<String>();
+			}
+		}
+	}
+	
+	public static void saveFortDB()
+	{
+		if(fortDB == null || fortDB.size() <= 0)
+		{
+			return;
+		}
+		
+		File fileFortDB = new File(currentWorldConfig.getAbsolutePath().replaceAll(currentWorldConfig.getName(), "ESM_fortDB"));
+		
+		ESM.log.log(Level.INFO, "Saving fortDB to " + fileFortDB.getAbsolutePath());
+		
+		try
+		{
+			FileOutputStream fileOut = new FileOutputStream(fileFortDB);
+			BufferedOutputStream buffer = new BufferedOutputStream(fileOut);
+			ObjectOutputStream objOut = new ObjectOutputStream(buffer);
+			
+			objOut.writeObject(fortDB);
+			
+			objOut.close();
+			buffer.close();
+			fileOut.close();
+		} catch(IOException e)
+		{
+			return;
+		}
 	}
 }

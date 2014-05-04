@@ -3,11 +3,13 @@ package funwayguy.esm.handlers;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.logging.Level;
 import funwayguy.esm.core.ESM;
 import funwayguy.esm.core.ESM_Settings;
 import funwayguy.esm.core.ESM_Utils;
 import funwayguy.esm.handlers.entities.ESM_BlazeHandler;
 import funwayguy.esm.handlers.entities.ESM_CreeperHandler;
+import funwayguy.esm.handlers.entities.ESM_DragonHandler;
 import funwayguy.esm.handlers.entities.ESM_EndermanHandler;
 import funwayguy.esm.handlers.entities.ESM_SkeletonHandler;
 import net.minecraft.enchantment.Enchantment;
@@ -17,6 +19,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityGhast;
@@ -33,11 +36,13 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.world.gen.feature.MapGenScatteredFeature;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
+import net.minecraftforge.event.terraingen.InitMapGenEvent;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import net.minecraftforge.event.world.WorldEvent.Unload;
 
@@ -285,18 +290,10 @@ public class ESM_EventManager
 			}
 		}
 		
-		if(event.entityLiving.posY < 0 && ESM_Settings.NewEnd)
+		if(event.entityLiving.posY < 0 && event.entityLiving.dimension == ESM_Settings.SpaceDimID && event.entityLiving instanceof EntityPlayer)
 		{
-			if(event.entityLiving.dimension == ESM_Settings.SpaceDimID)
-			{
-				event.entityLiving.setPosition(event.entityLiving.posX, 255D, event.entityLiving.posZ);
-				ESM_Utils.transferDimensions(0, event.entityLiving, true);
-			} else if(event.entityLiving.dimension == 1)
-			{
-				event.entityLiving.setPosition(event.entityLiving.posX, 64D, event.entityLiving.posZ);
-				event.entityLiving.motionX = event.entityLiving.motionY = event.entityLiving.motionZ = 0.0F;
-				ESM_Utils.transferDimensions(ESM_Settings.SpaceDimID, event.entityLiving, false);
-			}
+			event.entityLiving.setPosition(event.entityLiving.posX, 255D, event.entityLiving.posZ);
+			ESM_Utils.transferDimensions(0, event.entityLiving, true);
 		}
 		
 		if(event.entity.worldObj.isRemote)
@@ -332,6 +329,11 @@ public class ESM_EventManager
 		} else if(event.entityLiving instanceof EntityEnderman)
 		{
 			ESM_EndermanHandler.onLivingUpdate((EntityEnderman)event.entityLiving);
+		}
+		
+		if(event.entityLiving instanceof EntityDragon)
+		{
+			ESM_DragonHandler.onLivingUpdate((EntityDragon)event.entityLiving);
 		}
 		
 		return;
@@ -419,6 +421,20 @@ public class ESM_EventManager
 		}
 	}
 	
+	@ForgeSubscribe
+	public void initMapGen(InitMapGenEvent event)
+	{
+		/*ESM.log.log(Level.INFO, "Fired InitMapGenEvent with type " + event.type.toString());
+		if(event.type.equals(InitMapGenEvent.EventType.SCATTERED_FEATURE))
+		{
+			if(event.originalGen instanceof MapGenScatteredFeature)
+			{
+				ESM.log.log(Level.INFO, "Replacing MapGenScatteredFeature!");
+				event.newGen = new MapGenScatteredFortress();
+			}
+		}*/
+	}
+	
 	public static int getPortalTime(Entity entity)
 	{
 		int time = -1;
@@ -427,12 +443,16 @@ public class ESM_EventManager
 		try
 		{
 			field = Entity.class.getDeclaredField("portalCounter");
-		} catch(NoSuchFieldException e)
+		} catch(NoSuchFieldException | SecurityException e)
 		{
-			e.printStackTrace();
-			return time;
-		} catch(SecurityException e)
-		{
+			try
+			{
+				field = Entity.class.getDeclaredField("field_82153_h");
+			} catch(NoSuchFieldException | SecurityException e1)
+			{
+				e1.printStackTrace();
+				return time;
+			}
 			e.printStackTrace();
 			return time;
 		}
@@ -463,12 +483,16 @@ public class ESM_EventManager
 		try
 		{
 			field = Entity.class.getDeclaredField("inPortal");
-		} catch(NoSuchFieldException e)
+		} catch(NoSuchFieldException | SecurityException e)
 		{
-			e.printStackTrace();
-			return flag;
-		} catch(SecurityException e)
-		{
+			try
+			{
+				field = Entity.class.getDeclaredField("field_71087_bX");
+			} catch(NoSuchFieldException | SecurityException e1)
+			{
+				e1.printStackTrace();
+				return flag;
+			}
 			e.printStackTrace();
 			return flag;
 		}
@@ -497,12 +521,16 @@ public class ESM_EventManager
 		try
 		{
 			field = Entity.class.getDeclaredField("inPortal");
-		} catch(NoSuchFieldException e)
+		} catch(NoSuchFieldException | SecurityException e)
 		{
-			e.printStackTrace();
-			return;
-		} catch(SecurityException e)
-		{
+			try
+			{
+				field = Entity.class.getDeclaredField("field_71087_bX");
+			} catch(NoSuchFieldException | SecurityException e1)
+			{
+				e1.printStackTrace();
+				return;
+			}
 			e.printStackTrace();
 			return;
 		}

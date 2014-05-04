@@ -2,8 +2,8 @@ package funwayguy.esm.handlers.entities;
 
 import java.lang.reflect.Field;
 import java.util.UUID;
-
 import funwayguy.esm.core.ESM_Settings;
+import funwayguy.esm.core.ESM_Utils;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -84,7 +84,7 @@ public class ESM_EndermanHandler
 	
 	public static EntityLivingBase getValidTarget(EntityEnderman enderman)
 	{
-        EntityLivingBase target = ESM_Settings.GetNearestValidTarget(enderman);//enderman.worldObj.getClosestVulnerablePlayerToEntity(this, 64.0D);
+        EntityLivingBase target = ESM_Utils.GetNearestValidTarget(enderman);//enderman.worldObj.getClosestVulnerablePlayerToEntity(this, 64.0D);
 
         if (target != null)
         {
@@ -150,12 +150,16 @@ public class ESM_EndermanHandler
 		try
 		{
 			field = EntityEnderman.class.getDeclaredField("isAggressive");
-		} catch(NoSuchFieldException e)
+		} catch(NoSuchFieldException | SecurityException e)
 		{
-			e.printStackTrace();
-			return;
-		} catch(SecurityException e)
-		{
+			try
+			{
+				field = EntityEnderman.class.getDeclaredField("field_104003_g");
+			} catch(NoSuchFieldException | SecurityException e1)
+			{
+				e1.printStackTrace();
+				return;
+			}
 			e.printStackTrace();
 			return;
 		}
