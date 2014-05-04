@@ -157,11 +157,10 @@ public class ESM_EndermanHandler
 				field = EntityEnderman.class.getDeclaredField("field_104003_g");
 			} catch(NoSuchFieldException | SecurityException e1)
 			{
+				e.printStackTrace();
 				e1.printStackTrace();
 				return;
 			}
-			e.printStackTrace();
-			return;
 		}
 		
 		field.setAccessible(true);

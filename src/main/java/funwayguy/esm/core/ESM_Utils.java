@@ -309,11 +309,10 @@ public class ESM_Utils
 				fFD = EntityPlayerMP.class.getDeclaredField("field_71146_ci");
 			} catch(NoSuchFieldException | SecurityException e1)
 			{
+				e.printStackTrace();
 				e1.printStackTrace();
 				return;
 			}
-			e.printStackTrace();
-			return;
 		}
 		
 		fXP.setAccessible(true);
@@ -489,11 +488,10 @@ public class ESM_Utils
 				modifiers = Field.class.getDeclaredField("modifiers");
 			} catch(NoSuchFieldException | SecurityException e1)
 			{
+				e.printStackTrace();
 				e1.printStackTrace();
 				return;
 			}
-			e.printStackTrace();
-			return;
 		}
 		
 		modifiers.setAccessible(true);

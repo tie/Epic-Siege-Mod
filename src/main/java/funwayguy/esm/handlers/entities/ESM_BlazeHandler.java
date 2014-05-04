@@ -34,11 +34,7 @@ public class ESM_BlazeHandler
 		try
 		{
 			field = EntityBlaze.class.getDeclaredField("field_70846_g");
-		} catch(NoSuchFieldException e)
-		{
-			e.printStackTrace();
-			return fireballs;
-		} catch(SecurityException e)
+		} catch(NoSuchFieldException | SecurityException e)
 		{
 			e.printStackTrace();
 			return fireballs;

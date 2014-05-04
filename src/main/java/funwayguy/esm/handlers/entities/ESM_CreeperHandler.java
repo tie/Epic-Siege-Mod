@@ -64,11 +64,10 @@ public class ESM_CreeperHandler
 				field2 = EntityCreeper.class.getDeclaredField("field_82225_f");
 			} catch(NoSuchFieldException | SecurityException e1)
 			{
+				e.printStackTrace();
 				e1.printStackTrace();
 				return fuseTime;
 			}
-			e.printStackTrace();
-			return fuseTime;
 		}
 		
 		field1.setAccessible(true);

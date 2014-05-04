@@ -450,11 +450,10 @@ public class ESM_EventManager
 				field = Entity.class.getDeclaredField("field_82153_h");
 			} catch(NoSuchFieldException | SecurityException e1)
 			{
+				e.printStackTrace();
 				e1.printStackTrace();
 				return time;
 			}
-			e.printStackTrace();
-			return time;
 		}
 		
 		field.setAccessible(true);
@@ -490,11 +489,10 @@ public class ESM_EventManager
 				field = Entity.class.getDeclaredField("field_71087_bX");
 			} catch(NoSuchFieldException | SecurityException e1)
 			{
+				e.printStackTrace();
 				e1.printStackTrace();
 				return flag;
 			}
-			e.printStackTrace();
-			return flag;
 		}
 		
 		field.setAccessible(true);
@@ -528,11 +526,10 @@ public class ESM_EventManager
 				field = Entity.class.getDeclaredField("field_71087_bX");
 			} catch(NoSuchFieldException | SecurityException e1)
 			{
+				e.printStackTrace();
 				e1.printStackTrace();
 				return;
 			}
-			e.printStackTrace();
-			return;
 		}
 		
 		field.setAccessible(true);
