@@ -180,7 +180,13 @@ public class ESM_Settings
 				fileIn.close();
 				
 				return savedDB;
-			} catch(IOException | ClassNotFoundException | ClassCastException e)
+			} catch(IOException e)
+			{
+				return new ArrayList<String>();
+			} catch(ClassNotFoundException e)
+			{
+				return new ArrayList<String>();
+			} catch(ClassCastException e)
 			{
 				return new ArrayList<String>();
 			}

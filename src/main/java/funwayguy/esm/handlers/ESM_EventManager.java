@@ -540,12 +540,33 @@ public class ESM_EventManager
 		try
 		{
 			field = Entity.class.getDeclaredField("inPortal");
-		} catch(NoSuchFieldException | SecurityException e)
+		} catch(NoSuchFieldException e)
 		{
 			try
 			{
 				field = Entity.class.getDeclaredField("field_71087_bX");
-			} catch(NoSuchFieldException | SecurityException e1)
+			} catch(NoSuchFieldException e1)
+			{
+				e.printStackTrace();
+				e1.printStackTrace();
+				return;
+			} catch(SecurityException e1)
+			{
+				e.printStackTrace();
+				e1.printStackTrace();
+				return;
+			}
+		} catch(SecurityException e)
+		{
+			try
+			{
+				field = Entity.class.getDeclaredField("field_71087_bX");
+			} catch(NoSuchFieldException e1)
+			{
+				e.printStackTrace();
+				e1.printStackTrace();
+				return;
+			} catch(SecurityException e1)
 			{
 				e.printStackTrace();
 				e1.printStackTrace();

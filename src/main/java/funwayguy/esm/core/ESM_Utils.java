@@ -554,7 +554,11 @@ public class ESM_Utils
 		try
 		{
 			field.set(null, (new ESM_BlockEnderPortal(119, Material.portal)).setHardness(-1.0F).setResistance(6000000.0F));
-		} catch(IllegalArgumentException | IllegalAccessException e2)
+		} catch(IllegalArgumentException e2)
+		{
+			e2.printStackTrace();
+			return;
+		} catch(IllegalAccessException e2)
 		{
 			e2.printStackTrace();
 			return;
