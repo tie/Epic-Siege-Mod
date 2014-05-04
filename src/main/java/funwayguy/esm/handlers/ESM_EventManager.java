@@ -443,12 +443,33 @@ public class ESM_EventManager
 		try
 		{
 			field = Entity.class.getDeclaredField("portalCounter");
-		} catch(NoSuchFieldException | SecurityException e)
+		} catch(NoSuchFieldException e)
 		{
 			try
 			{
 				field = Entity.class.getDeclaredField("field_82153_h");
-			} catch(NoSuchFieldException | SecurityException e1)
+			} catch(NoSuchFieldException e1)
+			{
+				e.printStackTrace();
+				e1.printStackTrace();
+				return time;
+			} catch(SecurityException e1)
+			{
+				e.printStackTrace();
+				e1.printStackTrace();
+				return time;
+			}
+		} catch(SecurityException e)
+		{
+			try
+			{
+				field = Entity.class.getDeclaredField("field_82153_h");
+			} catch(NoSuchFieldException e1)
+			{
+				e.printStackTrace();
+				e1.printStackTrace();
+				return time;
+			} catch(SecurityException e1)
 			{
 				e.printStackTrace();
 				e1.printStackTrace();

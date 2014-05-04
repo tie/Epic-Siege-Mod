@@ -300,14 +300,37 @@ public class ESM_Utils
 			fXP = EntityPlayerMP.class.getDeclaredField("lastExperience");
 			fHP = EntityPlayerMP.class.getDeclaredField("lastHealth");
 			fFD = EntityPlayerMP.class.getDeclaredField("lastFoodLevel");
-		} catch(NoSuchFieldException | SecurityException e)
+		} catch(NoSuchFieldException e)
 		{
 			try
 			{
 				fXP = EntityPlayerMP.class.getDeclaredField("field_71144_ck");
 				fHP = EntityPlayerMP.class.getDeclaredField("field_71149_ch");
 				fFD = EntityPlayerMP.class.getDeclaredField("field_71146_ci");
-			} catch(NoSuchFieldException | SecurityException e1)
+			} catch(NoSuchFieldException e1)
+			{
+				e.printStackTrace();
+				e1.printStackTrace();
+				return;
+			} catch(SecurityException e1)
+			{
+				e.printStackTrace();
+				e1.printStackTrace();
+				return;
+			}
+		} catch(SecurityException e)
+		{
+			try
+			{
+				fXP = EntityPlayerMP.class.getDeclaredField("field_71144_ck");
+				fHP = EntityPlayerMP.class.getDeclaredField("field_71149_ch");
+				fFD = EntityPlayerMP.class.getDeclaredField("field_71146_ci");
+			} catch(NoSuchFieldException e1)
+			{
+				e.printStackTrace();
+				e1.printStackTrace();
+				return;
+			} catch(SecurityException e1)
 			{
 				e.printStackTrace();
 				e1.printStackTrace();
@@ -480,13 +503,35 @@ public class ESM_Utils
 		{
 			field = Block.class.getDeclaredField("endPortal");
 			modifiers = Field.class.getDeclaredField("modifiers");
-		} catch(NoSuchFieldException | SecurityException e)
+		} catch(NoSuchFieldException e)
 		{
 			try
 			{
 				field = Block.class.getDeclaredField("field_72102_bH");
 				modifiers = Field.class.getDeclaredField("modifiers");
-			} catch(NoSuchFieldException | SecurityException e1)
+			} catch(NoSuchFieldException e1)
+			{
+				e.printStackTrace();
+				e1.printStackTrace();
+				return;
+			} catch(SecurityException e1)
+			{
+				e.printStackTrace();
+				e1.printStackTrace();
+				return;
+			}
+		} catch(SecurityException e)
+		{
+			try
+			{
+				field = Block.class.getDeclaredField("field_72102_bH");
+				modifiers = Field.class.getDeclaredField("modifiers");
+			} catch(NoSuchFieldException e1)
+			{
+				e.printStackTrace();
+				e1.printStackTrace();
+				return;
+			} catch(SecurityException e1)
 			{
 				e.printStackTrace();
 				e1.printStackTrace();
