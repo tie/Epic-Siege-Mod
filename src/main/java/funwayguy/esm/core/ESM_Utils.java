@@ -544,7 +544,11 @@ public class ESM_Utils
 		try
 		{
 			modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-		} catch(IllegalArgumentException | IllegalAccessException e1)
+		} catch(IllegalArgumentException e1)
+		{
+			e1.printStackTrace();
+			return;
+		} catch(IllegalAccessException e1)
 		{
 			e1.printStackTrace();
 			return;
