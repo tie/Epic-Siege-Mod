@@ -6,13 +6,12 @@ import net.minecraft.entity.EntityOwnable;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.attributes.AttributeInstance;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.MathHelper;
-
 import org.apache.commons.lang3.StringUtils;
-
 import funwayguy.esm.core.ESM_Settings;
 import funwayguy.esm.core.ESM_Utils;
 
@@ -102,8 +101,16 @@ public abstract class ESM_EntityAITarget extends EntityAIBase
 
     protected double getTargetDistance()
     {
-        AttributeInstance attributeinstance = this.taskOwner.getEntityAttribute(SharedMonsterAttributes.followRange);
-        return attributeinstance == null ? (double)ESM_Settings.Awareness : attributeinstance.getAttributeValue();
+    	if(this.taskOwner instanceof EntityZombie)
+    	{
+            AttributeInstance attributeinstance = this.taskOwner.getEntityAttribute(SharedMonsterAttributes.followRange);
+            
+            if(attributeinstance != null && ESM_Settings.Awareness < 40)
+            {
+            	return attributeinstance.getAttributeValue();
+            }
+    	}
+        return (double)ESM_Settings.Awareness;
     }
 
     /**

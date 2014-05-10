@@ -18,11 +18,14 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityAIAvoidEntity;
 import net.minecraft.entity.ai.EntityAICreeperSwell;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAITaskEntry;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
@@ -409,6 +412,7 @@ public class ESM_Utils
 	{
 		boolean replaceNAT = false;
 		boolean replaceCS = false;
+		boolean replaceAE = false;
 		
 		if(entityLiving.targetTasks.taskEntries.size() >= 1)
 		{
@@ -438,6 +442,20 @@ public class ESM_Utils
 			}
 		}
 		
+		if(entityLiving.tasks.taskEntries.size() >= 1)
+		{
+			List<EntityAITaskEntry> taskList = entityLiving.tasks.taskEntries;
+			
+			for(int i = taskList.size()-1; i >= 0; i--)
+			{
+				if(taskList.get(i).action instanceof EntityAIAvoidEntity && entityLiving instanceof EntityVillager)
+				{
+					entityLiving.tasks.removeTask(taskList.get(i).action);
+					replaceAE = true;
+				}
+			}
+		}
+		
 		if(replaceNAT)
 		{
 			entityLiving.targetTasks.addTask(2, new ESM_EntityAINearestAttackableTarget((EntityCreature)entityLiving, EntityPlayer.class, 0, true));
@@ -454,6 +472,12 @@ public class ESM_Utils
 		if(replaceCS)
 		{
 			entityLiving.tasks.addTask(2, new ESM_EntityAICreeperSwell((EntityCreeper)entityLiving));
+		}
+		
+		if(replaceAE)
+		{
+			entityLiving.tasks.addTask(1, new EntityAIAvoidEntity((EntityVillager)entityLiving, EntityMob.class, 12.0F, 0.6D, 0.6D));
+			entityLiving.tasks.addTask(1, new EntityAIAvoidEntity((EntityVillager)entityLiving, EntitySlime.class, 12.0F, 0.6D, 0.6D));
 		}
 	}
 

@@ -3,7 +3,6 @@ package funwayguy.esm.handlers;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.logging.Level;
 import funwayguy.esm.core.ESM;
 import funwayguy.esm.core.ESM_Settings;
 import funwayguy.esm.core.ESM_Utils;
@@ -36,7 +35,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.world.gen.feature.MapGenScatteredFeature;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -59,7 +57,7 @@ public class ESM_EventManager
 		if(ESM_Settings.Apocalypse && event.entity instanceof EntityLivingBase && !(event.entity instanceof EntityZombie || event.entity instanceof EntityPlayer || (event.entity instanceof EntityEnderman && ESM_Settings.EndermanMode.equalsIgnoreCase("Slender"))))
 		{
 			event.entity.setDead();
-			event.setCanceled(true);
+			//event.setCanceled(true);
 			return;
 		}
 		
@@ -111,18 +109,20 @@ public class ESM_EventManager
 				{
 					if(ESM_Settings.GhastSpawn && ESM_Settings.GhastRarity <= 0 && event.world.canBlockSeeTheSky((int)event.entity.posX, (int)event.entity.posY, (int)event.entity.posZ) && event.entity.posY >= 64)
 					{
-						event.setCanceled(true);
+						//event.setCanceled(true);
 						EntityGhast newGhast = new EntityGhast(event.world);
 						newGhast.setLocationAndAngles(event.entity.posX, event.entity.posY + 32, event.entity.posZ, event.entity.rotationYaw, 0.0F);
 						event.world.spawnEntityInWorld(newGhast);
+						event.entity.setDead();
 					} else if(ESM_Settings.GhastSpawn && ESM_Settings.GhastRarity > 0 && event.world.canBlockSeeTheSky((int)event.entity.posX, (int)event.entity.posY, (int)event.entity.posZ) && event.entity.posY >= 64)
 					{
 						if(event.world.rand.nextInt(ESM_Settings.GhastRarity) == 0)
 						{
-							event.setCanceled(true);
+							//event.setCanceled(true);
 							EntityGhast newGhast = new EntityGhast(event.world);
 							newGhast.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
 							event.world.spawnEntityInWorld(newGhast);
+							event.entity.setDead();
 						}
 					}
 					break;
@@ -132,20 +132,22 @@ public class ESM_EventManager
 				{
 					if(ESM_Settings.BlazeSpawn && ESM_Settings.BlazeRarity <= 0)
 					{
-						event.setCanceled(true);
+						//event.setCanceled(true);
 						EntityBlaze newBlaze = new EntityBlaze(event.world);
 						newBlaze.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
 						newBlaze.getEntityData().setBoolean("ESM_MODIFIED", true);
 						event.world.spawnEntityInWorld(newBlaze);
+						event.entity.setDead();
 					} else if(ESM_Settings.BlazeSpawn && ESM_Settings.BlazeRarity > 0)
 					{
 						if(event.world.rand.nextInt(ESM_Settings.BlazeRarity) == 0)
 						{
-							event.setCanceled(true);
+							//event.setCanceled(true);
 							EntityBlaze newBlaze = new EntityBlaze(event.world);
 							newBlaze.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
 							newBlaze.getEntityData().setBoolean("ESM_MODIFIED", true);
 							event.world.spawnEntityInWorld(newBlaze);
+							event.entity.setDead();
 						}
 					}
 					break;
@@ -162,7 +164,8 @@ public class ESM_EventManager
 				if(target != null)
 				{
 					replaceArrowAttack(shooter, target, arrow.getDamage());
-					event.setCanceled(true);
+					//event.setCanceled(true);
+					event.entity.setDead();
 				}
 			}
 		} else if(event.entity instanceof EntityBlaze)
@@ -315,7 +318,7 @@ public class ESM_EventManager
 			}
 		}
 		
-		updateEntityAwareness(event.entityLiving);
+		//updateEntityAwareness(event.entityLiving);
 		
 		if(event.entityLiving instanceof EntityCreeper)
 		{
@@ -329,9 +332,7 @@ public class ESM_EventManager
 		} else if(event.entityLiving instanceof EntityEnderman)
 		{
 			ESM_EndermanHandler.onLivingUpdate((EntityEnderman)event.entityLiving);
-		}
-		
-		if(event.entityLiving instanceof EntityDragon)
+		} else if(event.entityLiving instanceof EntityDragon)
 		{
 			ESM_DragonHandler.onLivingUpdate((EntityDragon)event.entityLiving);
 		}
