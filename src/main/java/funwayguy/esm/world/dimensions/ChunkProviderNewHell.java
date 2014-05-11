@@ -7,10 +7,8 @@ import static net.minecraftforge.event.terraingen.InitMapGenEvent.EventType.RAVI
 import static net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.FIRE;
 import static net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.GLOWSTONE;
 import static net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.NETHER_LAVA;
-
 import java.util.List;
 import java.util.Random;
-
 import funwayguy.esm.world.dimensions.features.MapGenNewCaves;
 import funwayguy.esm.world.dimensions.features.MapGenNewRavine;
 import net.minecraft.block.Block;
@@ -23,6 +21,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraft.world.gen.ChunkProviderHell;
 import net.minecraft.world.gen.MapGenBase;
 import net.minecraft.world.gen.NoiseGeneratorOctaves;
 import net.minecraft.world.gen.feature.WorldGenFire;
@@ -39,7 +38,7 @@ import net.minecraftforge.event.terraingen.DecorateBiomeEvent;
 import net.minecraftforge.event.terraingen.PopulateChunkEvent;
 import net.minecraftforge.event.terraingen.TerrainGen;
 
-public class ChunkProviderNewHell implements IChunkProvider
+public class ChunkProviderNewHell extends ChunkProviderHell implements IChunkProvider
 {
 	public double heightMult = 1D;//5D;
 	public byte seaDepth = 63;
@@ -77,9 +76,6 @@ public class ChunkProviderNewHell implements IChunkProvider
 
     /** Reference to the World object. */
     private World worldObj;
-
-    /** are map structures going to be generated (e.g. strongholds) */
-    private final boolean mapFeaturesEnabled;
 
     /** Holds the overall noise array used in chunk generation */
     private double[] noiseArray;
@@ -120,10 +116,10 @@ public class ChunkProviderNewHell implements IChunkProvider
         genNetherBridge = (MapGenNetherBridge) TerrainGen.getModdedMapGen(genNetherBridge, NETHER_BRIDGE);
     }
 
-    public ChunkProviderNewHell(World par1World, long par2, boolean par4)
+    public ChunkProviderNewHell(World par1World, long par2)
     {
+    	super(par1World, par2);
         this.worldObj = par1World;
-        this.mapFeaturesEnabled = par4;
         this.rand = new Random(par2);
         this.noiseGen1 = new NoiseGeneratorOctaves(this.rand, 16);
         this.noiseGen2 = new NoiseGeneratorOctaves(this.rand, 16);

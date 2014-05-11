@@ -49,7 +49,7 @@ public class WorldProviderNewHell extends WorldProvider
      */
     public IChunkProvider createChunkGenerator()
     {
-        return new ChunkProviderNewHell(this.worldObj, this.worldObj.getSeed(), true);
+        return new ChunkProviderNewHell(this.worldObj, this.worldObj.getSeed());
     }
 
     /**
