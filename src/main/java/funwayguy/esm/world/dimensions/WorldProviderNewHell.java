@@ -4,10 +4,11 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.WorldProvider;
+import net.minecraft.world.WorldProviderHell;
 import net.minecraft.world.chunk.IChunkProvider;
 import funwayguy.esm.core.ESM_Settings;
 
-public class WorldProviderNewHell extends WorldProvider
+public class WorldProviderNewHell extends WorldProviderHell
 {
     /**
      * creates a new world chunk manager for WorldProvider
