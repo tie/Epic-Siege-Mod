@@ -2,6 +2,8 @@ package funwayguy.esm.handlers;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import funwayguy.esm.core.ESM;
 import funwayguy.esm.core.ESM_Settings;
@@ -15,6 +17,7 @@ import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EntityLivingData;
@@ -25,9 +28,11 @@ import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityGhast;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySkeleton;
+import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntitySpider;
+import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EnumStatus;
 import net.minecraft.entity.projectile.EntityArrow;
@@ -60,13 +65,16 @@ public class ESM_EventManager
 		if(ESM_Settings.Apocalypse && event.entity instanceof EntityLivingBase && !(event.entity instanceof EntityZombie || event.entity instanceof EntityPlayer || (event.entity instanceof EntityEnderman && ESM_Settings.EndermanMode.equalsIgnoreCase("Slender"))))
 		{
 			event.entity.setDead();
-			//event.setCanceled(true);
+			event.setCanceled(true);
 			return;
 		}
 		
 		if(event.entity instanceof EntityLiving)
 		{
-			updateEntityAwareness((EntityLiving)event.entity);
+			if((event.entity instanceof EntityMob || (event.entity instanceof EntitySpider && !event.world.isDaytime())) && ESM_Settings.Awareness != 16)
+			{
+				searchForTarget((EntityCreature)event.entity);
+			}
 			ESM_Utils.replaceAI((EntityLiving)event.entity);
 		}
 		
@@ -118,7 +126,7 @@ public class ESM_EventManager
 				{
 					if(ESM_Settings.GhastSpawn && ESM_Settings.GhastRarity <= 0 && event.world.canBlockSeeTheSky((int)event.entity.posX, (int)event.entity.posY, (int)event.entity.posZ) && event.entity.posY >= 64)
 					{
-						//event.setCanceled(true);
+						event.setCanceled(true);
 						EntityGhast newGhast = new EntityGhast(event.world);
 						newGhast.setLocationAndAngles(event.entity.posX, event.entity.posY + 32, event.entity.posZ, event.entity.rotationYaw, 0.0F);
 						event.world.spawnEntityInWorld(newGhast);
@@ -127,7 +135,7 @@ public class ESM_EventManager
 					{
 						if(event.world.rand.nextInt(ESM_Settings.GhastRarity) == 0)
 						{
-							//event.setCanceled(true);
+							event.setCanceled(true);
 							EntityGhast newGhast = new EntityGhast(event.world);
 							newGhast.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
 							event.world.spawnEntityInWorld(newGhast);
@@ -141,7 +149,7 @@ public class ESM_EventManager
 				{
 					if(ESM_Settings.BlazeSpawn && ESM_Settings.BlazeRarity <= 0)
 					{
-						//event.setCanceled(true);
+						event.setCanceled(true);
 						EntityBlaze newBlaze = new EntityBlaze(event.world);
 						newBlaze.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
 						newBlaze.getEntityData().setBoolean("ESM_MODIFIED", true);
@@ -151,7 +159,7 @@ public class ESM_EventManager
 					{
 						if(event.world.rand.nextInt(ESM_Settings.BlazeRarity) == 0)
 						{
-							//event.setCanceled(true);
+							event.setCanceled(true);
 							EntityBlaze newBlaze = new EntityBlaze(event.world);
 							newBlaze.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
 							newBlaze.getEntityData().setBoolean("ESM_MODIFIED", true);
@@ -173,7 +181,7 @@ public class ESM_EventManager
 				if(target != null)
 				{
 					replaceArrowAttack(shooter, target, arrow.getDamage());
-					//event.setCanceled(true);
+					event.setCanceled(true);
 					event.entity.setDead();
 				}
 			}
@@ -257,31 +265,85 @@ public class ESM_EventManager
 		}
 	}
 	
-	public static void updateEntityAwareness(EntityLivingBase entityLivingBase)
+	@SuppressWarnings("unchecked")
+	public static void searchForTarget(EntityCreature entity)
 	{
-		EntityLiving entityLiving;
-		
-		if(entityLivingBase instanceof EntityLiving)
+		if(entity.targetTasks.taskEntries.size() > 1)
 		{
-			entityLiving = (EntityLiving)entityLivingBase;
-		} else
-		{
+			entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 0);
 			return;
 		}
 		
-		if(entityLiving.getNavigator() != null)
+		if(entity.getEntityToAttack() != null && ESM_Settings.Awareness > 16)
 		{
-			if(entityLiving instanceof EntityZombie && ESM_Settings.Awareness < 40)
+			entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 0);
+			return;
+		} else if(entity.getEntityToAttack() != null)
+		{
+			if(entity.getDistanceToEntity(entity.getEntityToAttack()) < ESM_Settings.Awareness)
 			{
-				entityLiving.getEntityAttribute(SharedMonsterAttributes.followRange).setAttribute(40);
-			} else
-			{
-				entityLiving.getEntityAttribute(SharedMonsterAttributes.followRange).setAttribute(ESM_Settings.Awareness);
+				entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 0);
+				return;
 			}
+			
+			if(ESM_PathCapHandler.attackMap.get(entity.getEntityToAttack()).size() >= ESM_Settings.TargetCap && ESM_Settings.TargetCap != -1)
+			{
+				if(ESM_PathCapHandler.attackMap.get(entity.getEntityToAttack()).size() > ESM_Settings.TargetCap)
+				{
+					entity.setAttackTarget(null);
+				}
+				entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 0);
+				return;
+			}
+		}
+		
+		if(entity.getEntityData().getInteger("ESM_TARGET_COOLDOWN") > 0 && entity.getEntityToAttack() != null)
+		{
+			entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", entity.getEntityData().getInteger("ESM_TARGET_COOLDOWN") - 1);
 		} else
 		{
-			//entityLiving.setAttackTarget(ESM_Settings.GetNearestValidTarget(entityLiving));
+			entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 30);
 		}
+		
+		EntityLivingBase closestTarget = null;
+		ArrayList<EntityLiving> targets = new ArrayList<EntityLiving>();
+		
+		targets.addAll(entity.worldObj.getEntitiesWithinAABB(EntityPlayer.class, entity.boundingBox.expand(ESM_Settings.Awareness, 4.0D, ESM_Settings.Awareness)));
+		
+		if(ESM_Settings.VillagerTarget)
+		{
+			targets.addAll(entity.worldObj.getEntitiesWithinAABB(EntityVillager.class, entity.boundingBox.expand(ESM_Settings.Awareness, 4.0D, ESM_Settings.Awareness)));
+		}
+		
+		if(ESM_Settings.Chaos)
+		{
+			targets.addAll(entity.worldObj.getEntitiesWithinAABB(EntityCreature.class, entity.boundingBox.expand(ESM_Settings.Awareness, 4.0D, ESM_Settings.Awareness)));
+		}
+		
+		double dist = ESM_Settings.Awareness + 1;
+		
+		for(int i = 0; i < targets.size(); i++)
+		{
+			EntityLivingBase subject = targets.get(i);
+			
+			if(subject instanceof EntityPlayer)
+			{
+				EntityPlayer tmpPlayer = (EntityPlayer)subject;
+				
+				if(tmpPlayer.capabilities.isCreativeMode)
+				{
+					continue;
+				}
+			}
+			
+			if(entity.getDistanceToEntity(subject) < dist && (ESM_Settings.Xray || entity instanceof EntitySpider || entity.canEntityBeSeen(subject)))
+			{
+				closestTarget = subject;
+				dist = entity.getDistanceToEntity(subject);
+			}
+		}
+		
+		entity.setTarget(closestTarget);
 	}
 	
 	@ForgeSubscribe
@@ -327,7 +389,10 @@ public class ESM_EventManager
 			}
 		}
 		
-		//updateEntityAwareness(event.entityLiving);
+		if(ESM_Settings.Awareness != 16 && (event.entityLiving instanceof EntityMob || (event.entityLiving instanceof EntitySpider && !event.entityLiving.worldObj.isDaytime())))
+		{
+			searchForTarget((EntityCreature)event.entityLiving);
+		}
 		
 		if(event.entityLiving instanceof EntityCreeper)
 		{
