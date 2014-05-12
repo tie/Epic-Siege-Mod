@@ -11,6 +11,7 @@ import funwayguy.esm.handlers.entities.ESM_CreeperHandler;
 import funwayguy.esm.handlers.entities.ESM_DragonHandler;
 import funwayguy.esm.handlers.entities.ESM_EndermanHandler;
 import funwayguy.esm.handlers.entities.ESM_SkeletonHandler;
+import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -35,6 +36,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -69,6 +72,12 @@ public class ESM_EventManager
 		
 		if(event.entity.getEntityData().getBoolean("ESM_MODIFIED"))
 		{
+			return;
+		}
+		
+		if(event.entity instanceof EntityLiving && isNearSpawner(event.world, MathHelper.floor_double(event.entity.posX), MathHelper.floor_double(event.entity.posY), MathHelper.floor_double(event.entity.posZ)))
+		{
+			event.entity.getEntityData().setBoolean("ESM_MODIFIED", true);
 			return;
 		}
 		
@@ -280,11 +289,11 @@ public class ESM_EventManager
 	{
 		if(getPortalTime(event.entityLiving) >= event.entityLiving.getMaxInPortalTime()-1 && getInPortal(event.entityLiving) && ESM_Settings.NewHell)
 		{
-			if(event.entityLiving.dimension != ESM_Settings.HellDimID)
+			if(event.entityLiving.dimension != -1)
 			{
 				event.entityLiving.timeUntilPortal = event.entityLiving.getPortalCooldown();
 				setInPortal(event.entityLiving, false);
-				ESM_Utils.transferDimensions(ESM_Settings.HellDimID, event.entityLiving, false);
+				ESM_Utils.transferDimensions(-1, event.entityLiving, false);
 			} else
 			{
 				event.entityLiving.timeUntilPortal = event.entityLiving.getPortalCooldown();
@@ -293,7 +302,7 @@ public class ESM_EventManager
 			}
 		}
 		
-		if(event.entityLiving.posY < 0 && event.entityLiving.dimension == ESM_Settings.SpaceDimID && event.entityLiving instanceof EntityPlayer)
+		if(event.entityLiving.posY < 0 && event.entityLiving.dimension == 1 && event.entityLiving instanceof EntityPlayer && ESM_Settings.NewEnd)
 		{
 			event.entityLiving.setPosition(event.entityLiving.posX, 255D, event.entityLiving.posZ);
 			ESM_Utils.transferDimensions(0, event.entityLiving, true);
@@ -610,5 +619,23 @@ public class ESM_EventManager
 			e.printStackTrace();
 			return;
 		}
+	}
+	
+	public static boolean isNearSpawner(World world, int x, int y, int z)
+	{
+		for(int i = x - 5; i < x + 5; i++)
+		{
+			for(int j = x - 5; j < x + 5; j++)
+			{
+				for(int k = x - 5; k < x + 5; k++)
+				{
+					if(world.getBlockId(i, j, k) == Block.mobSpawner.blockID)
+					{
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 }

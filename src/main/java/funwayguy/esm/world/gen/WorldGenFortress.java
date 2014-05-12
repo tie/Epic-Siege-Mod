@@ -44,11 +44,11 @@ public class WorldGenFortress implements IWorldGenerator
 				{
 					ESM.log.log(Level.INFO, "New Desert Fort at (" + (chunkX * 16) + "," + (chunkZ * 16) + ")");
 				}
-			} else if(biome.biomeID == BiomeGenBase.sky.biomeID && world.provider.dimensionId == ESM_Settings.SpaceDimID)
+			} else if(biome.biomeID == BiomeGenBase.sky.biomeID && world.provider.dimensionId == 1 && ESM_Settings.NewEnd)
 			{
 				FortressSpace fortS = new FortressSpace(world, chunkX, chunkZ);
 				fortS.buildStructure();
-			} else if(biome.biomeID == BiomeGenBase.hell.biomeID && world.provider.dimensionId == ESM_Settings.HellDimID)
+			} else if(biome.biomeID == BiomeGenBase.hell.biomeID && world.provider.dimensionId == -1 && ESM_Settings.NewHell)
 			{
 				FortressHell fortH = new FortressHell(world, chunkX, chunkZ);
 				fortH.buildStructure();

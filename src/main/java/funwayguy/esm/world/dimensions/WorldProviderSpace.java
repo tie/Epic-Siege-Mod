@@ -18,7 +18,7 @@ public class WorldProviderSpace extends WorldProvider
     public void registerWorldChunkManager()
     {
         this.worldChunkMgr = new WorldChunkManagerHell(BiomeGenBase.sky, 0.5F, 0.0F);
-        this.dimensionId = ESM_Settings.SpaceDimID;
+        this.dimensionId = 1;
         this.hasNoSky = true;
     }
 

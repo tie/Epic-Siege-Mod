@@ -23,7 +23,7 @@ public class ESM_BlockEnderPortal extends BlockEndPortal
         {
         	if(ESM_Settings.NewEnd)
         	{
-        		ESM_Utils.transferDimensions(ESM_Settings.SpaceDimID, par5Entity, false);
+        		ESM_Utils.transferDimensions(1, par5Entity, false);
         	} else
         	{
         		par5Entity.travelToDimension(1);

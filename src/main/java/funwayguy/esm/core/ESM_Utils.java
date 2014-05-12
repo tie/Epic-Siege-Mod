@@ -11,7 +11,6 @@ import funwayguy.esm.ai.ESM_EntityAINearestAttackableTarget;
 import funwayguy.esm.blocks.ESM_BlockEnderPortal;
 import funwayguy.esm.handlers.ESM_PathCapHandler;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockEndPortal;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
@@ -22,7 +21,6 @@ import net.minecraft.entity.ai.EntityAIAvoidEntity;
 import net.minecraft.entity.ai.EntityAICreeperSwell;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAITaskEntry;
-import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
@@ -52,7 +50,7 @@ public class ESM_Utils
      */
     public static void transferPlayerMPToDimension(EntityPlayerMP player, int par1, boolean forceLoc)
     {
-        if ((player.dimension == 1 && par1 == 1) || (player.dimension == ESM_Settings.SpaceDimID && par1 == ESM_Settings.SpaceDimID))
+        if (player.dimension == 1 && par1 == 1)
         {
         	player.triggerAchievement(AchievementList.theEnd2);
         	player.worldObj.removeEntity(player);
@@ -61,7 +59,7 @@ public class ESM_Utils
         }
         else
         {
-            if(player.dimension == 0 && (par1 == 1 || par1 == ESM_Settings.SpaceDimID))
+            if(player.dimension == 0 && par1 == 1)
             {
             	player.triggerAchievement(AchievementList.theEnd);
                 ChunkCoordinates chunkcoordinates = player.mcServer.worldServerForDimension(par1).getEntrancePortalLocation();
@@ -71,15 +69,9 @@ public class ESM_Utils
                 	player.playerNetServerHandler.setPlayerLocation((double)chunkcoordinates.posX, (double)chunkcoordinates.posY, (double)chunkcoordinates.posZ, 0.0F, 0.0F);
                 }
 
-                if(par1 == ESM_Settings.SpaceDimID)
-                {
-                	par1 = ESM_Settings.SpaceDimID;
-                } else
-                {
-                	par1 = 1;
-                }
+                par1 = 1;
             }
-            else if(par1 == -1 || par1 == ESM_Settings.HellDimID)
+            else if(par1 == -1)
             {
             	player.triggerAchievement(AchievementList.portal);
             }
@@ -106,7 +98,7 @@ public class ESM_Utils
             WorldServer worldserver1 = minecraftserver.worldServerForDimension(par1);
             par2.dimension = par1;
 
-            if((j == 1 && par1 == 1) || (j == ESM_Settings.SpaceDimID && par1 == ESM_Settings.SpaceDimID))
+            if(j == 1 && par1 == 1)
             {
                 worldserver1 = minecraftserver.worldServerForDimension(0);
                 par2.dimension = 0;
@@ -124,7 +116,7 @@ public class ESM_Utils
             {
                 entity.copyDataFrom(par2, true);
 
-                if((j == 1 && par1 == 1) || (j == ESM_Settings.SpaceDimID && par1 == ESM_Settings.SpaceDimID))
+                if(j == 1 && par1 == 1)
                 {
                     ChunkCoordinates chunkcoordinates = worldserver1.getSpawnPoint();
                     chunkcoordinates.posY = par2.worldObj.getTopSolidOrLiquidBlock(chunkcoordinates.posX, chunkcoordinates.posZ);
@@ -163,7 +155,7 @@ public class ESM_Utils
         float f = par1Entity.rotationYaw;
         par3WorldServer.theProfiler.startSection("moving");
 
-        if (par1Entity.dimension == 1)
+        if (par1Entity.dimension == 1 && !ESM_Settings.NewEnd)
         {
             ChunkCoordinates chunkcoordinates;
 
@@ -185,7 +177,7 @@ public class ESM_Utils
             {
                 par3WorldServer.updateEntityWithOptionalForce(par1Entity, false);
             }
-        } else if((par1Entity.dimension == ESM_Settings.SpaceDimID || (par1Entity.dimension == 0 && !forceLoc)) && par2 == ESM_Settings.SpaceDimID)
+        } else if((par1Entity.dimension == 1 || (par1Entity.dimension == 0 && !forceLoc)) && par2 == 1)
         {
             ChunkCoordinates chunkcoordinates = par4WorldServer.getSpawnPoint();
             
@@ -203,7 +195,7 @@ public class ESM_Utils
 
         par3WorldServer.theProfiler.endSection();
 
-        if (!(par2 == 1 && par1Entity.dimension == 0))
+        if (!(par2 == 1 && par1Entity.dimension == 0 && !ESM_Settings.NewEnd))
         {
             par3WorldServer.theProfiler.startSection("placing");
             d0 = (double)MathHelper.clamp_int((int)d0, -29999872, 29999872);
@@ -217,7 +209,7 @@ public class ESM_Utils
                 
                 if(!forceLoc)
                 {
-	                if(par1Entity.dimension == ESM_Settings.SpaceDimID)
+	                if(par1Entity.dimension == 1)
 	                {
 	                    int i2 = MathHelper.floor_double(par1Entity.posX);
 	                    int j2 = 64;
@@ -233,7 +225,7 @@ public class ESM_Utils
 	                	
 	                	par1Entity.motionX = par1Entity.motionY = par1Entity.motionZ = 0.0F;
 	                	par1Entity.setPosition(i2, j2, k2);
-	                } else if(par2 != ESM_Settings.SpaceDimID)/* if(par1Entity.dimension == -1 || par1Entity.dimension == ESM_Settings.HellDimID || par1Entity.dimension == 0)*/
+	                } else if(par2 != 1)/* if(par1Entity.dimension == -1 || par1Entity.dimension == ESM_Settings.HellDimID || par1Entity.dimension == 0)*/
 	                {
 	                	teleporter.placeInPortal(par1Entity, d3, d4, d5, f);
 	                }

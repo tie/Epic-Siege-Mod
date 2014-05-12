@@ -64,10 +64,8 @@ public class ESM_Settings
 	public static int WitherSkeletonRarity; //DONE
 	
 	//Generation
-    public static boolean NewEnd; //50% (Requires alternative access methods)
-    public static int SpaceDimID = 2; //DONE
+    public static boolean NewEnd; //DONE
     public static boolean NewHell; //DONE
-    public static int HellDimID = -2; //DONE
     public static boolean SpawnForts;
     public static int fortRarity = 2;
     public static int fortDistance = 16;
@@ -84,8 +82,8 @@ public class ESM_Settings
 		
         config.load();
         
-        SpaceDimID = config.get("World", "Space ID", 2).getInt(2);
-        HellDimID = config.get("World", "New Hell ID", -2).getInt(-2);
+        NewEnd = config.get("World", "Use New End", false).getBoolean(false);
+        NewHell = config.get("World", "Use New Nether", false).getBoolean(false);
 
         config.save();
 	}
@@ -144,10 +142,6 @@ public class ESM_Settings
         WitherSkeletonRarity = config.get("Advanced Mobs", "Wither Skeleton Rarity", 9).getInt(9);
         
         //World
-        NewEnd = config.get("World", "Use New End", false).getBoolean(false);
-        //SpaceDimID = config.get("World", "Space ID", 2).getInt(2);
-        NewHell = config.get("World", "Use New Nether", false).getBoolean(false);
-        //HellDimID = config.get("World", "New Hell ID", -2).getInt(-2);
         SpawnForts = config.get("World", "Spawn Forts", false).getBoolean(false);
         fortRarity = config.get("World", "Fort Rarity", 100).getInt(100);
         fortDistance = config.get("World", "Fort Distance", 1024).getInt(1024);

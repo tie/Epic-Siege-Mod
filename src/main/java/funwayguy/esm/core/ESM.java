@@ -41,6 +41,24 @@ public class ESM
 		log = event.getModLog();
 		ESM_Settings.LoadMainConfig(event.getSuggestedConfigurationFile());
 		ESM_Utils.replaceEndPortal();
+		
+		if(ESM_Settings.NewEnd)
+		{
+			DimensionManager.unregisterDimension(1);
+			DimensionManager.unregisterProviderType(1);
+			DimensionManager.registerProviderType(1, WorldProviderSpace.class, false);
+			DimensionManager.registerDimension(1, 1);
+		}
+		
+		if(ESM_Settings.NewHell)
+		{
+			DimensionManager.unregisterDimension(-1);
+			DimensionManager.unregisterProviderType(-1);
+			DimensionManager.registerProviderType(-1, WorldProviderNewHell.class, false);
+			DimensionManager.registerDimension(-1, -1);
+		}
+		
+		//ESM_Utils.replaceEndPortal();
 	}
 	
 	@EventHandler
@@ -48,11 +66,6 @@ public class ESM
 	{
 		MinecraftForge.EVENT_BUS.register(new ESM_EventManager());
 		MinecraftForge.TERRAIN_GEN_BUS.register(new ESM_EventManager());
-		
-		DimensionManager.registerProviderType(ESM_Settings.SpaceDimID, WorldProviderSpace.class, false);
-		DimensionManager.registerDimension(ESM_Settings.SpaceDimID, ESM_Settings.SpaceDimID);
-		DimensionManager.registerProviderType(ESM_Settings.HellDimID, WorldProviderNewHell.class, false);
-		DimensionManager.registerDimension(ESM_Settings.HellDimID,ESM_Settings.HellDimID);
 		
 		GameRegistry.registerWorldGenerator(new WorldGenFortress());
 	}

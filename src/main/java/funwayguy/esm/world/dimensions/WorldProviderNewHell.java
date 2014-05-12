@@ -18,7 +18,7 @@ public class WorldProviderNewHell extends WorldProviderHell
         this.worldChunkMgr = terrainType.getChunkManager(worldObj);//new WorldChunkManagerHell(BiomeGenBase.hell, 1.0F, 0.0F);
         this.isHellWorld = true;
         this.hasNoSky = true;
-        this.dimensionId = ESM_Settings.HellDimID;
+        this.dimensionId = -1;
     }
 
     @SideOnly(Side.CLIENT)
@@ -101,5 +101,11 @@ public class WorldProviderNewHell extends WorldProviderHell
     public String getDimensionName()
     {
         return "Hell";
+    }
+    
+    @Override
+    public double getMovementFactor()
+    {
+    	return 1.0D;
     }
 }
