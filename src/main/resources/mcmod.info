@@ -8,7 +8,7 @@
     "updateUrl": "",
     "authors": ["Funwayguy"],
     "credits": "BETA tested by ninja_assin23 and jcant26",
-    "logoFile": "title.png",
+    "logoFile": "title.jpg",
     "screenshots": [],
     "dependencies": ["mod_MinecraftForge"]
 }]

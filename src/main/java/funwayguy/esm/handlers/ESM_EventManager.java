@@ -417,7 +417,7 @@ public class ESM_EventManager
 	@ForgeSubscribe
 	public void onPlayerSleepInBed(PlayerSleepInBedEvent event)
 	{
-		if(ESM_Settings.AllowSleep)
+		if(ESM_Settings.AllowSleep || event.entityPlayer.worldObj.isRemote)
 		{
 			return;
 		}
