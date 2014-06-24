@@ -71,11 +71,11 @@ public class ESM_EventManager
 		
 		if(event.entity instanceof EntityLiving)
 		{
-			if((event.entity instanceof EntityMob || (event.entity instanceof EntitySpider && !event.world.isDaytime())) && ESM_Settings.Awareness != 16)
+			ESM_Utils.replaceAI((EntityLiving)event.entity);
+			if(event.entity instanceof EntityMob || (event.entity instanceof EntitySpider && !event.world.isDaytime()))
 			{
 				searchForTarget((EntityCreature)event.entity);
 			}
-			ESM_Utils.replaceAI((EntityLiving)event.entity);
 		}
 		
 		if(event.entity.getEntityData().getBoolean("ESM_MODIFIED"))
@@ -268,7 +268,7 @@ public class ESM_EventManager
 	@SuppressWarnings("unchecked")
 	public static void searchForTarget(EntityCreature entity)
 	{
-		if(entity.targetTasks.taskEntries.size() > 1)
+		if(entity.targetTasks.taskEntries.size() >= 1)
 		{
 			entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 0);
 			return;
@@ -286,7 +286,7 @@ public class ESM_EventManager
 				return;
 			}
 			
-			if(ESM_PathCapHandler.attackMap.get(entity.getEntityToAttack()).size() >= ESM_Settings.TargetCap && ESM_Settings.TargetCap != -1)
+			if(ESM_PathCapHandler.attackMap.get(entity.getEntityToAttack()).size() >= ESM_Settings.TargetCap && ESM_Settings.TargetCap != -1 && (entity.getEntityToAttack() instanceof EntityLivingBase? !ESM_Utils.isCloserThanOtherAttackers(entity.worldObj, entity, (EntityLivingBase)entity.getEntityToAttack()) : true))
 			{
 				if(ESM_PathCapHandler.attackMap.get(entity.getEntityToAttack()).size() > ESM_Settings.TargetCap)
 				{
@@ -300,6 +300,7 @@ public class ESM_EventManager
 		if(entity.getEntityData().getInteger("ESM_TARGET_COOLDOWN") > 0 && entity.getEntityToAttack() != null)
 		{
 			entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", entity.getEntityData().getInteger("ESM_TARGET_COOLDOWN") - 1);
+			return;
 		} else
 		{
 			entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 30);
