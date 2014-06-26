@@ -81,6 +81,11 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
                 {
                     EntityLivingBase entity = (EntityLivingBase)var2.next();
                     
+                    if(taskOwner.getDistanceToEntity(entity) > this.getTargetDistance())
+                    {
+                    	continue;
+                    }
+                    
                     int pathCount = ESM_Utils.getAIPathCount(this.taskOwner.worldObj, entity);
                     
                 	if(pathCount < ESM_Settings.TargetCap || ESM_Settings.TargetCap == -1 || ESM_Utils.isCloserThanOtherAttackers(this.taskOwner.worldObj, taskOwner, entity))

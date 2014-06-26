@@ -276,6 +276,10 @@ public class ESM_EventManager
 		
 		if(entity.getEntityToAttack() != null && ESM_Settings.Awareness > 16)
 		{
+			if(!entity.hasPath())
+			{
+				entity.setPathToEntity(entity.worldObj.getPathEntityToEntity(entity, entity.getEntityToAttack(), ESM_Settings.Awareness, true, false, false, true));
+			}
 			entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 0);
 			return;
 		} else if(entity.getEntityToAttack() != null)
@@ -327,6 +331,11 @@ public class ESM_EventManager
 		{
 			EntityLivingBase subject = targets.get(i);
 			
+			if(subject.isDead)
+			{
+				continue;
+			}
+			
 			if(subject instanceof EntityPlayer)
 			{
 				EntityPlayer tmpPlayer = (EntityPlayer)subject;
@@ -345,6 +354,11 @@ public class ESM_EventManager
 		}
 		
 		entity.setTarget(closestTarget);
+		
+		if(closestTarget != null)
+		{
+			entity.setPathToEntity(entity.worldObj.getPathEntityToEntity(entity, closestTarget, ESM_Settings.Awareness, true, false, false, true));
+		}
 	}
 	
 	@ForgeSubscribe
