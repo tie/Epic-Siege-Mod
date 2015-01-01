@@ -9,9 +9,9 @@ import funwayguy.esm.core.ESM_Utils;
 
 public class ESM_BlockEnderPortal extends BlockEndPortal
 {
-    public ESM_BlockEnderPortal(int par1, Material par2Material)
+    public ESM_BlockEnderPortal(Material par2Material)
     {
-        super(par1, par2Material);
+        super(par2Material);
     }
 
     /**

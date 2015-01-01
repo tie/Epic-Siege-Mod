@@ -1,14 +1,15 @@
 package funwayguy.esm.handlers.entities;
 
 import java.util.List;
-import funwayguy.esm.core.ESM_Settings;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIArrowAttack;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.ai.EntityAITaskEntry;
+import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.monster.EntitySkeleton;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import funwayguy.esm.core.ESM_Settings;
 
 public class ESM_SkeletonHandler
 {
@@ -22,8 +23,8 @@ public class ESM_SkeletonHandler
 				EntitySkeleton newSkeleton = new EntitySkeleton(skeleton.worldObj);
 				newSkeleton.setLocationAndAngles(skeleton.posX, skeleton.posY, skeleton.posZ, 0.0F, 0.0F);
 				newSkeleton.setSkeletonType(1);
-				newSkeleton.setCurrentItemOrArmor(0, new ItemStack(Item.swordStone));
-				newSkeleton.getEntityAttribute(SharedMonsterAttributes.attackDamage).setAttribute(4.0D);
+				newSkeleton.setCurrentItemOrArmor(0, new ItemStack(Items.stone_sword));
+				newSkeleton.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(4.0D);
 				newSkeleton.setCombatTask();
 				newSkeleton.getEntityData().setBoolean("ESM_MODIFIED", true);
 				skeleton.worldObj.spawnEntityInWorld(newSkeleton);
@@ -35,8 +36,8 @@ public class ESM_SkeletonHandler
 					EntitySkeleton newSkeleton = new EntitySkeleton(skeleton.worldObj);
 					newSkeleton.setLocationAndAngles(skeleton.posX, skeleton.posY, skeleton.posZ, 0.0F, 0.0F);
 					newSkeleton.setSkeletonType(1);
-					newSkeleton.setCurrentItemOrArmor(0, new ItemStack(Item.swordStone));
-					newSkeleton.getEntityAttribute(SharedMonsterAttributes.attackDamage).setAttribute(4.0D);
+					newSkeleton.setCurrentItemOrArmor(0, new ItemStack(Items.stone_sword));
+					newSkeleton.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(4.0D);
 					newSkeleton.setCombatTask();
 					newSkeleton.getEntityData().setBoolean("ESM_MODIFIED", true);
 					skeleton.worldObj.spawnEntityInWorld(newSkeleton);

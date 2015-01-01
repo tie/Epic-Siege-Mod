@@ -1,9 +1,10 @@
 package funwayguy.esm.world.gen;
 
-import java.util.logging.Level;
+import org.apache.logging.log4j.Level;
 import funwayguy.esm.core.ESM;
 import funwayguy.esm.core.ESM_Utils;
 import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 
 public class FortressDesert extends FortressBase
@@ -23,20 +24,20 @@ public class FortressDesert extends FortressBase
     		ESM_Utils.addFortToDB(worldObj, this.getXWithOffset(0, 0), this.getZWithOffset(0, 0));
 		}
     	
-		int castleMaterial = Block.obsidian.blockID;
-		int moatMaterial = Block.lavaMoving.blockID;
-		int moatBaseMaterial = Block.sandStone.blockID;
-		int bridgeMaterial = Block.stoneBrick.blockID;
-		int grateMaterial = Block.fenceIron.blockID;
+		Block castleMaterial = Blocks.obsidian;
+		Block moatMaterial = Blocks.flowing_lava;
+		Block moatBaseMaterial = Blocks.sandstone;
+		Block bridgeMaterial = Blocks.stonebrick;
+		Block grateMaterial = Blocks.iron_bars;
 		
-		customFillWithBlocks(worldObj, 0, -3, 0, 24, 20, 32, 0, 0, false);
+		customFillWithBlocks(worldObj, 0, -3, 0, 24, 20, 32, Blocks.air, Blocks.air, false);
 		
 		// Moat
 		customFillWithBlocks(worldObj, 0, -3, 0, 24, -1, 32, moatBaseMaterial, moatBaseMaterial, false);
 		
-		customFillWithBlocks(worldObj, 3, -1, 1, 21, -1, 31, 0, 0, false);
-		customFillWithBlocks(worldObj, 2, -1, 2, 22, -1, 30, 0, 0, false);
-		customFillWithBlocks(worldObj, 1, -1, 3, 23, -1, 29, 0, 0, false);
+		customFillWithBlocks(worldObj, 3, -1, 1, 21, -1, 31, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 2, -1, 2, 22, -1, 30, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 1, -1, 3, 23, -1, 29, Blocks.air, Blocks.air, false);
 		
 		customFillWithBlocks(worldObj, 3, -2, 1, 21, -2, 31, moatMaterial, moatMaterial, false);
 		customFillWithBlocks(worldObj, 2, -2, 2, 22, -2, 30, moatMaterial, moatMaterial, false);
@@ -56,47 +57,47 @@ public class FortressDesert extends FortressBase
 		customFillWithBlocks(worldObj, 16, -2, 24, 19, 14, 27, castleMaterial, castleMaterial, false);
 		
 		// Hollow Out 1st Floor
-		customFillWithBlocks(worldObj, 7, 0, 7, 17, 3, 25, 0, 0, false);
+		customFillWithBlocks(worldObj, 7, 0, 7, 17, 3, 25, Blocks.air, Blocks.air, false);
 		
-		customFillWithBlocks(worldObj,  5, 0,  6,  8, 3,  7, 0, 0, false);
-		customFillWithBlocks(worldObj, 16, 0,  6, 19, 3,  7, 0, 0, false);
-		customFillWithBlocks(worldObj,  5, 0, 25,  8, 3, 26, 0, 0, false);
-		customFillWithBlocks(worldObj, 16, 0, 25, 19, 3, 26, 0, 0, false);
+		customFillWithBlocks(worldObj,  5, 0,  6,  8, 3,  7, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 16, 0,  6, 19, 3,  7, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj,  5, 0, 25,  8, 3, 26, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 16, 0, 25, 19, 3, 26, Blocks.air, Blocks.air, false);
 		
-		customFillWithBlocks(worldObj,  6, 0,  5,  7, 3,  8, 0, 0, false);
-		customFillWithBlocks(worldObj,  6, 0, 24,  7, 3, 27, 0, 0, false);
-		customFillWithBlocks(worldObj, 17, 0,  5, 18, 3,  8, 0, 0, false);
-		customFillWithBlocks(worldObj, 17, 0, 24, 18, 3, 27, 0, 0, false);
+		customFillWithBlocks(worldObj,  6, 0,  5,  7, 3,  8, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj,  6, 0, 24,  7, 3, 27, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 17, 0,  5, 18, 3,  8, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 17, 0, 24, 18, 3, 27, Blocks.air, Blocks.air, false);
 		
 		// Hollow Out 2nd Floor
-		customFillWithBlocks(worldObj, 7, 5, 7, 17, 8, 25, 0, 0, false);
+		customFillWithBlocks(worldObj, 7, 5, 7, 17, 8, 25, Blocks.air, Blocks.air, false);
 		
-		customFillWithBlocks(worldObj,  5, 5,  6,  8, 8,  7, 0, 0, false);
-		customFillWithBlocks(worldObj, 16, 5,  6, 19, 8,  7, 0, 0, false);
-		customFillWithBlocks(worldObj,  5, 5, 25,  8, 8, 26, 0, 0, false);
-		customFillWithBlocks(worldObj, 16, 5, 25, 19, 8, 26, 0, 0, false);
+		customFillWithBlocks(worldObj,  5, 5,  6,  8, 8,  7, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 16, 5,  6, 19, 8,  7, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj,  5, 5, 25,  8, 8, 26, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 16, 5, 25, 19, 8, 26, Blocks.air, Blocks.air, false);
 		
-		customFillWithBlocks(worldObj,  6, 5,  5,  7, 8,  8, 0, 0, false);
-		customFillWithBlocks(worldObj,  6, 5, 24,  7, 8, 27, 0, 0, false);
-		customFillWithBlocks(worldObj, 17, 5,  5, 18, 8,  8, 0, 0, false);
-		customFillWithBlocks(worldObj, 17, 5, 24, 18, 8, 27, 0, 0, false);
+		customFillWithBlocks(worldObj,  6, 5,  5,  7, 8,  8, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj,  6, 5, 24,  7, 8, 27, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 17, 5,  5, 18, 8,  8, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 17, 5, 24, 18, 8, 27, Blocks.air, Blocks.air, false);
 		
 		// Hollow Out 3rd Floor
-		customFillWithBlocks(worldObj, 7, 10, 7, 17, 13, 25, 0, 0, false);
+		customFillWithBlocks(worldObj, 7, 10, 7, 17, 13, 25, Blocks.air, Blocks.air, false);
 		
-		customFillWithBlocks(worldObj,  5, 10,  6,  8, 13,  7, 0, 0, false);
-		customFillWithBlocks(worldObj, 16, 10,  6, 19, 13,  7, 0, 0, false);
-		customFillWithBlocks(worldObj,  5, 10, 25,  8, 13, 26, 0, 0, false);
-		customFillWithBlocks(worldObj, 16, 10, 25, 19, 13, 26, 0, 0, false);
+		customFillWithBlocks(worldObj,  5, 10,  6,  8, 13,  7, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 16, 10,  6, 19, 13,  7, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj,  5, 10, 25,  8, 13, 26, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 16, 10, 25, 19, 13, 26, Blocks.air, Blocks.air, false);
 		
-		customFillWithBlocks(worldObj,  6, 10,  5,  7, 13,  8, 0, 0, false);
-		customFillWithBlocks(worldObj,  6, 10, 24,  7, 13, 27, 0, 0, false);
-		customFillWithBlocks(worldObj, 17, 10,  5, 18, 13,  8, 0, 0, false);
-		customFillWithBlocks(worldObj, 17, 10, 24, 18, 13, 27, 0, 0, false);
+		customFillWithBlocks(worldObj,  6, 10,  5,  7, 13,  8, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj,  6, 10, 24,  7, 13, 27, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 17, 10,  5, 18, 13,  8, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 17, 10, 24, 18, 13, 27, Blocks.air, Blocks.air, false);
 		
 		// Entrance
-		customFillWithBlocks(worldObj, 18, 0, 14, 18, 1, 18, 0, 0, false);
-		customFillWithBlocks(worldObj, 18, 2, 15, 18, 2, 17, 0, 0, false);
+		customFillWithBlocks(worldObj, 18, 0, 14, 18, 1, 18, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 18, 2, 15, 18, 2, 17, Blocks.air, Blocks.air, false);
 		
 		customFillWithBlocks(worldObj, 19, -1, 14, 23, -1, 18, bridgeMaterial, bridgeMaterial, false);
 		
@@ -239,8 +240,8 @@ public class FortressDesert extends FortressBase
 		customFillWithBlocks(worldObj, 7, 0, 15, 7, 3, 17, castleMaterial, castleMaterial, false);
 		customFillWithBlocks(worldObj, 7, 3, 15, 8, 3, 17, castleMaterial, castleMaterial, false);
 		
-		customFillWithBlocks(worldObj, 7, 4, 10, 8, 4, 14, 0, 0, false);
-		customFillWithBlocks(worldObj, 7, 4, 18, 8, 4, 22, 0, 0, false);
+		customFillWithBlocks(worldObj, 7, 4, 10, 8, 4, 14, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 7, 4, 18, 8, 4, 22, Blocks.air, Blocks.air, false);
 		
 		// 2nd floor divider
 		customFillWithBlocks(worldObj, 9, 5, 10, 9, 8, 22, castleMaterial, castleMaterial, false);
@@ -248,31 +249,31 @@ public class FortressDesert extends FortressBase
 		customFillWithBlocks(worldObj, 9, 6, 10, 9, 7, 14, grateMaterial, grateMaterial, false);
 		customFillWithBlocks(worldObj, 9, 6, 18, 9, 7, 22, grateMaterial, grateMaterial, false);
 		
-		customFillWithBlocks(worldObj, 9, 5, 16, 9, 6, 16, 0, 0, false);
+		customFillWithBlocks(worldObj, 9, 5, 16, 9, 6, 16, Blocks.air, Blocks.air, false);
 		customPlaceIronDoorAtCurrentPosition(worldObj, 9, 5, 16, 2);
 		
 		// 2nd floor sniper nests
 		customFillWithBlocks(worldObj, 7, 5, 7, 9, 8, 9, castleMaterial, castleMaterial, false);
-		customFillWithBlocks(worldObj, 7, 5, 7, 8, 8, 8, 0, 0, false);
+		customFillWithBlocks(worldObj, 7, 5, 7, 8, 8, 8, Blocks.air, Blocks.air, false);
 
 		customFillWithBlocks(worldObj, 7, 5, 23, 9, 8, 25, castleMaterial, castleMaterial, false);
-		customFillWithBlocks(worldObj, 7, 5, 24, 8, 8, 25, 0, 0, false);
+		customFillWithBlocks(worldObj, 7, 5, 24, 8, 8, 25, Blocks.air, Blocks.air, false);
 
 		customFillWithBlocks(worldObj, 15, 5, 7, 17, 8, 9, castleMaterial, castleMaterial, false);
-		customFillWithBlocks(worldObj, 16, 5, 7, 17, 8, 8, 0, 0, false);
+		customFillWithBlocks(worldObj, 16, 5, 7, 17, 8, 8, Blocks.air, Blocks.air, false);
 
 		customFillWithBlocks(worldObj, 15, 5, 23, 17, 8, 25, castleMaterial, castleMaterial, false);
-		customFillWithBlocks(worldObj, 16, 5, 24, 17, 8, 25, 0, 0, false);
+		customFillWithBlocks(worldObj, 16, 5, 24, 17, 8, 25, Blocks.air, Blocks.air, false);
 		
-		customFillWithBlocks(worldObj, 9, 5, 8, 9, 6, 8, 0, 0, false);
-		customFillWithBlocks(worldObj, 9, 5, 24, 9, 6, 24, 0, 0, false);
-		customFillWithBlocks(worldObj, 15, 5, 8, 15, 6, 8, 0, 0, false);
-		customFillWithBlocks(worldObj, 15, 5, 24, 15, 6, 24, 0, 0, false);
+		customFillWithBlocks(worldObj, 9, 5, 8, 9, 6, 8, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 9, 5, 24, 9, 6, 24, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 15, 5, 8, 15, 6, 8, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 15, 5, 24, 15, 6, 24, Blocks.air, Blocks.air, false);
 		
-		customFillWithBlocks(worldObj, 5, 5, 5, 5, 6, 27, 0, 0, false);
-		customFillWithBlocks(worldObj, 5, 5, 5, 19, 6, 5, 0, 0, false);
-		customFillWithBlocks(worldObj, 5, 5, 27, 19, 6, 27, 0, 0, false);
-		customFillWithBlocks(worldObj, 19, 5, 5, 19, 6, 27, 0, 0, false);
+		customFillWithBlocks(worldObj, 5, 5, 5, 5, 6, 27, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 5, 5, 5, 19, 6, 5, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 5, 5, 27, 19, 6, 27, Blocks.air, Blocks.air, false);
+		customFillWithBlocks(worldObj, 19, 5, 5, 19, 6, 27, Blocks.air, Blocks.air, false);
 		
 		// 2nd floor ladder
 		
@@ -283,7 +284,7 @@ public class FortressDesert extends FortressBase
 		for(int i = 5; i <= 11; i++)
 		{
 			int ladderMeta = 4;
-			customPlaceBlockAtCurrentPosition(worldObj, Block.ladder.blockID, ladderMeta, 17, i, 16);
+			customPlaceBlockAtCurrentPosition(worldObj, Blocks.ladder, ladderMeta, 17, i, 16);
 		}
 		
 		// 3rd floor ladder
@@ -296,7 +297,7 @@ public class FortressDesert extends FortressBase
 		for(int i = 10; i <= 16; i++)
 		{
 			int ladderMeta = 5;
-			customPlaceBlockAtCurrentPosition(worldObj, Block.ladder.blockID, ladderMeta, 7, i, 16);
+			customPlaceBlockAtCurrentPosition(worldObj, Blocks.ladder, ladderMeta, 7, i, 16);
 		}
 		
 		// Spawners
@@ -335,16 +336,16 @@ public class FortressDesert extends FortressBase
 		customGenerateSpawner(worldObj, 12, 15, 18, "Zombie");
 		
 		// Loot
-		customFillWithBlocks(worldObj, 11, 13, 15, 13, 13, 17, Block.blockIron.blockID, Block.blockIron.blockID, false);
+		customFillWithBlocks(worldObj, 11, 13, 15, 13, 13, 17, Blocks.iron_block, Blocks.iron_block, false);
 		
-		customPlaceBlockAtCurrentPosition(worldObj, Block.blockDiamond.blockID, 0, 11, 13, 16);
-		customPlaceBlockAtCurrentPosition(worldObj, Block.blockDiamond.blockID, 0, 12, 13, 15);
-		customPlaceBlockAtCurrentPosition(worldObj, Block.blockDiamond.blockID, 0, 12, 13, 17);
-		customPlaceBlockAtCurrentPosition(worldObj, Block.blockDiamond.blockID, 0, 13, 13, 16);
+		customPlaceBlockAtCurrentPosition(worldObj, Blocks.diamond_block, 0, 11, 13, 16);
+		customPlaceBlockAtCurrentPosition(worldObj, Blocks.diamond_block, 0, 12, 13, 15);
+		customPlaceBlockAtCurrentPosition(worldObj, Blocks.diamond_block, 0, 12, 13, 17);
+		customPlaceBlockAtCurrentPosition(worldObj, Blocks.diamond_block, 0, 13, 13, 16);
 		
-		customPlaceBlockAtCurrentPosition(worldObj, Block.beacon.blockID, 0, 12, 14, 16);
+		customPlaceBlockAtCurrentPosition(worldObj, Blocks.beacon, 0, 12, 14, 16);
 		
-		if(customGetBlockIdAtCurrentPosition(worldObj, 12, 15, 16) != Block.chest.blockID)
+		if(customGetBlockAtCurrentPosition(worldObj, 12, 15, 16) != Blocks.chest)
 		{
 			customGenerateStructureChestContents(worldObj, 12, 15, 16);
 		}

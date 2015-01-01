@@ -2,19 +2,21 @@ package funwayguy.esm.handlers.entities;
 
 import java.lang.reflect.Field;
 import java.util.UUID;
-import funwayguy.esm.core.ESM_Settings;
-import funwayguy.esm.core.ESM_Utils;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.AttributeInstance;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.monster.EntityEnderman;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
+import funwayguy.esm.core.ESM_Settings;
+import funwayguy.esm.core.ESM_Utils;
 
 public class ESM_EndermanHandler
 {
@@ -37,7 +39,7 @@ public class ESM_EndermanHandler
 				target.addPotionEffect(new PotionEffect(Potion.confusion.id, 100, 0));
 				target.addPotionEffect(new PotionEffect(Potion.hunger.id, 100, 0));
 				
-	            AttributeInstance attributeinstance = enderman.getEntityAttribute(SharedMonsterAttributes.movementSpeed);
+	            IAttributeInstance attributeinstance = enderman.getEntityAttribute(SharedMonsterAttributes.movementSpeed);
 	            attributeinstance.removeModifier(speedBoostMod);
 	            attributeinstance.removeModifier(speedHaltMod);
 	            
@@ -62,7 +64,7 @@ public class ESM_EndermanHandler
 					enderman.getEntityData().setBoolean("ESM_LOOKED_AWAY", true);
 				} else
 				{
-		            AttributeInstance attributeinstance = enderman.getEntityAttribute(SharedMonsterAttributes.movementSpeed);
+		            IAttributeInstance attributeinstance = enderman.getEntityAttribute(SharedMonsterAttributes.movementSpeed);
 		            attributeinstance.removeModifier(speedHaltMod);
 		            attributeinstance.applyModifier(speedHaltMod);
 				}
@@ -70,7 +72,7 @@ public class ESM_EndermanHandler
 		} else
 		{
 			enderman.getEntityData().setBoolean("ESM_LOOKED_AWAY", false);
-            AttributeInstance attributeinstance = enderman.getEntityAttribute(SharedMonsterAttributes.movementSpeed);
+            IAttributeInstance attributeinstance = enderman.getEntityAttribute(SharedMonsterAttributes.movementSpeed);
             attributeinstance.removeModifier(speedHaltMod);
             
 			EntityLivingBase target = getValidTarget(enderman);
@@ -117,16 +119,16 @@ public class ESM_EndermanHandler
 	
 	public static boolean shouldAttackTarget(EntityEnderman enderman, EntityLivingBase target)
 	{
-        ItemStack itemstack = target.getCurrentItemOrArmor(4);
+        ItemStack itemstack = target.getEquipmentInSlot(4);
 
-        if (itemstack != null && itemstack.itemID == Block.pumpkin.blockID)
+        if (itemstack != null && itemstack.getItem() == Item.getItemFromBlock(Blocks.pumpkin))
         {
             return false;
         }
         else
         {
             Vec3 vec3 = target.getLook(1.0F).normalize();
-            Vec3 vec31 = enderman.worldObj.getWorldVec3Pool().getVecFromPool(enderman.posX - target.posX, enderman.boundingBox.minY + (double)(enderman.height / 2.0F) - (target.posY + (double)target.getEyeHeight()), enderman.posZ - target.posZ);
+            Vec3 vec31 =  Vec3.createVectorHelper(enderman.posX - target.posX, enderman.boundingBox.minY + (double)(enderman.height / 2.0F) - (target.posY + (double)target.getEyeHeight()), enderman.posZ - target.posZ);
             double d0 = vec31.lengthVector();
             vec31 = vec31.normalize();
             double d1 = vec3.dotProduct(vec31);
@@ -245,9 +247,9 @@ public class ESM_EndermanHandler
 
             for (flag1 = false; !flag1 && j > 0;)
             {
-                int i1 = target.worldObj.getBlockId(i, j - 1, k);
+                Block i1 = target.worldObj.getBlock(i, j - 1, k);
 
-                if (i1 != 0 && Block.blocksList[i1].blockMaterial.blocksMovement())
+                if (i1.getMaterial().blocksMovement())
                 {
                 	flag1 = true;
                 }

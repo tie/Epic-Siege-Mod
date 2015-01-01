@@ -8,7 +8,7 @@ import funwayguy.esm.core.ESM_Utils;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.EntityAINearestAttackableTargetSorter;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityVillager;
@@ -19,7 +19,7 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
     private final int targetChance;
 
     /** Instance of EntityAINearestAttackableTargetSorter. */
-    private final EntityAINearestAttackableTargetSorter theNearestAttackableTargetSorter;
+    private final EntityAINearestAttackableTarget.Sorter theNearestAttackableTargetSorter;
 
     /**
      * This filter is applied to the Entity search.  Only matching entities will be targetted.  (null -> no
@@ -43,7 +43,7 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
         super(par1EntityCreature, par4, par5);
         this.targetClass = par2Class;
         this.targetChance = par3;
-        this.theNearestAttackableTargetSorter = new EntityAINearestAttackableTargetSorter(par1EntityCreature);
+        this.theNearestAttackableTargetSorter = new EntityAINearestAttackableTarget.Sorter(par1EntityCreature);
         this.setMutexBits(1);
         this.targetEntitySelector = new ESM_EntityAINearestAttackableTargetSelector(this, par6IEntitySelector);
     }

@@ -1,13 +1,11 @@
 package funwayguy.esm.world.gen;
 
 import java.util.Random;
-import java.util.logging.Level;
-
 import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
+import org.apache.logging.log4j.Level;
 import cpw.mods.fml.common.IWorldGenerator;
 import funwayguy.esm.core.ESM;
 import funwayguy.esm.core.ESM_Settings;

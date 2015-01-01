@@ -1,14 +1,12 @@
 package funwayguy.esm.world.dimensions;
 
-import funwayguy.esm.core.ESM_Settings;
-import net.minecraft.block.Block;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.WorldProvider;
-import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.WorldChunkManagerHell;
+import net.minecraft.world.chunk.IChunkProvider;
 
 public class WorldProviderSpace extends WorldProvider
 {
@@ -17,7 +15,7 @@ public class WorldProviderSpace extends WorldProvider
      */
     public void registerWorldChunkManager()
     {
-        this.worldChunkMgr = new WorldChunkManagerHell(BiomeGenBase.sky, 0.5F, 0.0F);
+        this.worldChunkMgr = new WorldChunkManagerHell(BiomeGenBase.sky, 0.0F);
         this.dimensionId = 1;
         this.hasNoSky = true;
     }
@@ -72,7 +70,7 @@ public class WorldProviderSpace extends WorldProvider
         var5 *= var4 * 0.0F + 0.15F;
         var6 *= var4 * 0.0F + 0.15F;
         var7 *= var4 * 0.0F + 0.15F;
-        return this.worldObj.getWorldVec3Pool().getVecFromPool((double)var5, (double)var6, (double)var7);
+        return Vec3.createVectorHelper((double)var5, (double)var6, (double)var7);
     }
 
     public boolean isSkyColored()
@@ -110,8 +108,7 @@ public class WorldProviderSpace extends WorldProvider
      */
     public boolean canCoordinateBeSpawn(int par1, int par2)
     {
-        int var3 = this.worldObj.getFirstUncoveredBlock(par1, par2);
-        return var3 == 0 ? false : Block.blocksList[var3].blockMaterial.blocksMovement();
+        return this.worldObj.getTopBlock(par1, par2).getMaterial().blocksMovement();
     }
 
     /**

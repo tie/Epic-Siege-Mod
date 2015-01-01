@@ -9,9 +9,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import java.util.logging.Level;
+import org.apache.logging.log4j.Level;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.Configuration;
+import net.minecraftforge.common.config.Configuration;
 
 public class ESM_Settings
 {
@@ -65,7 +65,9 @@ public class ESM_Settings
 	
 	//Generation
     public static boolean NewEnd; //DONE
+    public static int NewEndID = 2;
     public static boolean NewHell; //DONE
+    public static int NewHellID = -2;
     public static boolean SpawnForts;
     public static int fortRarity = 2;
     public static int fortDistance = 16;
@@ -82,8 +84,12 @@ public class ESM_Settings
 		
         config.load();
         
+        config.setCategoryComment("World", "For the main list of options please refer to the ESM_Options.cfg file in your world directory.");
+        
         NewEnd = config.get("World", "Use New End", false).getBoolean(false);
         NewHell = config.get("World", "Use New Nether", false).getBoolean(false);
+        NewEndID = config.get("World", "New End ID", 2).getInt(2);
+        NewHellID = config.get("World", "New Hell ID", -2).getInt(-2);
 
         config.save();
 	}
@@ -100,29 +106,29 @@ public class ESM_Settings
         config.load();
         
         //Main
-        Awareness = config.get("Main", "Awareness Radius", 16).getInt(16);
-        Xray = config.get("Main", "Xray Mobs", false).getBoolean(false);
-        TargetCap = config.get("Main", "Pathing Cap", -1).getInt(-1);
-        VillagerTarget = config.get("Main", "Villager Targeting", false).getBoolean(false);
+        Awareness = config.get("Main", "Awareness Radius", 64).getInt(64);
+        Xray = config.get("Main", "Xray Mobs", true).getBoolean(true);
+        TargetCap = config.get("Main", "Pathing Cap", 16).getInt(16);
+        VillagerTarget = config.get("Main", "Villager Targeting", true).getBoolean(true);
         Apocalypse = config.get("Main", "Apocalypse Mode", false).getBoolean(false);
         Chaos = config.get("Main", "Chaos Mode", false).getBoolean(false);
-        AllowSleep = config.get("Main", "Allow Sleep", true).getBoolean(true);
+        AllowSleep = config.get("Main", "Allow Sleep", false).getBoolean(false);
         
         //Creeper
-        CreeperBreaching = config.get("Creeper", "Breaching", false).getBoolean(false);
-        CreeperNapalm = config.get("Creeper", "Napalm", false).getBoolean(false);
-        CreeperPowered = config.get("Creeper", "Powered", false).getBoolean(false);
+        CreeperBreaching = config.get("Creeper", "Breaching", true).getBoolean(true);
+        CreeperNapalm = config.get("Creeper", "Napalm", true).getBoolean(true);
+        CreeperPowered = config.get("Creeper", "Powered", true).getBoolean(true);
         CreeperPoweredRarity = config.get("Creeper", "Powered Rarity", 9).getInt(9);
         
         //Skeletons
-        SkeletonAccuracy = config.get("Skeleton", "Arrow Error", 12).getInt(12);
-        SkeletonDistance = config.get("Skeleton", "Fire Distance", 16).getInt(16);
+        SkeletonAccuracy = config.get("Skeleton", "Arrow Error", 0).getInt(0);
+        SkeletonDistance = config.get("Skeleton", "Fire Distance", 64).getInt(64);
         
         //Zombies
-        ZombieInfectious = config.get("Zombie", "Infectious", false).getBoolean(false);
+        ZombieInfectious = config.get("Zombie", "Infectious", true).getBoolean(true);
         
         //Blazes
-        BlazeSpawn = config.get("Blaze", "Spawn", false).getBoolean(false);
+        BlazeSpawn = config.get("Blaze", "Spawn", true).getBoolean(true);
         BlazeRarity = config.get("Blaze", "Rarity", 9).getInt(9);
         BlazeFireballs = config.get("Blaze", "Fireballs", 9).getInt(9);
         
@@ -131,18 +137,18 @@ public class ESM_Settings
         GhastRarity = config.get("Ghast", "Rarity", 9).getInt(9);
         
         //Endermen
-        EndermanMode = config.get("Enderman", "Mode", "Default").getString();
-    	EndermanPlayerTele = config.get("Enderman", "Player Teleport", false).getBoolean(false);
+        EndermanMode = config.get("Enderman", "Mode", "Slender", "Valid Endermen Modes (Slender, Normal)").getString();
+    	EndermanPlayerTele = config.get("Enderman", "Player Teleport", true).getBoolean(true);
         
         
         //Advanced
-        SpiderBombs = config.get("Advanced Mobs", "Spider Bombs", false).getBoolean(false);
+        SpiderBombs = config.get("Advanced Mobs", "Spider Bombs", true).getBoolean(true);
         SpiderBombRarity = config.get("Advanced Mobs", "Spider Bomb Rarity", 9).getInt(9);
-        WitherSkeletons = config.get("Advanced Mobs", "Wither Skeletons", false).getBoolean(false);
+        WitherSkeletons = config.get("Advanced Mobs", "Wither Skeletons", true).getBoolean(true);
         WitherSkeletonRarity = config.get("Advanced Mobs", "Wither Skeleton Rarity", 9).getInt(9);
         
         //World
-        SpawnForts = config.get("World", "Spawn Forts", false).getBoolean(false);
+        SpawnForts = config.get("World", "Spawn Forts", true).getBoolean(true);
         fortRarity = config.get("World", "Fort Rarity", 100).getInt(100);
         fortDistance = config.get("World", "Fort Distance", 1024).getInt(1024);
         

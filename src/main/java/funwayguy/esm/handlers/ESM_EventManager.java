@@ -3,8 +3,43 @@ package funwayguy.esm.handlers;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IEntityLivingData;
+import net.minecraft.entity.boss.EntityDragon;
+import net.minecraft.entity.monster.EntityBlaze;
+import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.monster.EntityEnderman;
+import net.minecraft.entity.monster.EntityGhast;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.EntitySkeleton;
+import net.minecraft.entity.monster.EntitySpider;
+import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.passive.EntityVillager;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayer.EnumStatus;
+import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.projectile.EntitySmallFireball;
+import net.minecraft.init.Blocks;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.MathHelper;
+import net.minecraft.world.World;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
+import net.minecraftforge.event.terraingen.InitMapGenEvent;
+import net.minecraftforge.event.world.WorldEvent.Load;
+import net.minecraftforge.event.world.WorldEvent.Unload;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import funwayguy.esm.core.ESM;
 import funwayguy.esm.core.ESM_Settings;
 import funwayguy.esm.core.ESM_Utils;
@@ -13,48 +48,10 @@ import funwayguy.esm.handlers.entities.ESM_CreeperHandler;
 import funwayguy.esm.handlers.entities.ESM_DragonHandler;
 import funwayguy.esm.handlers.entities.ESM_EndermanHandler;
 import funwayguy.esm.handlers.entities.ESM_SkeletonHandler;
-import net.minecraft.block.Block;
-import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.EntityLivingData;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.boss.EntityDragon;
-import net.minecraft.entity.monster.EntityBlaze;
-import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.monster.EntityGhast;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntitySkeleton;
-import net.minecraft.entity.monster.EntitySlime;
-import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.entity.monster.EntityEnderman;
-import net.minecraft.entity.monster.EntitySpider;
-import net.minecraft.entity.passive.EntityVillager;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EnumStatus;
-import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.entity.projectile.EntitySmallFireball;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.ChatMessageComponent;
-import net.minecraft.util.ChunkCoordinates;
-import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
-import net.minecraftforge.event.ForgeSubscribe;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
-import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
-import net.minecraftforge.event.terraingen.InitMapGenEvent;
-import net.minecraftforge.event.world.WorldEvent.Load;
-import net.minecraftforge.event.world.WorldEvent.Unload;
 
 public class ESM_EventManager
 {	
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void onEntityJoinWorld(EntityJoinWorldEvent event)
 	{
 		if(event.world.isRemote)
@@ -100,7 +97,7 @@ public class ESM_EventManager
 				{
 					EntityCreeper passenger = new EntityCreeper(event.entity.worldObj);
 					passenger.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
-					passenger.onSpawnWithEgg((EntityLivingData)null);
+					passenger.onSpawnWithEgg((IEntityLivingData)null);
 					event.entity.worldObj.spawnEntityInWorld(passenger);
 					passenger.mountEntity(event.entity);
 				} else if(ESM_Settings.SpiderBombs && ESM_Settings.SpiderBombRarity > 0)
@@ -109,7 +106,7 @@ public class ESM_EventManager
 					{
 						EntityCreeper passenger = new EntityCreeper(event.entity.worldObj);
 						passenger.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
-						passenger.onSpawnWithEgg((EntityLivingData)null);
+						passenger.onSpawnWithEgg((IEntityLivingData)null);
 						event.entity.worldObj.spawnEntityInWorld(passenger);
 						passenger.mountEntity(event.entity);
 					}
@@ -241,7 +238,7 @@ public class ESM_EventManager
         shooter.worldObj.spawnEntityInWorld(entityarrow);
 	}
 	
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void onEntityDeath(LivingDeathEvent event)
 	{
 		if(event.entity.worldObj.isRemote)
@@ -258,7 +255,7 @@ public class ESM_EventManager
 				EntityZombie zombie = new EntityZombie(event.entity.worldObj);
 				zombie.setPosition(event.entity.posX, event.entity.posY, event.entity.posZ);
 				zombie.setCanPickUpLoot(true);
-				zombie.setCustomNameTag(event.entity.getEntityName());
+				zombie.setCustomNameTag(event.entity.getCommandSenderName());
 				zombie.getEntityData().setBoolean("ESM_MODIFIED", true);
 				event.entity.worldObj.spawnEntityInWorld(zombie);
 			}
@@ -361,7 +358,7 @@ public class ESM_EventManager
 		}
 	}
 	
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void onLivingUpdate(LivingUpdateEvent event)
 	{
 		if(getPortalTime(event.entityLiving) >= event.entityLiving.getMaxInPortalTime()-1 && getInPortal(event.entityLiving) && ESM_Settings.NewHell)
@@ -429,7 +426,7 @@ public class ESM_EventManager
 		return;
 	}
 
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void onPlayerSleepInBed(PlayerSleepInBedEvent event)
 	{
 		if(ESM_Settings.AllowSleep || event.entityPlayer.worldObj.isRemote)
@@ -460,7 +457,7 @@ public class ESM_EventManager
             }
             double d0 = 8.0D;
             double d1 = 5.0D;
-            List list = event.entityPlayer.worldObj.getEntitiesWithinAABB(EntityMob.class, AxisAlignedBB.getAABBPool().getAABB((double)event.x - d0, (double)event.y - d1, (double)event.z - d0, (double)event.x + d0, (double)event.y + d1, (double)event.z + d0));
+            List list = event.entityPlayer.worldObj.getEntitiesWithinAABB(EntityMob.class, AxisAlignedBB.getBoundingBox((double)event.x - d0, (double)event.y - d1, (double)event.z - d0, (double)event.x + d0, (double)event.y + d1, (double)event.z + d0));
             
 	        if (!list.isEmpty())
             {
@@ -476,10 +473,10 @@ public class ESM_EventManager
 	    }
 	    
 		event.entityPlayer.setSpawnChunk(new ChunkCoordinates(event.x,event.y,event.z), false);
-		event.entityPlayer.sendChatToPlayer(ChatMessageComponent.createFromText("Spawnpoint set"));
+		event.entityPlayer.addChatMessage(new ChatComponentText("Spawnpoint set"));
 	}
 	
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void onWorldLoad(Load event)
 	{
 		if(!event.world.isRemote && ESM_Settings.currentWorlds == null)
@@ -497,7 +494,7 @@ public class ESM_EventManager
 		}
 	}
 	
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void onWorldUnload(Unload event)
 	{
 		if(!event.world.isRemote)
@@ -511,7 +508,7 @@ public class ESM_EventManager
 		}
 	}
 	
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void initMapGen(InitMapGenEvent event)
 	{
 		/*ESM.log.log(Level.INFO, "Fired InitMapGenEvent with type " + event.type.toString());
@@ -709,7 +706,7 @@ public class ESM_EventManager
 			{
 				for(int k = x - 5; k < x + 5; k++)
 				{
-					if(world.getBlockId(i, j, k) == Block.mobSpawner.blockID)
+					if(world.getBlock(i, j, k) == Blocks.mob_spawner)
 					{
 						return true;
 					}

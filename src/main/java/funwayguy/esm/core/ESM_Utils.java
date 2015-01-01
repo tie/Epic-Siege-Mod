@@ -1,15 +1,11 @@
 package funwayguy.esm.core;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
-import cpw.mods.fml.common.registry.GameRegistry;
-import funwayguy.esm.ai.ESM_EntityAICreeperSwell;
-import funwayguy.esm.ai.ESM_EntityAINearestAttackableTarget;
-import funwayguy.esm.blocks.ESM_BlockEnderPortal;
-import funwayguy.esm.handlers.ESM_PathCapHandler;
+import org.apache.logging.log4j.Level;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
@@ -21,7 +17,7 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAvoidEntity;
 import net.minecraft.entity.ai.EntityAICreeperSwell;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.ai.EntityAITaskEntry;
+import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySlime;
@@ -29,9 +25,12 @@ import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.network.packet.Packet41EntityEffect;
-import net.minecraft.network.packet.Packet70GameEvent;
-import net.minecraft.network.packet.Packet9Respawn;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.network.play.server.S07PacketRespawn;
+import net.minecraft.network.play.server.S1DPacketEntityEffect;
+import net.minecraft.network.play.server.S2BPacketChangeGameState;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.ServerConfigurationManager;
@@ -42,10 +41,16 @@ import net.minecraft.world.Teleporter;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldServer;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.registry.FMLControlledNamespacedRegistry;
+import cpw.mods.fml.common.registry.GameData;
+import funwayguy.esm.ai.ESM_EntityAICreeperSwell;
+import funwayguy.esm.ai.ESM_EntityAINearestAttackableTarget;
+import funwayguy.esm.blocks.ESM_BlockEnderPortal;
+import funwayguy.esm.handlers.ESM_PathCapHandler;
 
 public class ESM_Utils
 {
-
     /**
      * Teleports the entity to another dimension. Params: Dimension number to teleport to
      */
@@ -56,7 +61,7 @@ public class ESM_Utils
         	player.triggerAchievement(AchievementList.theEnd2);
         	player.worldObj.removeEntity(player);
         	player.playerConqueredTheEnd = true;
-        	player.playerNetServerHandler.sendPacketToPlayer(new Packet70GameEvent(4, 0));
+        	player.playerNetServerHandler.sendPacket(new S2BPacketChangeGameState(4, 0));
         }
         else
         {
@@ -220,7 +225,7 @@ public class ESM_Utils
 	                	{
 	                		for(int j = -2; j <= 2; j++)
 	                		{
-	                			par4WorldServer.setBlock(i2 + i, j2 - 1, k2 + j, Block.obsidian.blockID);
+	                			par4WorldServer.setBlock(i2 + i, j2 - 1, k2 + j, Blocks.obsidian);
 	                		}
 	                	}
 	                	
@@ -252,7 +257,7 @@ public class ESM_Utils
         WorldServer worldserver = par1EntityPlayerMP.mcServer.worldServerForDimension(par1EntityPlayerMP.dimension);
         par1EntityPlayerMP.dimension = par2;
         WorldServer worldserver1 = par1EntityPlayerMP.mcServer.worldServerForDimension(par1EntityPlayerMP.dimension);
-        par1EntityPlayerMP.playerNetServerHandler.sendPacketToPlayer(new Packet9Respawn(par1EntityPlayerMP.dimension, (byte)par1EntityPlayerMP.worldObj.difficultySetting, worldserver1.getWorldInfo().getTerrainType(), worldserver1.getHeight(), par1EntityPlayerMP.theItemInWorldManager.getGameType()));
+        par1EntityPlayerMP.playerNetServerHandler.sendPacket(new S07PacketRespawn(par1EntityPlayerMP.dimension, par1EntityPlayerMP.worldObj.difficultySetting, par1EntityPlayerMP.worldObj.getWorldInfo().getTerrainType(), par1EntityPlayerMP.theItemInWorldManager.getGameType()));
         worldserver.removePlayerEntityDangerously(par1EntityPlayerMP);
         par1EntityPlayerMP.isDead = false;
         //configManager.transferEntityToWorld(par1EntityPlayerMP, j, worldserver, worldserver1, teleporter);
@@ -267,10 +272,10 @@ public class ESM_Utils
         while (iterator.hasNext())
         {
             PotionEffect potioneffect = (PotionEffect)iterator.next();
-            par1EntityPlayerMP.playerNetServerHandler.sendPacketToPlayer(new Packet41EntityEffect(par1EntityPlayerMP.entityId, potioneffect));
+            par1EntityPlayerMP.playerNetServerHandler.sendPacket(new S1DPacketEntityEffect(par1EntityPlayerMP.getEntityId(), potioneffect));
         }
 
-        GameRegistry.onPlayerChangedDimension(par1EntityPlayerMP);
+        FMLCommonHandler.instance().firePlayerChangedDimensionEvent(par1EntityPlayerMP, j, par2);
     }
     
     public static int getSuitableSpawnHeight(World world, int par1, int par2)
@@ -452,7 +457,7 @@ public class ESM_Utils
 		if(replaceNAT)
 		{
 			if(!(entityLiving instanceof EntityZombie) || ESM_Settings.Awareness > 40)
-			entityLiving.getEntityAttribute(SharedMonsterAttributes.followRange).setAttribute(ESM_Settings.Awareness);
+			entityLiving.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(ESM_Settings.Awareness);
 			entityLiving.targetTasks.addTask(2, new ESM_EntityAINearestAttackableTarget((EntityCreature)entityLiving, EntityPlayer.class, 0, true));
 			if(entityLiving instanceof EntityZombie)
 			{
@@ -511,46 +516,24 @@ public class ESM_Utils
 		ESM_Settings.saveFortDB();
 	}
 	
+	// Experience says this is a bad idea... really bad!
 	public static void replaceEndPortal()
 	{
-		Block.blocksList[Block.endPortal.blockID] = null;
-		
-		Field field = null;
+		Block block = new ESM_BlockEnderPortal(Material.portal).setHardness(-1.0F).setResistance(6000000.0F);
+		Field fBlock = null;
 		Field modifiers = null;
 
 		try
 		{
-			field = Block.class.getDeclaredField("endPortal");
+			fBlock = Blocks.class.getDeclaredField("end_portal");
 			modifiers = Field.class.getDeclaredField("modifiers");
-		} catch(NoSuchFieldException e)
+		} catch(Exception e)
 		{
 			try
 			{
-				field = Block.class.getDeclaredField("field_72102_bH");
+				fBlock = Blocks.class.getDeclaredField("field_150384_bq");
 				modifiers = Field.class.getDeclaredField("modifiers");
-			} catch(NoSuchFieldException e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return;
-			} catch(SecurityException e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return;
-			}
-		} catch(SecurityException e)
-		{
-			try
-			{
-				field = Block.class.getDeclaredField("field_72102_bH");
-				modifiers = Field.class.getDeclaredField("modifiers");
-			} catch(NoSuchFieldException e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return;
-			} catch(SecurityException e1)
+			} catch(Exception e1)
 			{
 				e.printStackTrace();
 				e1.printStackTrace();
@@ -562,31 +545,42 @@ public class ESM_Utils
 		
 		try
 		{
-			modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-		} catch(IllegalArgumentException e1)
+			modifiers.setInt(fBlock, fBlock.getModifiers() & ~Modifier.FINAL);
+		} catch(Exception e)
 		{
-			e1.printStackTrace();
-			return;
-		} catch(IllegalAccessException e1)
-		{
-			e1.printStackTrace();
+			ESM.log.log(Level.ERROR, "Failed to replace End Portal", e);
 			return;
 		}
 		
-		field.setAccessible(true);
+		fBlock.setAccessible(true);
+		
 		try
 		{
-			field.set(null, (new ESM_BlockEnderPortal(119, Material.portal)).setHardness(-1.0F).setResistance(6000000.0F));
-		} catch(IllegalArgumentException e2)
+			fBlock.set(null, block);
+			
+			try
+			{
+				Method addRawObj = FMLControlledNamespacedRegistry.class.getDeclaredMethod("addObjectRaw", int.class, String.class, Object.class);
+				addRawObj.setAccessible(true);
+				
+				addRawObj.invoke(GameData.getItemRegistry(), 119, "minecraft:end_portal", new ItemBlock(block));
+				addRawObj.invoke(GameData.getBlockRegistry(), 119, "minecraft:end_portal", block);
+			} catch(Exception e)
+			{
+				ESM.log.log(Level.ERROR, "Failed to replace End Portal", e);
+			}
+		} catch(Exception e)
 		{
-			e2.printStackTrace();
-			return;
-		} catch(IllegalAccessException e2)
-		{
-			e2.printStackTrace();
+			ESM.log.log(Level.ERROR, "Failed to replace End Portal", e);
 			return;
 		}
 		
-		ESM.log.log(Level.INFO, "Successfully replaced BlockEndPortal");
+		if(Blocks.end_portal instanceof ESM_BlockEnderPortal && Block.blockRegistry.getObject("end_portal") instanceof ESM_BlockEnderPortal)
+		{
+			ESM.log.log(Level.INFO, "Successfully replaced vanilla End Portal");
+		} else
+		{
+			ESM.log.log(Level.ERROR, "Failed to override vanilla End Portal block");
+		}
 	}
 }

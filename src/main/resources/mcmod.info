@@ -1,14 +1,16 @@
-[{
-    "modid": "ESM",
-    "name": "Epic Siege Mod",
-    "description": "Makes Minecraft's Mobs Extremely difficult and dangerous.",
-    "version": "FWG_ESM_VER",
-    "mcversion": "1.6.4",
-    "url": "",
-    "updateUrl": "",
-    "authors": ["Funwayguy"],
-    "credits": "BETA tested by ninja_assin23 and jcant26",
-    "logoFile": "title.jpg",
-    "screenshots": [],
-    "dependencies": ["mod_MinecraftForge"]
-}]
+[
+{
+  "modid": "ESM",
+  "name": "Epic Siege Mod",
+  "description": "Makes Minecraft's mobs extremely difficult and dangerous with an unending lust for death and destruction. One might even say it's just down right unfair",
+  "version": "FWG_ESM_VER",
+  "mcversion": "1.6.4",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Funwayguy"],
+  "credits": "BETA tested by ninja_assin23 and jcant26",
+  "logoFile": "title.jpg",
+  "screenshots": [],
+  "dependencies": ["mod_MinecraftForge"]
+}
+]
