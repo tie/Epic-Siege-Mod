@@ -1,5 +1,7 @@
 package funwayguy.esm.world.gen;
 
+import org.apache.logging.log4j.Level;
+import funwayguy.esm.core.ESM;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -24,8 +26,20 @@ public abstract class FortressBase
     	this.worldObj = par1World;
     	this.originX = chunkX * 16;
     	this.originZ = chunkZ * 16;
-    	this.originY = par1World.getChunkFromChunkCoords(chunkX, chunkZ).getHeightValue(8, 8);
+    	this.originY = GetYHeight(originX + 8, 96, originZ + 8);
     	this.orientation = par1World.rand.nextInt(4);
+	}
+	
+	public int GetYHeight(int posX, int startY, int posZ)
+	{
+		int y = startY;
+		
+		while(y > 48 && this.worldObj.getBlock(posX, y, posZ) == Blocks.air && this.worldObj.getBlock(posX, y - 1, posZ) != Blocks.air)
+		{
+			y--;
+		}
+		
+		return y;
 	}
 	
 	public abstract boolean buildStructure();
@@ -95,11 +109,14 @@ public abstract class FortressBase
         	{
         		var12.setInventorySlotContents(i, new ItemStack(Items.experience_bottle, 1, 0));
         	}
+            
+            var12.setInventorySlotContents(10, new ItemStack(Blocks.emerald_block, 1, 0));
+            var12.setInventorySlotContents(13, new ItemStack(Blocks.emerald_block, 1, 0));
+            var12.setInventorySlotContents(16, new ItemStack(Blocks.emerald_block, 1, 0));
+        } else
+        {
+        	ESM.log.log(Level.ERROR, "Loot chest did not generate loot correctly... did something override it?");
         }
-        
-        var12.setInventorySlotContents(10, new ItemStack(Blocks.emerald_block, 1, 0));
-        var12.setInventorySlotContents(13, new ItemStack(Blocks.emerald_block, 1, 0));
-        var12.setInventorySlotContents(16, new ItemStack(Blocks.emerald_block, 1, 0));
         
         return true;
     }

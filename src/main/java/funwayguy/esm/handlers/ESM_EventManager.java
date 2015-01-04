@@ -376,7 +376,7 @@ public class ESM_EventManager
 			}
 		}
 		
-		if(event.entityLiving.posY < 0 && event.entityLiving.dimension == 1 && event.entityLiving instanceof EntityPlayer && ESM_Settings.NewEnd)
+		if(event.entityLiving.posY < 0 && event.entityLiving.dimension == 1 && event.entityLiving instanceof EntityPlayer && ESM_Settings.NewEnd && ESM_Settings.fallFromEnd)
 		{
 			event.entityLiving.setPosition(event.entityLiving.posX, 255D, event.entityLiving.posZ);
 			ESM_Utils.transferDimensions(0, event.entityLiving, true);

@@ -9,9 +9,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
-import org.apache.logging.log4j.Level;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.config.Configuration;
+import org.apache.logging.log4j.Level;
 
 public class ESM_Settings
 {
@@ -71,6 +71,8 @@ public class ESM_Settings
     public static boolean SpawnForts;
     public static int fortRarity = 2;
     public static int fortDistance = 16;
+    public static ArrayList<Integer> fortDimensions = new ArrayList<Integer>();
+    public static boolean fallFromEnd = true;
     
     //Non-configurables
     public static ArrayList<String> fortDB = new ArrayList<String>();
@@ -151,6 +153,13 @@ public class ESM_Settings
         SpawnForts = config.get("World", "Spawn Forts", true).getBoolean(true);
         fortRarity = config.get("World", "Fort Rarity", 100).getInt(100);
         fortDistance = config.get("World", "Fort Distance", 1024).getInt(1024);
+        fallFromEnd = config.get("World", "Fall From End", true, "Whether the player should fall into the overworld from the new End").getBoolean(true);
+        int[] tmpFD = config.get("World", "Fort Dimensions", new int[]{0}).getIntList();
+        
+        for(int dimID : tmpFD)
+        {
+        	fortDimensions.add(dimID);
+        }
         
         config.save();
         
@@ -159,8 +168,8 @@ public class ESM_Settings
 	
 	public static ArrayList<String> loadFortDB()
 	{
-		File fileFortDB = new File(currentWorldConfig.getAbsolutePath().replaceAll(currentWorldConfig.getName(), "ESM_fortDB"));
-		ESM.log.log(Level.INFO, "Loading fortDB from " + fileFortDB.getAbsolutePath());
+		File fileFortDB = new File(currentWorldConfig.getPath().replaceAll(currentWorldConfig.getName(), "ESM_fortDB"));
+		ESM.log.log(Level.INFO, "Loading fortDB from " + fileFortDB.getPath());
 		
 		if(!fileFortDB.exists())
 		{
@@ -200,9 +209,9 @@ public class ESM_Settings
 			return;
 		}
 		
-		File fileFortDB = new File(currentWorldConfig.getAbsolutePath().replaceAll(currentWorldConfig.getName(), "ESM_fortDB"));
+		File fileFortDB = new File(currentWorldConfig.getPath().replaceAll(currentWorldConfig.getName(), "ESM_fortDB"));
 		
-		ESM.log.log(Level.INFO, "Saving fortDB to " + fileFortDB.getAbsolutePath());
+		ESM.log.log(Level.INFO, "Saving fortDB to " + fileFortDB.getPath());
 		
 		try
 		{
