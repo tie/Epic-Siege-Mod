@@ -64,7 +64,7 @@ public class ESM_EntityAICreeperSwell extends EntityAIBase
             return;
     	}
     	
-    	boolean enableBreach = !this.swellingCreeper.getEntitySenses().canSee(this.creeperAttackTarget) && ESM_Settings.CreeperBreaching && swellingCreeper.getNavigator().noPath();
+    	boolean enableBreach = this.creeperAttackTarget != null && !this.swellingCreeper.getEntitySenses().canSee(this.creeperAttackTarget) && ESM_Settings.CreeperBreaching && swellingCreeper.getNavigator().noPath();
     	
         if (this.creeperAttackTarget == null)
         {

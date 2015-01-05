@@ -60,6 +60,7 @@ public class ESM_Settings
 	//Advanced
 	public static ArrayList<Integer> MobBombs; //DONE
 	public static int MobBombRarity; //DONE
+	public static boolean MobBombAll; // DONE
 	public static boolean WitherSkeletons; //DONE
 	public static int WitherSkeletonRarity; //DONE
 	
@@ -150,7 +151,8 @@ public class ESM_Settings
         {
         	MobBombs.add(id);
         }
-        MobBombRarity = config.get("Advanced Mobs", "Spider Bomb Rarity", 9).getInt(9);
+        MobBombRarity = config.get("Advanced Mobs", "Mob Bomb Rarity", 9).getInt(9);
+        MobBombAll = config.get("Advanced Mobs", "Mob Bomb All", true, "Skip the Mob Bomb list and allow everything!").getBoolean(true);
         WitherSkeletons = config.get("Advanced Mobs", "Wither Skeletons", true).getBoolean(true);
         WitherSkeletonRarity = config.get("Advanced Mobs", "Wither Skeleton Rarity", 9).getInt(9);
         

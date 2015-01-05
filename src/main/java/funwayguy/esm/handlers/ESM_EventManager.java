@@ -177,7 +177,7 @@ public class ESM_EventManager
 			ESM_EndermanHandler.onEntityJoinWorld((EntityEnderman)event.entity);
 		}
 		
-		if(ESM_Settings.MobBombs.contains(EntityList.getEntityID(event.entity)) && event.entity.riddenByEntity == null)
+		if((ESM_Settings.MobBombAll || ESM_Settings.MobBombs.contains(EntityList.getEntityID(event.entity))) && event.entity.riddenByEntity == null)
 		{
 			if(ESM_Settings.MobBombRarity <= 0)
 			{
