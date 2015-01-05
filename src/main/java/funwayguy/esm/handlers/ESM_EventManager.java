@@ -8,6 +8,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
@@ -91,27 +92,6 @@ public class ESM_EventManager
 			ESM_CreeperHandler.onEntityJoinWorld((EntityCreeper)event.entity);
 		} else if(event.entity instanceof EntitySpider)
 		{
-			if(event.entity.riddenByEntity == null)
-			{
-				if(ESM_Settings.SpiderBombs && ESM_Settings.SpiderBombRarity <= 0)
-				{
-					EntityCreeper passenger = new EntityCreeper(event.entity.worldObj);
-					passenger.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
-					passenger.onSpawnWithEgg((IEntityLivingData)null);
-					event.entity.worldObj.spawnEntityInWorld(passenger);
-					passenger.mountEntity(event.entity);
-				} else if(ESM_Settings.SpiderBombs && ESM_Settings.SpiderBombRarity > 0)
-				{
-					if(event.world.rand.nextInt(ESM_Settings.SpiderBombRarity) == 0)
-					{
-						EntityCreeper passenger = new EntityCreeper(event.entity.worldObj);
-						passenger.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
-						passenger.onSpawnWithEgg((IEntityLivingData)null);
-						event.entity.worldObj.spawnEntityInWorld(passenger);
-						passenger.mountEntity(event.entity);
-					}
-				}
-			}
 		} else if(event.entity instanceof EntitySkeleton)
 		{
 			ESM_SkeletonHandler.onEntityJoinWorld((EntitySkeleton)event.entity);
@@ -195,6 +175,28 @@ public class ESM_EventManager
 		} else if(event.entity instanceof EntityEnderman)
 		{
 			ESM_EndermanHandler.onEntityJoinWorld((EntityEnderman)event.entity);
+		}
+		
+		if(ESM_Settings.MobBombs.contains(EntityList.getEntityID(event.entity)) && event.entity.riddenByEntity == null)
+		{
+			if(ESM_Settings.MobBombRarity <= 0)
+			{
+				EntityCreeper passenger = new EntityCreeper(event.entity.worldObj);
+				passenger.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
+				passenger.onSpawnWithEgg((IEntityLivingData)null);
+				event.entity.worldObj.spawnEntityInWorld(passenger);
+				passenger.mountEntity(event.entity);
+			} else if(ESM_Settings.MobBombRarity > 0)
+			{
+				if(event.world.rand.nextInt(ESM_Settings.MobBombRarity) == 0)
+				{
+					EntityCreeper passenger = new EntityCreeper(event.entity.worldObj);
+					passenger.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
+					passenger.onSpawnWithEgg((IEntityLivingData)null);
+					event.entity.worldObj.spawnEntityInWorld(passenger);
+					passenger.mountEntity(event.entity);
+				}
+			}
 		}
 		
 		event.entity.getEntityData().setBoolean("ESM_MODIFIED", true);

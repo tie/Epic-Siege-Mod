@@ -58,8 +58,8 @@ public class ESM_Settings
 	public static boolean EndermanPlayerTele; //DONE
 	
 	//Advanced
-	public static boolean SpiderBombs; //DONE
-	public static int SpiderBombRarity; //DONE
+	public static ArrayList<Integer> MobBombs; //DONE
+	public static int MobBombRarity; //DONE
 	public static boolean WitherSkeletons; //DONE
 	public static int WitherSkeletonRarity; //DONE
 	
@@ -144,8 +144,13 @@ public class ESM_Settings
         
         
         //Advanced
-        SpiderBombs = config.get("Advanced Mobs", "Spider Bombs", true).getBoolean(true);
-        SpiderBombRarity = config.get("Advanced Mobs", "Spider Bomb Rarity", 9).getInt(9);
+        int[] tmp = config.get("Advanced Mobs", "Mob Bombs", new int[]{52}).getIntList();
+        MobBombs = new ArrayList<Integer>();
+        for(int id : tmp)
+        {
+        	MobBombs.add(id);
+        }
+        MobBombRarity = config.get("Advanced Mobs", "Spider Bomb Rarity", 9).getInt(9);
         WitherSkeletons = config.get("Advanced Mobs", "Wither Skeletons", true).getBoolean(true);
         WitherSkeletonRarity = config.get("Advanced Mobs", "Wither Skeleton Rarity", 9).getInt(9);
         
