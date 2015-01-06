@@ -21,6 +21,7 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayer.EnumStatus;
@@ -177,7 +178,7 @@ public class ESM_EventManager
 			ESM_EndermanHandler.onEntityJoinWorld((EntityEnderman)event.entity);
 		}
 		
-		if((ESM_Settings.MobBombAll || ESM_Settings.MobBombs.contains(EntityList.getEntityID(event.entity))) && event.entity.riddenByEntity == null)
+		if((ESM_Settings.MobBombAll || ESM_Settings.MobBombs.contains(EntityList.getEntityID(event.entity))) && event.entity.riddenByEntity == null && event.entity instanceof IMob)
 		{
 			if(ESM_Settings.MobBombRarity <= 0)
 			{
