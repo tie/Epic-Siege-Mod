@@ -1,10 +1,13 @@
 package funwayguy.esm.world.gen;
 
+import java.util.ArrayList;
 import java.util.Random;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.IChunkProvider;
+import net.minecraftforge.common.BiomeDictionary;
+import net.minecraftforge.common.BiomeDictionary.Type;
 import org.apache.logging.log4j.Level;
 import cpw.mods.fml.common.IWorldGenerator;
 import funwayguy.esm.core.ESM;
@@ -33,23 +36,43 @@ public class WorldGenFortress implements IWorldGenerator
 			return;
 		}
 		
+		ArrayList<Type> typeList = new ArrayList<Type>();
+		Type[] typeArray = BiomeDictionary.getTypesForBiome(biome);
+		for(int i = 0; i < typeArray.length; i++)
+		{
+			typeList.add(typeArray[i]);
+		}
+		
 		if(random.nextInt(chance) == 0 && ESM_Settings.SpawnForts)
 		{
-			if(biome.biomeID == BiomeGenBase.desert.biomeID)
+			if(typeList.contains(Type.JUNGLE))
+			{
+				FortressJungle fortJ = new FortressJungle(world, chunkX, chunkZ);
+				if(fortJ.buildStructure())
+				{
+					ESM.log.log(Level.INFO, "New Jungle Fortress at (" + (chunkX * 16) + "," + (chunkZ * 16) + ")");
+				}
+			} else if(typeList.contains(Type.SANDY) || typeList.contains(Type.WASTELAND))
 			{
 				FortressDesert fortD = new FortressDesert(world, chunkX, chunkZ);
 				if(fortD.buildStructure())
 				{
-					ESM.log.log(Level.INFO, "New Desert Fort at (" + (chunkX * 16) + "," + (chunkZ * 16) + ")");
+					ESM.log.log(Level.INFO, "New Desert Fortress at (" + (chunkX * 16) + "," + (chunkZ * 16) + ")");
 				}
-			} else if(biome == BiomeGenBase.sky && world.provider.dimensionId == 1 && ESM_Settings.NewEnd)
+			} else if(typeList.contains(Type.END) && world.provider.dimensionId == 1 && ESM_Settings.NewEnd)
 			{
 				FortressSpace fortS = new FortressSpace(world, chunkX, chunkZ);
-				fortS.buildStructure();
-			} else if(biome == BiomeGenBase.hell && world.provider.dimensionId == -1 && ESM_Settings.NewHell)
+				if(fortS.buildStructure())
+				{
+					ESM.log.log(Level.INFO, "New End Fortress at (" + (chunkX * 16) + "," + (chunkZ * 16) + ")");
+				}
+			} else if(typeList.contains(Type.NETHER))
 			{
 				FortressHell fortH = new FortressHell(world, chunkX, chunkZ);
-				fortH.buildStructure();
+				if(fortH.buildStructure())
+				{
+					ESM.log.log(Level.INFO, "New Hell Fortress at (" + (chunkX * 16) + "," + (chunkZ * 16) + ")");
+				}
 			}
 		}
 	}

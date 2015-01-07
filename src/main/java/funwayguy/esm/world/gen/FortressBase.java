@@ -34,7 +34,7 @@ public abstract class FortressBase
 	{
 		int y = startY;
 		
-		while(y > 48 && this.worldObj.getBlock(posX, y, posZ) == Blocks.air && this.worldObj.getBlock(posX, y - 1, posZ) != Blocks.air)
+		while(y > 48 && !(this.worldObj.getBlock(posX, y, posZ) == Blocks.air && this.worldObj.getBlock(posX, y - 1, posZ) != Blocks.air))
 		{
 			y--;
 		}
