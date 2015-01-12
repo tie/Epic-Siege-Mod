@@ -1,23 +1,51 @@
 package funwayguy.esm.world.gen;
 
+import java.util.ArrayList;
 import org.apache.logging.log4j.Level;
 import funwayguy.esm.core.ESM;
 import funwayguy.esm.core.ESM_Utils;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraftforge.common.BiomeDictionary;
+import net.minecraftforge.common.BiomeDictionary.Type;
 
 public class FortressDesert extends FortressBase
 {
-	static final Block castleMaterial = Blocks.sandstone;
-	static final Block moatMaterial = Blocks.flowing_lava;
-	static final Block moatBaseMaterial = Blocks.sandstone;
-	static final Block bridgeMaterial = Blocks.sandstone;
-	static final Block grateMaterial = Blocks.iron_bars;
+	Block castleMaterial = Blocks.stonebrick;
+	Block moatMaterial = Blocks.lava;
+	//static final Block moatBaseMaterial = Blocks.sandstone;
+	Block bridgeMaterial = Blocks.sandstone;
+	Block grateMaterial = Blocks.iron_bars;
 	
-    public FortressDesert(World par1World, int chunkX, int chunkZ)
+    public FortressDesert(World par1World, int chunkX, int chunkZ, BiomeGenBase biome)
     {
     	super(par1World, chunkX, chunkZ);
+    	
+    	ArrayList<Type> typeList = new ArrayList<Type>();
+		Type[] typeArray = BiomeDictionary.getTypesForBiome(biome);
+		for(int i = 0; i < typeArray.length; i++)
+		{
+			typeList.add(typeArray[i]);
+		}
+		
+    	if(typeList.contains(Type.SANDY) || typeList.contains(Type.WASTELAND))
+    	{
+    		castleMaterial = Blocks.sandstone;
+    	} else if(typeList.contains(Type.SNOWY))
+    	{
+    		castleMaterial = Blocks.packed_ice;
+    		moatMaterial = Blocks.water;
+    		grateMaterial = Blocks.glass_pane;
+    	} else if(typeList.contains(Type.NETHER))
+    	{
+    		castleMaterial = Blocks.nether_brick;
+    		grateMaterial = Blocks.nether_brick_fence;
+    	} else if(typeList.contains(Type.SWAMP) || typeList.contains(Type.JUNGLE))
+    	{
+    		castleMaterial = Blocks.mossy_cobblestone;
+    	}
     }
     
     public boolean buildStructure()
@@ -33,7 +61,7 @@ public class FortressDesert extends FortressBase
 		customFillWithBlocks(worldObj, 0, -3, 0, 24, 20, 32, Blocks.air, Blocks.air, false);
 		
 		// Moat
-		customFillWithBlocks(worldObj, 0, -3, 0, 24, -1, 32, moatBaseMaterial, moatBaseMaterial, false);
+		customFillWithBlocks(worldObj, 0, -3, 0, 24, -1, 32, castleMaterial, castleMaterial, false);
 		
 		customFillWithBlocks(worldObj, 3, -1, 1, 21, -1, 31, Blocks.air, Blocks.air, false);
 		customFillWithBlocks(worldObj, 2, -1, 2, 22, -1, 30, Blocks.air, Blocks.air, false);

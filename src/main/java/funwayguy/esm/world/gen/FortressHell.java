@@ -151,5 +151,6 @@ public class FortressHell extends FortressBase
 		this.customFillWithBlocks(worldObj, posX + 3, posY - 4, posZ + 1, posX + 3, posY - 2, posZ + 1, spineMat, spineMat, false); // Rib straight R
 		this.customPlaceBlockAtCurrentPosition(worldObj, spineMat, 0, posX - 2, posY - 5, posZ + 1); // Rib 2nd curve L
 		this.customPlaceBlockAtCurrentPosition(worldObj, spineMat, 0, posX + 2, posY - 5, posZ + 1); // Rib 2nd curve R
+		this.customGenerateSpawner(worldObj, posX, posY, posZ + 1, "LavaSlime");
 	}
 }

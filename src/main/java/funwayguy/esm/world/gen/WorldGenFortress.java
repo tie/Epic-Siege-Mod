@@ -52,13 +52,6 @@ public class WorldGenFortress implements IWorldGenerator
 				{
 					ESM.log.log(Level.INFO, "New Jungle Fortress at (" + (chunkX * 16) + "," + (chunkZ * 16) + ")");
 				}
-			} else if(typeList.contains(Type.SANDY) || typeList.contains(Type.WASTELAND))
-			{
-				FortressDesert fortD = new FortressDesert(world, chunkX, chunkZ);
-				if(fortD.buildStructure())
-				{
-					ESM.log.log(Level.INFO, "New Desert Fortress at (" + (chunkX * 16) + "," + (chunkZ * 16) + ")");
-				}
 			} else if(typeList.contains(Type.END) && world.provider.dimensionId == 1 && ESM_Settings.NewEnd)
 			{
 				FortressSpace fortS = new FortressSpace(world, chunkX, chunkZ);
@@ -72,6 +65,13 @@ public class WorldGenFortress implements IWorldGenerator
 				if(fortH.buildStructure())
 				{
 					ESM.log.log(Level.INFO, "New Hell Fortress at (" + (chunkX * 16) + "," + (chunkZ * 16) + ")");
+				}
+			} else if(typeList.contains(Type.SANDY) || typeList.contains(Type.WASTELAND) || typeList.contains(Type.SNOWY) || typeList.contains(Type.JUNGLE) || typeList.contains(Type.SWAMP))
+			{
+				FortressDesert fortD = new FortressDesert(world, chunkX, chunkZ, biome);
+				if(fortD.buildStructure())
+				{
+					ESM.log.log(Level.INFO, "New Desert Fortress at (" + (chunkX * 16) + "," + (chunkZ * 16) + ")");
 				}
 			}
 		}
