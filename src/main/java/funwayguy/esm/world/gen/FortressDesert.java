@@ -9,6 +9,12 @@ import net.minecraft.world.World;
 
 public class FortressDesert extends FortressBase
 {
+	static final Block castleMaterial = Blocks.sandstone;
+	static final Block moatMaterial = Blocks.flowing_lava;
+	static final Block moatBaseMaterial = Blocks.sandstone;
+	static final Block bridgeMaterial = Blocks.sandstone;
+	static final Block grateMaterial = Blocks.iron_bars;
+	
     public FortressDesert(World par1World, int chunkX, int chunkZ)
     {
     	super(par1World, chunkX, chunkZ);
@@ -23,12 +29,6 @@ public class FortressDesert extends FortressBase
 		{
     		ESM_Utils.addFortToDB(worldObj, this.getXWithOffset(0, 0), this.getZWithOffset(0, 0));
 		}
-    	
-		Block castleMaterial = Blocks.obsidian;
-		Block moatMaterial = Blocks.flowing_lava;
-		Block moatBaseMaterial = Blocks.sandstone;
-		Block bridgeMaterial = Blocks.stonebrick;
-		Block grateMaterial = Blocks.iron_bars;
 		
 		customFillWithBlocks(worldObj, 0, -3, 0, 24, 20, 32, Blocks.air, Blocks.air, false);
 		

@@ -26,6 +26,7 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayer.EnumStatus;
 import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.projectile.EntityLargeFireball;
 import net.minecraft.entity.projectile.EntitySmallFireball;
 import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
@@ -75,6 +76,11 @@ public class ESM_EventManager
 			{
 				searchForTarget((EntityCreature)event.entity);
 			}
+		} else if(event.entity instanceof EntityLargeFireball && ESM_Settings.Xray && ESM_Settings.CreeperBreaching)
+		{
+			EntityLargeFireball fireball = (EntityLargeFireball)event.entity;
+			
+			fireball.field_92057_e = 3;
 		}
 		
 		if(event.entity.getEntityData().getBoolean("ESM_MODIFIED"))
