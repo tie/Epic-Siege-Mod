@@ -69,7 +69,7 @@ public class ESM_EventManager
 			return;
 		}
 		
-		if(event.entity instanceof EntityLiving)
+		if(event.entity instanceof EntityLiving && (event.entity instanceof IMob || ESM_Settings.ambiguous_AI))
 		{
 			ESM_Utils.replaceAI((EntityLiving)event.entity);
 			if(event.entity instanceof EntityMob || (event.entity instanceof EntitySpider && !event.world.isDaytime()))

@@ -79,6 +79,7 @@ public class ESM_Settings
     public static ArrayList<String> fortDB = new ArrayList<String>();
     public static WorldServer[] currentWorlds = null;
     public static File currentWorldConfig = null;
+	public static boolean ambiguous_AI = true;
 
 	public static void LoadMainConfig(File file)
 	{
@@ -103,7 +104,7 @@ public class ESM_Settings
 		{
 			return;
 		}
-		Configuration config = new Configuration(currentWorldConfig);
+		Configuration config = new Configuration(currentWorldConfig, true);
 		ESM.log.log(Level.INFO, "Loaded ESM Config: " + currentWorldConfig.getAbsolutePath());
 		
         config.load();
@@ -116,6 +117,7 @@ public class ESM_Settings
         Apocalypse = config.get("Main", "Apocalypse Mode", false).getBoolean(false);
         Chaos = config.get("Main", "Chaos Mode", false).getBoolean(false);
         AllowSleep = config.get("Main", "Allow Sleep", false).getBoolean(false);
+        ambiguous_AI = config.get("Main", "Ambiguous AI", true, "If set to true, ESM will not check whether the entity is a mob or not when setting up new AI").getBoolean(true);
         
         //Creeper
         CreeperBreaching = config.get("Creeper", "Breaching", true).getBoolean(true);
