@@ -1,11 +1,11 @@
 package funwayguy.esm.world.gen;
 
-import funwayguy.esm.core.ESM_Utils;
 import net.minecraft.block.Block;
 import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
+import funwayguy.esm.core.ESM_Utils;
 
 public class FortressSpace extends FortressBase
 {
@@ -50,8 +50,6 @@ public class FortressSpace extends FortressBase
 		EntityDragon var4 = new EntityDragon(worldObj);
 		var4.setLocationAndAngles(dragonX, dragonY, dragonZ, worldObj.rand.nextFloat() * 360.0F, 0.0F);
 		worldObj.spawnEntityInWorld(var4);
-		
-		System.out.println("Fort Generated Successfully!");
 		
 		return true;
 	}

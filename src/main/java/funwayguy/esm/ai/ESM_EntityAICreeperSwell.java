@@ -70,22 +70,20 @@ public class ESM_EntityAICreeperSwell extends EntityAIBase
             this.swellingCreeper.setCreeperState(1);
             return;
     	}
-    	
-    	boolean enableBreach = this.creeperAttackTarget != null && !this.swellingCreeper.getEntitySenses().canSee(this.creeperAttackTarget) && ESM_Settings.CreeperBreaching && swellingCreeper.getNavigator().noPath();
+
+        MovingObjectPosition mop = GetMovingObjectPosition(this.swellingCreeper, false);
+    	boolean enableBreach = this.creeperAttackTarget != null && !this.swellingCreeper.getEntitySenses().canSee(this.creeperAttackTarget) && ESM_Settings.CreeperBreaching && swellingCreeper.getNavigator().noPath() && mop != null && mop.typeOfHit == MovingObjectType.BLOCK;
     	
         if (this.creeperAttackTarget == null)
         {
-        	System.out.println("No target");
             this.swellingCreeper.setCreeperState(-1);
         }
         else if (this.swellingCreeper.getDistanceSqToEntity(this.creeperAttackTarget) > (detDist * 2) && !enableBreach)
         {
-        	System.out.println("Too far can't breach");
             this.swellingCreeper.setCreeperState(-1);
         }
         else if (!this.swellingCreeper.getEntitySenses().canSee(this.creeperAttackTarget) && !enableBreach)
         {
-        	System.out.println("Can't see and can't breach");
             this.swellingCreeper.setCreeperState(-1);
         }
         else
