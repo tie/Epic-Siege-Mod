@@ -156,7 +156,7 @@ public abstract class ESM_EntityAITarget extends EntityAIBase
             }
             else
             {
-                if (this.nearbyOnly)
+                if (this.nearbyOnly && ESM_Settings.QuickPathing)
                 {
                     if (--this.targetSearchDelay <= 0)
                     {
