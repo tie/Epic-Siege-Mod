@@ -494,15 +494,19 @@ public class ESM_EventManager
 		if(!event.world.isRemote && (ESM_Settings.currentWorlds == null || ESM_Settings.worldDir == null))
 		{
 			MinecraftServer server = MinecraftServer.getServer();
-			ESM_Settings.currentWorlds = server.worldServers;
-			if(ESM.proxy.isClient())
+			
+			if(server.isServerRunning())
 			{
-				ESM_Settings.worldDir = server.getFile("saves/" + server.getFolderName());
-			} else
-			{
-				ESM_Settings.worldDir = server.getFile(server.getFolderName());
+				ESM_Settings.currentWorlds = server.worldServers;
+				if(ESM.proxy.isClient())
+				{
+					ESM_Settings.worldDir = server.getFile("saves/" + server.getFolderName());
+				} else
+				{
+					ESM_Settings.worldDir = server.getFile(server.getFolderName());
+				}
+				ESM_Settings.LoadWorldConfig();
 			}
-			ESM_Settings.LoadWorldConfig();
 		}
 	}
 	
@@ -529,33 +533,12 @@ public class ESM_EventManager
 		try
 		{
 			field = Entity.class.getDeclaredField("portalCounter");
-		} catch(NoSuchFieldException e)
+		} catch(Exception e)
 		{
 			try
 			{
 				field = Entity.class.getDeclaredField("field_82153_h");
-			} catch(NoSuchFieldException e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return time;
-			} catch(SecurityException e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return time;
-			}
-		} catch(SecurityException e)
-		{
-			try
-			{
-				field = Entity.class.getDeclaredField("field_82153_h");
-			} catch(NoSuchFieldException e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return time;
-			} catch(SecurityException e1)
+			} catch(Exception e1)
 			{
 				e.printStackTrace();
 				e1.printStackTrace();
@@ -568,11 +551,7 @@ public class ESM_EventManager
 		try
 		{
 			time = (int)field.getInt(entity);
-		} catch(IllegalArgumentException e)
-		{
-			e.printStackTrace();
-			return time;
-		} catch(IllegalAccessException e)
+		} catch(Exception e)
 		{
 			e.printStackTrace();
 			return time;
@@ -589,33 +568,12 @@ public class ESM_EventManager
 		try
 		{
 			field = Entity.class.getDeclaredField("inPortal");
-		} catch(NoSuchFieldException e)
+		} catch(Exception e)
 		{
 			try
 			{
 				field = Entity.class.getDeclaredField("field_71087_bX");
-			} catch(NoSuchFieldException e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return flag;
-			} catch(SecurityException e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return flag;
-			}
-		} catch(SecurityException e)
-		{
-			try
-			{
-				field = Entity.class.getDeclaredField("field_71087_bX");
-			} catch(NoSuchFieldException e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return flag;
-			} catch(SecurityException e1)
+			} catch(Exception e1)
 			{
 				e.printStackTrace();
 				e1.printStackTrace();
@@ -628,11 +586,7 @@ public class ESM_EventManager
 		try
 		{
 			flag = (boolean)field.getBoolean(entity);
-		} catch(IllegalArgumentException e)
-		{
-			e.printStackTrace();
-			return flag;
-		} catch(IllegalAccessException e)
+		} catch(Exception e)
 		{
 			e.printStackTrace();
 			return flag;
@@ -647,33 +601,12 @@ public class ESM_EventManager
 		try
 		{
 			field = Entity.class.getDeclaredField("inPortal");
-		} catch(NoSuchFieldException e)
+		} catch(Exception e)
 		{
 			try
 			{
 				field = Entity.class.getDeclaredField("field_71087_bX");
-			} catch(NoSuchFieldException e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return;
-			} catch(SecurityException e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return;
-			}
-		} catch(SecurityException e)
-		{
-			try
-			{
-				field = Entity.class.getDeclaredField("field_71087_bX");
-			} catch(NoSuchFieldException e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return;
-			} catch(SecurityException e1)
+			} catch(Exception e1)
 			{
 				e.printStackTrace();
 				e1.printStackTrace();
@@ -686,11 +619,7 @@ public class ESM_EventManager
 		try
 		{
 			field.setBoolean(entity, value);
-		} catch(IllegalArgumentException e)
-		{
-			e.printStackTrace();
-			return;
-		} catch(IllegalAccessException e)
+		} catch(Exception e)
 		{
 			e.printStackTrace();
 			return;

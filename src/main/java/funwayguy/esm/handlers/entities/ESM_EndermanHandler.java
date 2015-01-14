@@ -152,33 +152,12 @@ public class ESM_EndermanHandler
 		try
 		{
 			field = EntityEnderman.class.getDeclaredField("isAggressive");
-		} catch(NoSuchFieldException e)
+		} catch(Exception e)
 		{
 			try
 			{
 				field = EntityEnderman.class.getDeclaredField("field_104003_g");
-			} catch(NoSuchFieldException e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return;
-			} catch(SecurityException e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return;
-			}
-		} catch(SecurityException e)
-		{
-			try
-			{
-				field = EntityEnderman.class.getDeclaredField("field_104003_g");
-			} catch(NoSuchFieldException e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return;
-			} catch(SecurityException e1)
+			} catch(Exception e1)
 			{
 				e.printStackTrace();
 				e1.printStackTrace();
@@ -191,11 +170,7 @@ public class ESM_EndermanHandler
 		try
 		{
 			field.setBoolean(enderman, state);
-		} catch(IllegalArgumentException e)
-		{
-			e.printStackTrace();
-			return;
-		} catch(IllegalAccessException e)
+		} catch(Exception e)
 		{
 			e.printStackTrace();
 			return;

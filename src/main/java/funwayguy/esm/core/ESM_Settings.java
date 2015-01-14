@@ -5,7 +5,6 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
@@ -122,7 +121,7 @@ public class ESM_Settings
 			}
 		}
 		
-		Configuration config = new Configuration(worldDir, true);
+		Configuration config = new Configuration(conFile, true);
 		ESM.log.log(Level.INFO, "Loading ESM Config: " + conFile.getPath());
 		
         config.load();
@@ -221,13 +220,7 @@ public class ESM_Settings
 				fileIn.close();
 				
 				return savedDB;
-			} catch(IOException e)
-			{
-				return new ArrayList<String>();
-			} catch(ClassNotFoundException e)
-			{
-				return new ArrayList<String>();
-			} catch(ClassCastException e)
+			} catch(Exception e)
 			{
 				return new ArrayList<String>();
 			}
@@ -261,8 +254,9 @@ public class ESM_Settings
 			objOut.close();
 			buffer.close();
 			fileOut.close();
-		} catch(IOException e)
+		} catch(Exception e)
 		{
+			e.printStackTrace();
 			return;
 		}
 	}

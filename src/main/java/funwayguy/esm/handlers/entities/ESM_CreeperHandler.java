@@ -56,35 +56,13 @@ public class ESM_CreeperHandler
 		{
 			field1 = EntityCreeper.class.getDeclaredField("timeSinceIgnited");
 			field2 = EntityCreeper.class.getDeclaredField("fuseTime");
-		} catch(NoSuchFieldException e)
+		} catch(Exception e)
 		{
 			try
 			{
 				field1 = EntityCreeper.class.getDeclaredField("field_70833_d");
 				field2 = EntityCreeper.class.getDeclaredField("field_82225_f");
-			} catch(NoSuchFieldException e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return fuseTime;
-			} catch(SecurityException e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return fuseTime;
-			}
-		} catch(SecurityException e)
-		{
-			try
-			{
-				field1 = EntityCreeper.class.getDeclaredField("field_70833_d");
-				field2 = EntityCreeper.class.getDeclaredField("field_82225_f");
-			} catch(NoSuchFieldException e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return fuseTime;
-			} catch(SecurityException e1)
+			} catch(Exception e1)
 			{
 				e.printStackTrace();
 				e1.printStackTrace();
@@ -98,11 +76,7 @@ public class ESM_CreeperHandler
 		try
 		{
 			fuseTime = (int)(field2.getInt(creeper) - field1.getInt(creeper));
-		} catch(IllegalArgumentException e)
-		{
-			e.printStackTrace();
-			return fuseTime;
-		} catch(IllegalAccessException e)
+		} catch(Exception e)
 		{
 			e.printStackTrace();
 			return fuseTime;

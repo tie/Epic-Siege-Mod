@@ -300,37 +300,14 @@ public class ESM_Utils
 			fXP = EntityPlayerMP.class.getDeclaredField("lastExperience");
 			fHP = EntityPlayerMP.class.getDeclaredField("lastHealth");
 			fFD = EntityPlayerMP.class.getDeclaredField("lastFoodLevel");
-		} catch(NoSuchFieldException e)
+		} catch(Exception e)
 		{
 			try
 			{
 				fXP = EntityPlayerMP.class.getDeclaredField("field_71144_ck");
 				fHP = EntityPlayerMP.class.getDeclaredField("field_71149_ch");
 				fFD = EntityPlayerMP.class.getDeclaredField("field_71146_ci");
-			} catch(NoSuchFieldException e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return;
-			} catch(SecurityException e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return;
-			}
-		} catch(SecurityException e)
-		{
-			try
-			{
-				fXP = EntityPlayerMP.class.getDeclaredField("field_71144_ck");
-				fHP = EntityPlayerMP.class.getDeclaredField("field_71149_ch");
-				fFD = EntityPlayerMP.class.getDeclaredField("field_71146_ci");
-			} catch(NoSuchFieldException e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return;
-			} catch(SecurityException e1)
+			} catch(Exception e1)
 			{
 				e.printStackTrace();
 				e1.printStackTrace();
@@ -347,11 +324,7 @@ public class ESM_Utils
 			fXP.setInt(player, -1);
 			fHP.setFloat(player, -1.0F);
 			fFD.setInt(player, -1);
-		} catch(IllegalArgumentException e)
-		{
-			e.printStackTrace();
-			return;
-		} catch(IllegalAccessException e)
+		} catch(Exception e)
 		{
 			e.printStackTrace();
 			return;

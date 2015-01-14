@@ -34,11 +34,7 @@ public class ESM_BlazeHandler
 		try
 		{
 			field = EntityBlaze.class.getDeclaredField("field_70846_g");
-		} catch(NoSuchFieldException e)
-		{
-			e.printStackTrace();
-			return fireballs;
-		} catch(SecurityException e)
+		} catch(Exception e)
 		{
 			e.printStackTrace();
 			return fireballs;
@@ -49,11 +45,7 @@ public class ESM_BlazeHandler
 		try
 		{
 			fireballs = (int)field.getInt(blaze);
-		} catch(IllegalArgumentException e)
-		{
-			e.printStackTrace();
-			return fireballs;
-		} catch(IllegalAccessException e)
+		} catch(Exception e)
 		{
 			e.printStackTrace();
 			return fireballs;
@@ -68,10 +60,7 @@ public class ESM_BlazeHandler
 		try
 		{
 			field = EntityBlaze.class.getDeclaredField("field_70846_g");
-		} catch(NoSuchFieldException e)
-		{
-			e.printStackTrace();
-		} catch(SecurityException e)
+		} catch(Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -81,10 +70,7 @@ public class ESM_BlazeHandler
 		try
 		{
 			field.setInt(blaze, count);
-		} catch(IllegalArgumentException e)
-		{
-			e.printStackTrace();
-		} catch(IllegalAccessException e)
+		} catch(Exception e)
 		{
 			e.printStackTrace();
 		}
