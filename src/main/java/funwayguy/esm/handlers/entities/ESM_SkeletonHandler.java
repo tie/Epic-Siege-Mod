@@ -7,7 +7,6 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import funwayguy.esm.core.ESM_Settings;
 
@@ -49,6 +48,7 @@ public class ESM_SkeletonHandler
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static void onLivingUpdate(EntitySkeleton skeleton)
 	{
 		if(!skeleton.getEntityData().getString("ESM_TASK_ID").equals(skeleton.getUniqueID().toString() + "," + ESM_Settings.SkeletonDistance) && skeleton.getSkeletonType() == 0)

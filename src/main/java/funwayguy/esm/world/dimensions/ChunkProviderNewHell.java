@@ -1,5 +1,13 @@
 package funwayguy.esm.world.dimensions;
 
+import static net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.SHROOM;
+import static net.minecraftforge.event.terraingen.InitMapGenEvent.EventType.CAVE;
+import static net.minecraftforge.event.terraingen.InitMapGenEvent.EventType.NETHER_BRIDGE;
+import static net.minecraftforge.event.terraingen.InitMapGenEvent.EventType.RAVINE;
+import static net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable.EventType.QUARTZ;
+import static net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.FIRE;
+import static net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.GLOWSTONE;
+import static net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.NETHER_LAVA;
 import java.util.List;
 import java.util.Random;
 import net.minecraft.block.Block;
@@ -9,7 +17,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.IProgressUpdate;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.ChunkPosition;
-import net.minecraft.world.SpawnerAnimals;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -21,26 +28,19 @@ import net.minecraft.world.gen.MapGenRavine;
 import net.minecraft.world.gen.NoiseGenerator;
 import net.minecraft.world.gen.NoiseGeneratorOctaves;
 import net.minecraft.world.gen.NoiseGeneratorPerlin;
-import net.minecraft.world.gen.feature.WorldGenDungeons;
 import net.minecraft.world.gen.feature.WorldGenFire;
 import net.minecraft.world.gen.feature.WorldGenFlowers;
 import net.minecraft.world.gen.feature.WorldGenGlowStone1;
 import net.minecraft.world.gen.feature.WorldGenGlowStone2;
 import net.minecraft.world.gen.feature.WorldGenHellLava;
-import net.minecraft.world.gen.feature.WorldGenLakes;
 import net.minecraft.world.gen.feature.WorldGenMinable;
-import net.minecraft.world.gen.structure.MapGenMineshaft;
 import net.minecraft.world.gen.structure.MapGenNetherBridge;
-import net.minecraft.world.gen.structure.MapGenScatteredFeature;
-import net.minecraft.world.gen.structure.MapGenStronghold;
-import net.minecraft.world.gen.structure.MapGenVillage;
-import static net.minecraftforge.event.terraingen.DecorateBiomeEvent.Decorate.EventType.SHROOM;
-import static net.minecraftforge.event.terraingen.InitMapGenEvent.EventType.*;
-import static net.minecraftforge.event.terraingen.OreGenEvent.GenerateMinable.EventType.QUARTZ;
-import static net.minecraftforge.event.terraingen.PopulateChunkEvent.Populate.EventType.*;
-import net.minecraftforge.common.*;
-import cpw.mods.fml.common.eventhandler.Event.*;
-import net.minecraftforge.event.terraingen.*;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.terraingen.ChunkProviderEvent;
+import net.minecraftforge.event.terraingen.DecorateBiomeEvent;
+import net.minecraftforge.event.terraingen.PopulateChunkEvent;
+import net.minecraftforge.event.terraingen.TerrainGen;
+import cpw.mods.fml.common.eventhandler.Event.Result;
 
 public class ChunkProviderNewHell implements IChunkProvider
 {
@@ -57,8 +57,6 @@ public class ChunkProviderNewHell implements IChunkProvider
     public NoiseGeneratorOctaves mobSpawnerNoise;
     /** Reference to the World object. */
     private World worldObj;
-    /** are map structures going to be generated (e.g. strongholds) */
-    private final boolean mapFeaturesEnabled;
     private WorldType field_147435_p;
     private final double[] field_147434_q;
     private final float[] parabolicField;
@@ -74,7 +72,6 @@ public class ChunkProviderNewHell implements IChunkProvider
     double[] field_147425_f;
     double[] field_147426_g;
     int[][] field_73219_j = new int[32][32];
-    private static final String __OBFID = "CL_00000396";
 
     {
         genNetherBridge = (MapGenNetherBridge) TerrainGen.getModdedMapGen(genNetherBridge, NETHER_BRIDGE);
@@ -85,7 +82,6 @@ public class ChunkProviderNewHell implements IChunkProvider
     public ChunkProviderNewHell(World p_i2006_1_, long p_i2006_2_)
     {
         this.worldObj = p_i2006_1_;
-        this.mapFeaturesEnabled = true;
         this.field_147435_p = p_i2006_1_.getWorldInfo().getTerrainType();
         this.rand = new Random(p_i2006_2_);
         this.field_147431_j = new NoiseGeneratorOctaves(this.rand, 16);
@@ -252,19 +248,19 @@ public class ChunkProviderNewHell implements IChunkProvider
 
     private void func_147423_a(int p_147423_1_, int p_147423_2_, int p_147423_3_)
     {
-        double d0 = 684.412D;
-        double d1 = 684.412D;
-        double d2 = 512.0D;
-        double d3 = 512.0D;
+        //double d0 = 684.412D;
+        //double d1 = 684.412D;
+        //double d2 = 512.0D;
+        //double d3 = 512.0D;
         this.field_147426_g = this.noiseGen6.generateNoiseOctaves(this.field_147426_g, p_147423_1_, p_147423_3_, 5, 5, 200.0D, 200.0D, 0.5D);
         this.field_147427_d = this.field_147429_l.generateNoiseOctaves(this.field_147427_d, p_147423_1_, p_147423_2_, p_147423_3_, 5, 33, 5, 8.555150000000001D, 4.277575000000001D, 8.555150000000001D);
         this.field_147428_e = this.field_147431_j.generateNoiseOctaves(this.field_147428_e, p_147423_1_, p_147423_2_, p_147423_3_, 5, 33, 5, 684.412D, 684.412D, 684.412D);
         this.field_147425_f = this.field_147432_k.generateNoiseOctaves(this.field_147425_f, p_147423_1_, p_147423_2_, p_147423_3_, 5, 33, 5, 684.412D, 684.412D, 684.412D);
-        boolean flag1 = false;
-        boolean flag = false;
+        //boolean flag1 = false;
+        //boolean flag = false;
         int l = 0;
         int i1 = 0;
-        double d4 = 8.5D;
+        //double d4 = 8.5D;
 
         for (int j1 = 0; j1 < 5; ++j1)
         {
@@ -524,7 +520,7 @@ public class ChunkProviderNewHell implements IChunkProvider
     /**
      * Returns a list of creatures of the specified type that can spawn at the given location.
      */
-    public List getPossibleCreatures(EnumCreatureType p_73155_1_, int p_73155_2_, int p_73155_3_, int p_73155_4_)
+    public List<?> getPossibleCreatures(EnumCreatureType p_73155_1_, int p_73155_2_, int p_73155_3_, int p_73155_4_)
     {
         if (p_73155_1_ == EnumCreatureType.monster)
         {

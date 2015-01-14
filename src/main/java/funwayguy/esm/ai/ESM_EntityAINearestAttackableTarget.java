@@ -15,7 +15,7 @@ import net.minecraft.entity.passive.EntityVillager;
 
 public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
 {
-    private final Class targetClass;
+    private final Class<?> targetClass;
     private final int targetChance;
 
     /** Instance of EntityAINearestAttackableTargetSorter. */
@@ -28,17 +28,17 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
     private final IEntitySelector targetEntitySelector;
     private EntityLivingBase targetEntity;
 
-    public ESM_EntityAINearestAttackableTarget(EntityCreature par1EntityCreature, Class par2Class, int par3, boolean par4)
+    public ESM_EntityAINearestAttackableTarget(EntityCreature par1EntityCreature, Class<?> par2Class, int par3, boolean par4)
     {
         this(par1EntityCreature, par2Class, par3, par4, false);
     }
 
-    public ESM_EntityAINearestAttackableTarget(EntityCreature par1EntityCreature, Class par2Class, int par3, boolean par4, boolean par5)
+    public ESM_EntityAINearestAttackableTarget(EntityCreature par1EntityCreature, Class<?> par2Class, int par3, boolean par4, boolean par5)
     {
         this(par1EntityCreature, par2Class, par3, par4, par5, (IEntitySelector)null);
     }
 
-    public ESM_EntityAINearestAttackableTarget(EntityCreature par1EntityCreature, Class par2Class, int par3, boolean par4, boolean par5, IEntitySelector par6IEntitySelector)
+    public ESM_EntityAINearestAttackableTarget(EntityCreature par1EntityCreature, Class<?> par2Class, int par3, boolean par4, boolean par5, IEntitySelector par6IEntitySelector)
     {
         super(par1EntityCreature, par4, par5);
         this.targetClass = par2Class;
@@ -51,7 +51,8 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
     /**
      * Returns whether the EntityAIBase should begin execution.
      */
-    public boolean shouldExecute()
+    @SuppressWarnings("unchecked")
+	public boolean shouldExecute()
     {
         if (this.targetChance > 0 && this.taskOwner.getRNG().nextInt(this.targetChance) != 0)
         {
@@ -65,7 +66,7 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
     	} else
         {
             double d0 = this.getTargetDistance();
-            List list = this.taskOwner.worldObj.selectEntitiesWithinAABB(this.targetClass, this.taskOwner.boundingBox.expand(d0, 4.0D, d0), this.targetEntitySelector);
+            List<?> list = this.taskOwner.worldObj.selectEntitiesWithinAABB(this.targetClass, this.taskOwner.boundingBox.expand(d0, d0, d0), this.targetEntitySelector);
             Collections.sort(list, this.theNearestAttackableTargetSorter);
 
             if (list.isEmpty())
@@ -76,7 +77,7 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
             {
                 //this.targetEntity = (EntityLivingBase)list.get(0);
                 //return true;
-            	Iterator var2 = list.iterator();
+            	Iterator<?> var2 = list.iterator();
             	while (var2.hasNext())
                 {
                     EntityLivingBase entity = (EntityLivingBase)var2.next();

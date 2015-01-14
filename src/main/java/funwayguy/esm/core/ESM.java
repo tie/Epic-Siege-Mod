@@ -9,8 +9,10 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import funwayguy.esm.core.proxies.CommonProxy;
+import funwayguy.esm.entities.EntityESMGhast;
 import funwayguy.esm.handlers.ESM_EventManager;
 import funwayguy.esm.world.dimensions.WorldProviderNewHell;
 import funwayguy.esm.world.dimensions.WorldProviderSpace;
@@ -61,6 +63,7 @@ public class ESM
 		MinecraftForge.TERRAIN_GEN_BUS.register(new ESM_EventManager());
 		
 		GameRegistry.registerWorldGenerator(new WorldGenFortress(), 0);
+		EntityRegistry.registerModEntity(EntityESMGhast.class, "ESM_Ghast", EntityRegistry.findGlobalUniqueEntityId(), instance, 128, 1, true);
 	}
 
 	@EventHandler

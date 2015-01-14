@@ -228,7 +228,7 @@ public class ChunkProviderSpace implements IChunkProvider
     
     public void CustomReplace(World p_150560_1_, Random p_150560_2_, Block[] p_150560_3_, byte[] p_150560_4_, int p_150560_5_, int p_150560_6_, double p_150560_7_, BiomeGenBase obiome)
     {
-        boolean flag = true;
+        //boolean flag = true;
         Block block = topBlock;
         byte b0 = (byte)(obiome.field_150604_aj & 255);
         Block block1 = fillBlock;
@@ -361,19 +361,19 @@ public class ChunkProviderSpace implements IChunkProvider
 
     private void func_147423_a(int p_147423_1_, int p_147423_2_, int p_147423_3_)
     {
-        double d0 = 684.412D;
-        double d1 = 684.412D;
-        double d2 = 512.0D;
-        double d3 = 512.0D;
+        //double d0 = 684.412D;
+        //double d1 = 684.412D;
+        //double d2 = 512.0D;
+        //double d3 = 512.0D;
         this.field_147426_g = this.noiseGen6.generateNoiseOctaves(this.field_147426_g, p_147423_1_, p_147423_3_, 5, 5, 200.0D, 200.0D, 0.5D);
         this.field_147427_d = this.field_147429_l.generateNoiseOctaves(this.field_147427_d, p_147423_1_, p_147423_2_, p_147423_3_, 5, 33, 5, 8.555150000000001D, 4.277575000000001D, 8.555150000000001D);
         this.field_147428_e = this.field_147431_j.generateNoiseOctaves(this.field_147428_e, p_147423_1_, p_147423_2_, p_147423_3_, 5, 33, 5, 684.412D, 684.412D, 684.412D);
         this.field_147425_f = this.field_147432_k.generateNoiseOctaves(this.field_147425_f, p_147423_1_, p_147423_2_, p_147423_3_, 5, 33, 5, 684.412D, 684.412D, 684.412D);
-        boolean flag1 = false;
-        boolean flag = false;
+        //boolean flag1 = false;
+        //boolean flag = false;
         int l = 0;
         int i1 = 0;
-        double d4 = 8.5D;
+        //double d4 = 8.5D;
 
         for (int j1 = 0; j1 < 5; ++j1)
         {
@@ -659,7 +659,7 @@ public class ChunkProviderSpace implements IChunkProvider
     /**
      * Returns a list of creatures of the specified type that can spawn at the given location.
      */
-    public List getPossibleCreatures(EnumCreatureType p_73155_1_, int p_73155_2_, int p_73155_3_, int p_73155_4_)
+    public List<?> getPossibleCreatures(EnumCreatureType p_73155_1_, int p_73155_2_, int p_73155_3_, int p_73155_4_)
     {
         BiomeGenBase biomegenbase = this.worldObj.getBiomeGenForCoords(p_73155_2_, p_73155_4_);
         return p_73155_1_ == EnumCreatureType.monster && this.scatteredFeatureGenerator.func_143030_a(p_73155_2_, p_73155_3_, p_73155_4_) ? this.scatteredFeatureGenerator.getScatteredFeatureSpawnList() : biomegenbase.getSpawnableList(p_73155_1_);

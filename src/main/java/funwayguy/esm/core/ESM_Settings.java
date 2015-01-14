@@ -45,6 +45,9 @@ public class ESM_Settings
 	//Ghast
 	public static boolean GhastSpawn; //DONE
 	public static int GhastRarity; //DONE
+	public static double GhastFireDelay; //DONE
+	public static boolean GhastBreaching; //DONE
+	public static double GhastFireDist; //DONE
 	
 	//Skeleton
 	public static int SkeletonDistance; //DONE
@@ -66,9 +69,7 @@ public class ESM_Settings
 	
 	//Generation
     public static boolean NewEnd; //DONE
-    public static int NewEndID = 2;
     public static boolean NewHell; //DONE
-    public static int NewHellID = -2;
     public static boolean SpawnForts;
     public static int fortRarity = 2;
     public static int fortDistance = 16;
@@ -78,7 +79,7 @@ public class ESM_Settings
     //Non-configurables
     public static ArrayList<String> fortDB = new ArrayList<String>();
     public static WorldServer[] currentWorlds = null;
-    public static File currentWorldConfig = null;
+    public static File worldDir = null;
 	public static boolean ambiguous_AI = true;
 
 	public static void LoadMainConfig(File file)
@@ -92,20 +93,36 @@ public class ESM_Settings
         
         NewEnd = config.get("World", "Use New End", false).getBoolean(false);
         NewHell = config.get("World", "Use New Nether", false).getBoolean(false);
-        NewEndID = config.get("World", "New End ID", 2).getInt(2);
-        NewHellID = config.get("World", "New Hell ID", -2).getInt(-2);
+        //NewEndID = config.get("World", "New End ID", 2).getInt(2);
+        //NewHellID = config.get("World", "New Hell ID", -2).getInt(-2);
 
         config.save();
 	}
 	
 	public static void LoadWorldConfig()
 	{
-		if(currentWorldConfig == null)
+		if(worldDir == null)
 		{
+			ESM.log.log(Level.ERROR, "Failed to load world configs! Directory is null");
 			return;
 		}
-		Configuration config = new Configuration(currentWorldConfig, true);
-		ESM.log.log(Level.INFO, "Loaded ESM Config: " + currentWorldConfig.getAbsolutePath());
+		
+		File conFile = new File(worldDir, "ESM_Options.cfg");
+		
+		if(!conFile.exists())
+		{
+			try
+			{
+				conFile.createNewFile();
+			} catch(Exception e)
+			{
+				ESM.log.log(Level.INFO, "Failed to load ESM Config: " + conFile.getPath(), e);
+				return;
+			}
+		}
+		
+		Configuration config = new Configuration(worldDir, true);
+		ESM.log.log(Level.INFO, "Loading ESM Config: " + conFile.getPath());
 		
         config.load();
         
@@ -140,6 +157,9 @@ public class ESM_Settings
         //Ghasts
         GhastSpawn = config.get("Ghast", "Spawn", false).getBoolean(false);
         GhastRarity = config.get("Ghast", "Rarity", 9).getInt(9);
+        GhastFireDelay = config.get("Ghast", "Fire Delay", 1.0D).getDouble(1.0D);
+        GhastBreaching = config.get("Ghast", "Breaching", true).getBoolean(true);
+        GhastFireDist = config.get("Ghast", "Fire Distance", 64.0D).getDouble(64.0D);
         
         //Endermen
         EndermanMode = config.get("Enderman", "Mode", "Slender", "Valid Endermen Modes (Slender, Normal)").getString();
@@ -175,9 +195,10 @@ public class ESM_Settings
         fortDB = loadFortDB();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static ArrayList<String> loadFortDB()
 	{
-		File fileFortDB = new File(currentWorldConfig.getPath().replaceAll(currentWorldConfig.getName(), "ESM_fortDB"));
+		File fileFortDB = new File(worldDir, "ESM_fortDB");
 		ESM.log.log(Level.INFO, "Loading fortDB from " + fileFortDB.getPath());
 		
 		if(!fileFortDB.exists())
@@ -218,12 +239,17 @@ public class ESM_Settings
 			return;
 		}
 		
-		File fileFortDB = new File(currentWorldConfig.getPath().replaceAll(currentWorldConfig.getName(), "ESM_fortDB"));
+		File fileFortDB = new File(worldDir, "ESM_fortDB");
 		
 		ESM.log.log(Level.INFO, "Saving fortDB to " + fileFortDB.getPath());
 		
 		try
 		{
+			if(!fileFortDB.exists())
+			{
+				fileFortDB.createNewFile();
+			}
+			
 			FileOutputStream fileOut = new FileOutputStream(fileFortDB);
 			BufferedOutputStream buffer = new BufferedOutputStream(fileOut);
 			ObjectOutputStream objOut = new ObjectOutputStream(buffer);

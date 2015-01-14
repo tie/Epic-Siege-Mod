@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.logging.log4j.Level;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
@@ -26,7 +25,6 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.network.play.server.S07PacketRespawn;
 import net.minecraft.network.play.server.S1DPacketEntityEffect;
@@ -41,6 +39,7 @@ import net.minecraft.world.Teleporter;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldServer;
+import org.apache.logging.log4j.Level;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.FMLControlledNamespacedRegistry;
 import cpw.mods.fml.common.registry.GameData;
@@ -267,7 +266,7 @@ public class ESM_Utils
         par1EntityPlayerMP.theItemInWorldManager.setWorld(worldserver1);
         configManager.updateTimeAndWeatherForPlayer(par1EntityPlayerMP, worldserver1);
         configManager.syncPlayerInventory(par1EntityPlayerMP);
-        Iterator iterator = par1EntityPlayerMP.getActivePotionEffects().iterator();
+        Iterator<?> iterator = par1EntityPlayerMP.getActivePotionEffects().iterator();
 
         while (iterator.hasNext())
         {
@@ -406,6 +405,7 @@ public class ESM_Utils
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static void replaceAI(EntityLiving entityLiving)
 	{
 		boolean replaceNAT = false;

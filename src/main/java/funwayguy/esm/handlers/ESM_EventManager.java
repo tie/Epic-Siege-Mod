@@ -1,6 +1,5 @@
 package funwayguy.esm.handlers;
 
-import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +11,6 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
-import net.minecraft.entity.boss.EntityDragon;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityEnderman;
@@ -26,9 +24,9 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayer.EnumStatus;
 import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.entity.projectile.EntityLargeFireball;
 import net.minecraft.entity.projectile.EntitySmallFireball;
 import net.minecraft.init.Blocks;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
@@ -39,16 +37,15 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
-import net.minecraftforge.event.terraingen.InitMapGenEvent;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import net.minecraftforge.event.world.WorldEvent.Unload;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import funwayguy.esm.core.ESM;
 import funwayguy.esm.core.ESM_Settings;
 import funwayguy.esm.core.ESM_Utils;
+import funwayguy.esm.entities.EntityESMGhast;
 import funwayguy.esm.handlers.entities.ESM_BlazeHandler;
 import funwayguy.esm.handlers.entities.ESM_CreeperHandler;
-import funwayguy.esm.handlers.entities.ESM_DragonHandler;
 import funwayguy.esm.handlers.entities.ESM_EndermanHandler;
 import funwayguy.esm.handlers.entities.ESM_SkeletonHandler;
 
@@ -76,11 +73,6 @@ public class ESM_EventManager
 			{
 				searchForTarget((EntityCreature)event.entity);
 			}
-		} else if(event.entity instanceof EntityLargeFireball && ESM_Settings.Xray && ESM_Settings.CreeperBreaching)
-		{
-			EntityLargeFireball fireball = (EntityLargeFireball)event.entity;
-			
-			fireball.field_92057_e = 3;
 		}
 		
 		if(event.entity.getEntityData().getBoolean("ESM_MODIFIED"))
@@ -94,7 +86,17 @@ public class ESM_EventManager
 			return;
 		}
 		
-		if(event.entity instanceof EntityCreeper)
+		if(event.entity.getClass() == EntityGhast.class)
+		{
+			event.setCanceled(true);
+			EntityESMGhast newGhast = new EntityESMGhast(event.world);
+			newGhast.setLocationAndAngles(event.entity.posX, event.entity.posY + 32, event.entity.posZ, event.entity.rotationYaw, 0.0F);
+			NBTTagCompound oldTags = new NBTTagCompound();
+			event.entity.writeToNBT(oldTags);
+			newGhast.readFromNBT(oldTags);
+			event.world.spawnEntityInWorld(newGhast);
+			event.entity.setDead();
+		} else if(event.entity instanceof EntityCreeper)
 		{
 			ESM_CreeperHandler.onEntityJoinWorld((EntityCreeper)event.entity);
 		} else if(event.entity instanceof EntitySpider)
@@ -111,7 +113,7 @@ public class ESM_EventManager
 					if(ESM_Settings.GhastSpawn && ESM_Settings.GhastRarity <= 0 && event.world.canBlockSeeTheSky((int)event.entity.posX, (int)event.entity.posY, (int)event.entity.posZ) && event.entity.posY >= 64)
 					{
 						event.setCanceled(true);
-						EntityGhast newGhast = new EntityGhast(event.world);
+						EntityESMGhast newGhast = new EntityESMGhast(event.world);
 						newGhast.setLocationAndAngles(event.entity.posX, event.entity.posY + 32, event.entity.posZ, event.entity.rotationYaw, 0.0F);
 						event.world.spawnEntityInWorld(newGhast);
 						event.entity.setDead();
@@ -120,7 +122,7 @@ public class ESM_EventManager
 						if(event.world.rand.nextInt(ESM_Settings.GhastRarity) == 0)
 						{
 							event.setCanceled(true);
-							EntityGhast newGhast = new EntityGhast(event.world);
+							EntityESMGhast newGhast = new EntityESMGhast(event.world);
 							newGhast.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
 							event.world.spawnEntityInWorld(newGhast);
 							event.entity.setDead();
@@ -186,6 +188,7 @@ public class ESM_EventManager
 		
 		if((ESM_Settings.MobBombAll || (ESM_Settings.MobBombs != null && ESM_Settings.MobBombs.contains(EntityList.getEntityID(event.entity)))) && event.entity.riddenByEntity == null && event.entity instanceof IMob && !event.isCanceled() && !event.entity.isDead)
 		{
+			event.entity.getEntityData().setBoolean("ESM_MODIFIED", true);
 			if(ESM_Settings.MobBombRarity <= 0)
 			{
 				EntityCreeper passenger = new EntityCreeper(event.entity.worldObj);
@@ -296,7 +299,7 @@ public class ESM_EventManager
 				return;
 			}
 			
-			if(ESM_PathCapHandler.attackMap.get(entity.getEntityToAttack()).size() >= ESM_Settings.TargetCap && ESM_Settings.TargetCap != -1 && (entity.getEntityToAttack() instanceof EntityLivingBase? !ESM_Utils.isCloserThanOtherAttackers(entity.worldObj, entity, (EntityLivingBase)entity.getEntityToAttack()) : true))
+			if(ESM_PathCapHandler.attackMap.get(entity.getEntityToAttack()) != null && ESM_PathCapHandler.attackMap.get(entity.getEntityToAttack()).size() >= ESM_Settings.TargetCap && ESM_Settings.TargetCap != -1 && (entity.getEntityToAttack() instanceof EntityLivingBase? !ESM_Utils.isCloserThanOtherAttackers(entity.worldObj, entity, (EntityLivingBase)entity.getEntityToAttack()) : true))
 			{
 				if(ESM_PathCapHandler.attackMap.get(entity.getEntityToAttack()).size() > ESM_Settings.TargetCap)
 				{
@@ -319,16 +322,16 @@ public class ESM_EventManager
 		EntityLivingBase closestTarget = null;
 		ArrayList<EntityLiving> targets = new ArrayList<EntityLiving>();
 		
-		targets.addAll(entity.worldObj.getEntitiesWithinAABB(EntityPlayer.class, entity.boundingBox.expand(ESM_Settings.Awareness, 4.0D, ESM_Settings.Awareness)));
+		targets.addAll(entity.worldObj.getEntitiesWithinAABB(EntityPlayer.class, entity.boundingBox.expand(ESM_Settings.Awareness, ESM_Settings.Awareness, ESM_Settings.Awareness)));
 		
 		if(ESM_Settings.VillagerTarget)
 		{
-			targets.addAll(entity.worldObj.getEntitiesWithinAABB(EntityVillager.class, entity.boundingBox.expand(ESM_Settings.Awareness, 4.0D, ESM_Settings.Awareness)));
+			targets.addAll(entity.worldObj.getEntitiesWithinAABB(EntityVillager.class, entity.boundingBox.expand(ESM_Settings.Awareness, ESM_Settings.Awareness, ESM_Settings.Awareness)));
 		}
 		
 		if(ESM_Settings.Chaos)
 		{
-			targets.addAll(entity.worldObj.getEntitiesWithinAABB(EntityCreature.class, entity.boundingBox.expand(ESM_Settings.Awareness, 4.0D, ESM_Settings.Awareness)));
+			targets.addAll(entity.worldObj.getEntitiesWithinAABB(EntityCreature.class, entity.boundingBox.expand(ESM_Settings.Awareness, ESM_Settings.Awareness, ESM_Settings.Awareness)));
 		}
 		
 		double dist = ESM_Settings.Awareness + 1;
@@ -407,6 +410,9 @@ public class ESM_EventManager
 			if(((EntityLiving)event.entityLiving).getAttackTarget() != null)
 			{
 				ESM_PathCapHandler.AddNewAttack(event.entityLiving, ((EntityLiving)event.entityLiving).getAttackTarget());
+			} else if(event.entityLiving.getAITarget() != null)
+			{
+				ESM_PathCapHandler.AddNewAttack(event.entityLiving, event.entityLiving.getAITarget());
 			}
 		}
 		
@@ -427,9 +433,6 @@ public class ESM_EventManager
 		} else if(event.entityLiving instanceof EntityEnderman)
 		{
 			ESM_EndermanHandler.onLivingUpdate((EntityEnderman)event.entityLiving);
-		} else if(event.entityLiving instanceof EntityDragon)
-		{
-			ESM_DragonHandler.onLivingUpdate((EntityDragon)event.entityLiving);
 		}
 		
 		return;
@@ -466,7 +469,7 @@ public class ESM_EventManager
             }
             double d0 = 8.0D;
             double d1 = 5.0D;
-            List list = event.entityPlayer.worldObj.getEntitiesWithinAABB(EntityMob.class, AxisAlignedBB.getBoundingBox((double)event.x - d0, (double)event.y - d1, (double)event.z - d0, (double)event.x + d0, (double)event.y + d1, (double)event.z + d0));
+            List<?> list = event.entityPlayer.worldObj.getEntitiesWithinAABB(EntityMob.class, AxisAlignedBB.getBoundingBox((double)event.x - d0, (double)event.y - d1, (double)event.z - d0, (double)event.x + d0, (double)event.y + d1, (double)event.z + d0));
             
 	        if (!list.isEmpty())
             {
@@ -488,16 +491,16 @@ public class ESM_EventManager
 	@SubscribeEvent
 	public void onWorldLoad(Load event)
 	{
-		if(!event.world.isRemote && ESM_Settings.currentWorlds == null)
+		if(!event.world.isRemote && (ESM_Settings.currentWorlds == null || ESM_Settings.worldDir == null))
 		{
-			MinecraftServer mc = MinecraftServer.getServer();
-			ESM_Settings.currentWorlds = mc.worldServers;
+			MinecraftServer server = MinecraftServer.getServer();
+			ESM_Settings.currentWorlds = server.worldServers;
 			if(ESM.proxy.isClient())
 			{
-				ESM_Settings.currentWorldConfig = new File(mc.getFile("saves/" + mc.getFolderName()).getAbsolutePath(), "ESM_Options.cfg");
+				ESM_Settings.worldDir = server.getFile("saves/" + server.getFolderName());
 			} else
 			{
-				ESM_Settings.currentWorldConfig = new File(mc.getFile(mc.getFolderName()).getAbsolutePath(), "ESM_Options.cfg");
+				ESM_Settings.worldDir = server.getFile(server.getFolderName());
 			}
 			ESM_Settings.LoadWorldConfig();
 		}
@@ -510,25 +513,12 @@ public class ESM_EventManager
 		{
 			MinecraftServer mc = MinecraftServer.getServer();
 			
-			if(mc.worldServers == null || !mc.isServerRunning())
+			if(!mc.isServerRunning())
 			{
 				ESM_Settings.currentWorlds = null;
+				ESM_Settings.worldDir = null;
 			}
 		}
-	}
-	
-	@SubscribeEvent
-	public void initMapGen(InitMapGenEvent event)
-	{
-		/*ESM.log.log(Level.INFO, "Fired InitMapGenEvent with type " + event.type.toString());
-		if(event.type.equals(InitMapGenEvent.EventType.SCATTERED_FEATURE))
-		{
-			if(event.originalGen instanceof MapGenScatteredFeature)
-			{
-				ESM.log.log(Level.INFO, "Replacing MapGenScatteredFeature!");
-				event.newGen = new MapGenScatteredFortress();
-			}
-		}*/
 	}
 	
 	public static int getPortalTime(Entity entity)
@@ -711,10 +701,15 @@ public class ESM_EventManager
 	{
 		for(int i = x - 5; i < x + 5; i++)
 		{
-			for(int j = x - 5; j < x + 5; j++)
+			for(int j = y - 5; j < y + 5; j++)
 			{
-				for(int k = x - 5; k < x + 5; k++)
+				for(int k = z - 5; k < z + 5; k++)
 				{
+					if(!world.getChunkProvider().chunkExists(i, k))
+					{
+						continue;
+					}
+					
 					if(world.getBlock(i, j, k) == Blocks.mob_spawner)
 					{
 						return true;

@@ -37,7 +37,7 @@ public class ESM_PathCapHandler
 			
 			for(int i = attackers.size(); i >= 0; i--)
 			{
-				if(i >- attackers.size())
+				if(i >= attackers.size())
 				{
 					continue;
 				}
@@ -48,7 +48,7 @@ public class ESM_PathCapHandler
 				{
 					attackers.remove(i);
 					continue;
-				} else if(subject instanceof EntityLiving && ((EntityLiving)subject).getAttackTarget() != target)
+				} else if(subject instanceof EntityLiving && ((EntityLiving)subject).getAttackTarget() != target && ((EntityLiving)subject).getAITarget() != target)
 				{
 					attackers.remove(i);
 					continue;
