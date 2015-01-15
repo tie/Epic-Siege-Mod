@@ -634,7 +634,7 @@ public class ESM_EventManager
 			{
 				for(int k = z - 5; k < z + 5; k++)
 				{
-					if(!world.getChunkProvider().chunkExists(i, k))
+					if(!world.getChunkProvider().chunkExists(i >> 4, k >> 4))
 					{
 						continue;
 					}
