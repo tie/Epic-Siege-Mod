@@ -30,6 +30,7 @@ public class ESM_Settings
 	public static boolean Chaos; //DONE
 	public static boolean AllowSleep; //DONE
 	public static boolean QuickPathing; //DONE
+	public static int ResistanceCoolDown; //DONE
 	
 	//Creeper
 	public static boolean CreeperBreaching; //DONE
@@ -136,6 +137,7 @@ public class ESM_Settings
         AllowSleep = config.get("Main", "Allow Sleep", false).getBoolean(false);
         ambiguous_AI = config.get("Main", "Ambiguous AI", true, "If set to true, ESM will not check whether the entity is a mob or not when setting up new AI").getBoolean(true);
         QuickPathing = config.get("Main", "Quick Pathing", false, "If set to fales, mobs can use much longer routes to get to their target").getBoolean(false);
+        ResistanceCoolDown = config.get("Main", "Resistance Cooldown", 30, "The amount of ticks of resistance given to the player after changing dimensions").getInt(300);
         
         //Creeper
         CreeperBreaching = config.get("Creeper", "Breaching", true).getBoolean(true);

@@ -61,8 +61,10 @@ public class ESM
 	@EventHandler
 	public static void init(FMLInitializationEvent event)
 	{
-		MinecraftForge.EVENT_BUS.register(new ESM_EventManager());
-		MinecraftForge.TERRAIN_GEN_BUS.register(new ESM_EventManager());
+		ESM_EventManager manager = new ESM_EventManager();
+		MinecraftForge.EVENT_BUS.register(manager);
+		MinecraftForge.TERRAIN_GEN_BUS.register(manager);
+		FMLCommonHandler.instance().bus().register(manager);
 		FMLCommonHandler.instance().bus().register(new ESM_UpdateNotification());
 		
 		GameRegistry.registerWorldGenerator(new WorldGenFortress(), 0);

@@ -29,6 +29,8 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
@@ -37,12 +39,14 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import net.minecraftforge.event.world.WorldEvent.Unload;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 import funwayguy.esm.core.ESM;
 import funwayguy.esm.core.ESM_Settings;
 import funwayguy.esm.core.ESM_Utils;
@@ -449,6 +453,27 @@ public class ESM_EventManager
 		}
 		
 		return;
+	}
+	
+	@SubscribeEvent
+	public void onEnderTeleport(EnderTeleportEvent event)
+	{
+		AxisAlignedBB bounds = event.entityLiving.getCollisionBox(event.entityLiving);
+		bounds = bounds != null? bounds : event.entityLiving.getBoundingBox();
+		
+		if(bounds != null && !event.entityLiving.worldObj.getEntitiesWithinAABB(EntityPlayer.class, bounds.expand(5D, 5D, 5D)).isEmpty())
+		{
+			event.setCanceled(true);
+		}
+	}
+	
+	@SubscribeEvent
+	public void onDimensionChange(PlayerChangedDimensionEvent event)
+	{
+		if(ESM_Settings.ResistanceCoolDown > 0)
+		{
+			event.player.addPotionEffect(new PotionEffect(Potion.resistance.id, ESM_Settings.ResistanceCoolDown, 5));
+		}
 	}
 
 	@SubscribeEvent
