@@ -18,9 +18,8 @@ import net.minecraft.entity.ai.EntityAICreeperSwell;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -44,6 +43,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.FMLControlledNamespacedRegistry;
 import cpw.mods.fml.common.registry.GameData;
 import funwayguy.esm.ai.ESM_EntityAICreeperSwell;
+import funwayguy.esm.ai.ESM_EntityAIDigging;
 import funwayguy.esm.ai.ESM_EntityAINearestAttackableTarget;
 import funwayguy.esm.blocks.ESM_BlockEnderPortal;
 import funwayguy.esm.handlers.ESM_PathCapHandler;
@@ -449,8 +449,12 @@ public class ESM_Utils
 		
 		if(replaceAE)
 		{
-			entityLiving.tasks.addTask(1, new EntityAIAvoidEntity((EntityVillager)entityLiving, EntityMob.class, 12.0F, 0.6D, 0.6D));
-			entityLiving.tasks.addTask(1, new EntityAIAvoidEntity((EntityVillager)entityLiving, EntitySlime.class, 12.0F, 0.6D, 0.6D));
+			entityLiving.tasks.addTask(1, new EntityAIAvoidEntity((EntityVillager)entityLiving, IMob.class, 12.0F, 0.6D, 0.6D));
+		}
+		
+		if(entityLiving instanceof EntityZombie && ESM_Settings.ZombieDiggers)
+		{
+			entityLiving.targetTasks.addTask(3, new ESM_EntityAIDigging((EntityZombie)entityLiving));
 		}
 	}
 

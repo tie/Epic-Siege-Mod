@@ -26,12 +26,15 @@ import net.minecraft.entity.player.EntityPlayer.EnumStatus;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.entity.projectile.EntitySmallFireball;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -104,46 +107,38 @@ public class ESM_EventManager
 		} else if(event.entity instanceof EntitySkeleton)
 		{
 			ESM_SkeletonHandler.onEntityJoinWorld((EntitySkeleton)event.entity);
-		} else if(event.entity instanceof EntityZombie && !ESM_Settings.Apocalypse)
+		} else if(event.entity instanceof EntityZombie)
 		{
-			switch(event.world.rand.nextInt(3))
+			if(!ESM_Settings.Apocalypse)
 			{
-				case 0:
+				switch(event.world.rand.nextInt(3))
 				{
-					if(ESM_Settings.GhastSpawn && ESM_Settings.GhastRarity <= 0 && event.world.canBlockSeeTheSky((int)event.entity.posX, (int)event.entity.posY, (int)event.entity.posZ) && event.entity.posY >= 64)
+					case 0:
 					{
-						event.setCanceled(true);
-						EntityESMGhast newGhast = new EntityESMGhast(event.world);
-						newGhast.setLocationAndAngles(event.entity.posX, event.entity.posY + 32, event.entity.posZ, event.entity.rotationYaw, 0.0F);
-						event.world.spawnEntityInWorld(newGhast);
-						event.entity.setDead();
-					} else if(ESM_Settings.GhastSpawn && ESM_Settings.GhastRarity > 0 && event.world.canBlockSeeTheSky((int)event.entity.posX, (int)event.entity.posY, (int)event.entity.posZ) && event.entity.posY >= 64)
-					{
-						if(event.world.rand.nextInt(ESM_Settings.GhastRarity) == 0)
+						if(ESM_Settings.GhastSpawn && ESM_Settings.GhastRarity <= 0 && event.world.canBlockSeeTheSky((int)event.entity.posX, (int)event.entity.posY, (int)event.entity.posZ) && event.entity.posY >= 64)
 						{
 							event.setCanceled(true);
 							EntityESMGhast newGhast = new EntityESMGhast(event.world);
-							newGhast.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
+							newGhast.setLocationAndAngles(event.entity.posX, event.entity.posY + 32, event.entity.posZ, event.entity.rotationYaw, 0.0F);
 							event.world.spawnEntityInWorld(newGhast);
 							event.entity.setDead();
+						} else if(ESM_Settings.GhastSpawn && ESM_Settings.GhastRarity > 0 && event.world.canBlockSeeTheSky((int)event.entity.posX, (int)event.entity.posY, (int)event.entity.posZ) && event.entity.posY >= 64)
+						{
+							if(event.world.rand.nextInt(ESM_Settings.GhastRarity) == 0)
+							{
+								event.setCanceled(true);
+								EntityESMGhast newGhast = new EntityESMGhast(event.world);
+								newGhast.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
+								event.world.spawnEntityInWorld(newGhast);
+								event.entity.setDead();
+							}
 						}
+						break;
 					}
-					break;
-				}
-				
-				case 1:
-				{
-					if(ESM_Settings.BlazeSpawn && ESM_Settings.BlazeRarity <= 0)
+					
+					case 1:
 					{
-						event.setCanceled(true);
-						EntityBlaze newBlaze = new EntityBlaze(event.world);
-						newBlaze.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
-						newBlaze.getEntityData().setBoolean("ESM_MODIFIED", true);
-						event.world.spawnEntityInWorld(newBlaze);
-						event.entity.setDead();
-					} else if(ESM_Settings.BlazeSpawn && ESM_Settings.BlazeRarity > 0)
-					{
-						if(event.world.rand.nextInt(ESM_Settings.BlazeRarity) == 0)
+						if(ESM_Settings.BlazeSpawn && ESM_Settings.BlazeRarity <= 0)
 						{
 							event.setCanceled(true);
 							EntityBlaze newBlaze = new EntityBlaze(event.world);
@@ -151,10 +146,28 @@ public class ESM_EventManager
 							newBlaze.getEntityData().setBoolean("ESM_MODIFIED", true);
 							event.world.spawnEntityInWorld(newBlaze);
 							event.entity.setDead();
+						} else if(ESM_Settings.BlazeSpawn && ESM_Settings.BlazeRarity > 0)
+						{
+							if(event.world.rand.nextInt(ESM_Settings.BlazeRarity) == 0)
+							{
+								event.setCanceled(true);
+								EntityBlaze newBlaze = new EntityBlaze(event.world);
+								newBlaze.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
+								newBlaze.getEntityData().setBoolean("ESM_MODIFIED", true);
+								event.world.spawnEntityInWorld(newBlaze);
+								event.entity.setDead();
+							}
 						}
+						break;
 					}
-					break;
 				}
+			}
+			
+
+			if(ESM_Settings.ZombieDiggers && event.world.rand.nextFloat() < (event.world.difficultySetting == EnumDifficulty.HARD ? 0.05F : 0.01F))
+			{
+				((EntityZombie)event.entity).setCanPickUpLoot(true);
+				((EntityZombie)event.entity).setCurrentItemOrArmor(0, new ItemStack(Items.iron_pickaxe));
 			}
 		} else if(event.entity instanceof EntityArrow)
 		{

@@ -2,6 +2,7 @@ package funwayguy.esm.core;
 
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.MinecraftForge;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -14,6 +15,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import funwayguy.esm.core.proxies.CommonProxy;
 import funwayguy.esm.entities.EntityESMGhast;
 import funwayguy.esm.handlers.ESM_EventManager;
+import funwayguy.esm.handlers.ESM_UpdateNotification;
 import funwayguy.esm.world.dimensions.WorldProviderNewHell;
 import funwayguy.esm.world.dimensions.WorldProviderSpace;
 import funwayguy.esm.world.gen.WorldGenFortress;
@@ -61,6 +63,7 @@ public class ESM
 	{
 		MinecraftForge.EVENT_BUS.register(new ESM_EventManager());
 		MinecraftForge.TERRAIN_GEN_BUS.register(new ESM_EventManager());
+		FMLCommonHandler.instance().bus().register(new ESM_UpdateNotification());
 		
 		GameRegistry.registerWorldGenerator(new WorldGenFortress(), 0);
 		EntityRegistry.registerModEntity(EntityESMGhast.class, "ESM_Ghast", EntityRegistry.findGlobalUniqueEntityId(), instance, 128, 1, true);

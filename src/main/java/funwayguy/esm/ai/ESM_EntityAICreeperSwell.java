@@ -21,7 +21,7 @@ public class ESM_EntityAICreeperSwell extends EntityAIBase
     EntityLivingBase creeperAttackTarget;
     
     double detDist = 9.0D;
-    boolean breachLock = false;
+    boolean detLock = false;
 
     public ESM_EntityAICreeperSwell(EntityCreeper par1EntityCreeper)
     {
@@ -39,7 +39,7 @@ public class ESM_EntityAICreeperSwell extends EntityAIBase
         EntityLivingBase entitylivingbase = this.swellingCreeper.getAttackTarget();
         MovingObjectPosition mop = GetMovingObjectPosition(this.swellingCreeper, false);
     	
-    	boolean enableBreach = entitylivingbase != null && ESM_Settings.CreeperBreaching && !swellingCreeper.hasPath() && mop != null && mop.typeOfHit == MovingObjectType.BLOCK;
+    	boolean enableBreach = entitylivingbase != null && swellingCreeper.ridingEntity == null && ESM_Settings.CreeperBreaching && !swellingCreeper.hasPath() && mop != null && mop.typeOfHit == MovingObjectType.BLOCK;
         return this.swellingCreeper.getCreeperState() > 0 || enableBreach || (entitylivingbase != null && this.swellingCreeper.getDistanceSqToEntity(entitylivingbase) <= detDist);
     }
 
@@ -65,14 +65,14 @@ public class ESM_EntityAICreeperSwell extends EntityAIBase
      */
     public void updateTask()
     {
-    	if(breachLock)
+    	if(detLock)
     	{
             this.swellingCreeper.setCreeperState(1);
             return;
     	}
 
         MovingObjectPosition mop = GetMovingObjectPosition(this.swellingCreeper, false);
-    	boolean enableBreach = this.creeperAttackTarget != null && !this.swellingCreeper.getEntitySenses().canSee(this.creeperAttackTarget) && ESM_Settings.CreeperBreaching && swellingCreeper.getNavigator().noPath() && mop != null && mop.typeOfHit == MovingObjectType.BLOCK;
+    	boolean enableBreach = this.creeperAttackTarget != null && swellingCreeper.ridingEntity == null && !this.swellingCreeper.getEntitySenses().canSee(this.creeperAttackTarget) && ESM_Settings.CreeperBreaching && swellingCreeper.getNavigator().noPath() && mop != null && mop.typeOfHit == MovingObjectType.BLOCK;
     	
         if (this.creeperAttackTarget == null)
         {
@@ -88,9 +88,9 @@ public class ESM_EntityAICreeperSwell extends EntityAIBase
         }
         else
         {
-        	if(enableBreach)
+        	if(!enableBreach)
         	{
-        		//breachLock = true;
+        		detLock = true; // Prevents creepers who are in clear line of sight of the player canceling their detonation
         	}
             this.swellingCreeper.setCreeperState(1);
         }

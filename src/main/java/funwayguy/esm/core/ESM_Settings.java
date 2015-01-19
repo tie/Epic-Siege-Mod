@@ -22,7 +22,7 @@ public class ESM_Settings
 	public static final String Proxy = "funwayguy.esm.core.proxies";
 	
 	//Main
-	public static int Awareness; //NEEDS FIXING: Non-pathing entities don't work
+	public static int Awareness; //DONE
 	public static boolean Xray; //DONE
 	public static int TargetCap; //DONE
 	public static boolean VillagerTarget; //DONE
@@ -55,6 +55,8 @@ public class ESM_Settings
 	
 	//Zombie
 	public static boolean ZombieInfectious; //DONE
+	public static boolean ZombieDiggers; //DONE
+	public static boolean ZombieDiggerTools; //DONE
 	
 	//Enderman
 	public static String EndermanMode; //DONE
@@ -93,8 +95,6 @@ public class ESM_Settings
         
         NewEnd = config.get("World", "Use New End", false).getBoolean(false);
         NewHell = config.get("World", "Use New Nether", false).getBoolean(false);
-        //NewEndID = config.get("World", "New End ID", 2).getInt(2);
-        //NewHellID = config.get("World", "New Hell ID", -2).getInt(-2);
 
         config.save();
 	}
@@ -149,6 +149,8 @@ public class ESM_Settings
         
         //Zombies
         ZombieInfectious = config.get("Zombie", "Infectious", true).getBoolean(true);
+        ZombieDiggers = config.get("Zombie", "Diggers", true).getBoolean(true);
+        ZombieDiggerTools = config.get("Zombie", "Need Required Tools", true).getBoolean(true);
         
         //Blazes
         BlazeSpawn = config.get("Blaze", "Spawn", true).getBoolean(true);
