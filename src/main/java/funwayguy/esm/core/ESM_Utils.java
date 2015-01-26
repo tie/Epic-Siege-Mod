@@ -42,9 +42,11 @@ import org.apache.logging.log4j.Level;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.FMLControlledNamespacedRegistry;
 import cpw.mods.fml.common.registry.GameData;
+import funwayguy.esm.ai.ESM_EntityAIAvoidDetonatingCreepers;
 import funwayguy.esm.ai.ESM_EntityAICreeperSwell;
 import funwayguy.esm.ai.ESM_EntityAIDigging;
 import funwayguy.esm.ai.ESM_EntityAINearestAttackableTarget;
+import funwayguy.esm.ai.ESM_EntityAITorchBreak;
 import funwayguy.esm.blocks.ESM_BlockEnderPortal;
 import funwayguy.esm.handlers.ESM_PathCapHandler;
 
@@ -452,9 +454,21 @@ public class ESM_Utils
 			entityLiving.tasks.addTask(1, new EntityAIAvoidEntity((EntityVillager)entityLiving, IMob.class, 12.0F, 0.6D, 0.6D));
 		}
 		
+		if(entityLiving instanceof EntityCreature && !(entityLiving instanceof EntityCreeper))
+		{
+			if(entityLiving.targetTasks.taskEntries.size() > 0)
+			{
+				entityLiving.targetTasks.addTask(0, new ESM_EntityAIAvoidDetonatingCreepers((EntityCreature)entityLiving, 12F, 1D, 1D));
+			} else
+			{
+				entityLiving.tasks.addTask(0, new ESM_EntityAIAvoidDetonatingCreepers((EntityCreature)entityLiving, 12F, 0.75D, 0.75D));
+			}
+		}
+		
 		if(entityLiving instanceof EntityZombie && ESM_Settings.ZombieDiggers)
 		{
 			entityLiving.targetTasks.addTask(3, new ESM_EntityAIDigging((EntityZombie)entityLiving));
+			entityLiving.tasks.addTask(5, new ESM_EntityAITorchBreak((EntityZombie)entityLiving));
 		}
 	}
 

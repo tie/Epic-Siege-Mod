@@ -36,7 +36,6 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
-import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
@@ -168,17 +167,24 @@ public class ESM_EventManager
 			}
 			
 
-			if(ESM_Settings.ZombieDiggers && event.world.rand.nextFloat() < (event.world.difficultySetting == EnumDifficulty.HARD ? 0.05F : 0.01F))
+			if(ESM_Settings.ZombieDiggers && event.world.rand.nextFloat() < 0.1F)
 			{
 				((EntityZombie)event.entity).setCanPickUpLoot(true);
-				((EntityZombie)event.entity).setCurrentItemOrArmor(0, new ItemStack(Items.iron_pickaxe));
+				
+				if(event.world.rand.nextFloat() < 0.1F)
+				{
+					((EntityZombie)event.entity).setCurrentItemOrArmor(0, new ItemStack(Items.diamond_pickaxe));
+				} else
+				{
+					((EntityZombie)event.entity).setCurrentItemOrArmor(0, new ItemStack(Items.iron_pickaxe));
+				}
 			}
 		} else if(event.entity instanceof EntityArrow)
 		{
 			EntityArrow arrow = (EntityArrow)event.entity;
-			if(arrow.shootingEntity instanceof EntitySkeleton)
+			if(arrow.shootingEntity instanceof EntityLiving && arrow.shootingEntity instanceof IMob)
 			{
-				EntitySkeleton shooter = (EntitySkeleton)arrow.shootingEntity;
+				EntityLiving shooter = (EntityLiving)arrow.shootingEntity;
 				EntityLivingBase target = shooter.getAttackTarget();
 				
 				if(target != null)
@@ -229,20 +235,32 @@ public class ESM_EventManager
 		event.entity.getEntityData().setBoolean("ESM_MODIFIED", true);
 	}
 	
-	public static void replaceArrowAttack(EntitySkeleton shooter, EntityLivingBase par1EntityLivingBase, double par2)
+	public static void replaceArrowAttack(EntityLiving shooter, EntityLivingBase targetEntity, double par2)
 	{
     	EntityArrow entityarrow;
-        double targetDist = shooter.getDistance(par1EntityLivingBase.posX, par1EntityLivingBase.boundingBox.minY, par1EntityLivingBase.posZ);
+        double targetDist = shooter.getDistance(targetEntity.posX + (targetEntity.posX - targetEntity.lastTickPosX), targetEntity.boundingBox.minY, targetEntity.posZ + (targetEntity.posZ - targetEntity.lastTickPosZ));
+        float fireSpeed = (float)((0.00013*(targetDist)*(targetDist)) + (0.02*targetDist) + 1.25);
     	
-    	if(ESM_Settings.SkeletonDistance == 0)
+    	if(ESM_Settings.SkeletonDistance <= 0)
     	{
-    		entityarrow = new EntityArrow(shooter.worldObj, shooter, par1EntityLivingBase, 1.6F, ESM_Settings.SkeletonAccuracy);
+    		entityarrow = new EntityArrow(shooter.worldObj, shooter, targetEntity, 1.6F, ESM_Settings.SkeletonAccuracy);
     	} else
     	{
-    		entityarrow = new EntityArrow(shooter.worldObj, shooter, par1EntityLivingBase, (float)((0.00013*(targetDist)*(targetDist)) + (0.02*targetDist) + 1.25), ESM_Settings.SkeletonAccuracy);
+    		entityarrow = new EntityArrow(shooter.worldObj, shooter, targetEntity, fireSpeed, ESM_Settings.SkeletonAccuracy);
     	}
     	
-        //EntityArrow entityarrow = new EntityArrow(shooter.worldObj, shooter, par1EntityLivingBase, 1.6F, (float)(14 - shooter.worldObj.difficultySetting * 4));
+        double d0 = (targetEntity.posX + (targetEntity.posX - targetEntity.lastTickPosX) * (targetDist/fireSpeed)) - shooter.posX;
+        double d1 = targetEntity.boundingBox.minY + (double)(targetEntity.height / 3.0F) - entityarrow.posY;
+        double d2 = (targetEntity.posZ + (targetEntity.posZ - targetEntity.lastTickPosZ) * (targetDist/fireSpeed)) - shooter.posZ;
+        double d3 = (double)MathHelper.sqrt_double(d0 * d0 + d2 * d2);
+        
+        if (d3 >= 1.0E-7D)
+        {
+            float f4 = (float)d3 * 0.2F;
+        	entityarrow.setThrowableHeading(d0, d1 + (double)f4, d2, fireSpeed, ESM_Settings.SkeletonAccuracy);
+        }
+    	
+        //EntityArrow entityarrow = new EntityArrow(shooter.worldObj, shooter, targetEntity, 1.6F, (float)(14 - shooter.worldObj.difficultySetting * 4));
         int i = EnchantmentHelper.getEnchantmentLevel(Enchantment.power.effectId, shooter.getHeldItem());
         int j = EnchantmentHelper.getEnchantmentLevel(Enchantment.punch.effectId, shooter.getHeldItem());
         entityarrow.setDamage(par2);
@@ -257,7 +275,7 @@ public class ESM_EventManager
             entityarrow.setKnockbackStrength(j);
         }
 
-        if (EnchantmentHelper.getEnchantmentLevel(Enchantment.flame.effectId, shooter.getHeldItem()) > 0 || shooter.getSkeletonType() == 1)
+        if (EnchantmentHelper.getEnchantmentLevel(Enchantment.flame.effectId, shooter.getHeldItem()) > 0 || (shooter instanceof EntitySkeleton && ((EntitySkeleton)shooter).getSkeletonType() == 1))
         {
             entityarrow.setFire(100);
         }
