@@ -20,11 +20,10 @@ import funwayguy.esm.world.dimensions.WorldProviderNewHell;
 import funwayguy.esm.world.dimensions.WorldProviderSpace;
 import funwayguy.esm.world.gen.WorldGenFortress;
 
-@Mod(modid = ESM_Settings.ID, name = ESM_Settings.Name, version = ESM_Settings.Version)
-
+@Mod(modid = ESM_Settings.ID, name = ESM_Settings.Name, version = ESM_Settings.Version, guiFactory = "funwayguy.esm.client.ESMGuiFactory")
 public class ESM
 {
-	@Instance("ESM")
+	@Instance(ESM_Settings.ID)
     public static ESM instance;
 	
 	@SidedProxy(clientSide = ESM_Settings.Proxy + ".ClientProxy", serverSide = ESM_Settings.Proxy + ".CommonProxy")

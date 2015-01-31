@@ -3,6 +3,7 @@ package funwayguy.esm.core;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import net.minecraft.block.Block;
@@ -12,12 +13,15 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAvoidEntity;
 import net.minecraft.entity.ai.EntityAICreeperSwell;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
+import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.monster.EntityGhast;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityVillager;
@@ -38,8 +42,11 @@ import net.minecraft.world.Teleporter;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.BiomeGenBase.SpawnListEntry;
 import org.apache.logging.log4j.Level;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.FMLControlledNamespacedRegistry;
 import cpw.mods.fml.common.registry.GameData;
 import funwayguy.esm.ai.ESM_EntityAIAvoidDetonatingCreepers;
@@ -572,6 +579,80 @@ public class ESM_Utils
 		} else
 		{
 			ESM.log.log(Level.ERROR, "Failed to override vanilla End Portal block");
+		}
+	}
+	
+	public static void UpdateBiomeSpawns()
+	{
+		if(nativeBlazeBiomes == null || nativeGhastBiomes == null)
+		{
+			SetBiomeSpawnDefaults();
+		}
+		
+		BiomeGenBase[] biomeList = BiomeGenBase.getBiomeGenArray();
+		
+		for(BiomeGenBase biome : biomeList)
+		{
+			if(biome == null)
+			{
+				continue;
+			}
+			
+			if(!nativeBlazeBiomes.contains(biome))
+			{
+				if(ESM_Settings.BlazeSpawn)
+				{
+					EntityRegistry.addSpawn(EntityBlaze.class, 100/(ESM_Settings.BlazeRarity <= 0? 1: ESM_Settings.BlazeRarity), 1, 4, EnumCreatureType.monster, biome);
+				} else
+				{
+					EntityRegistry.removeSpawn(EntityBlaze.class, EnumCreatureType.monster, biome);
+				}
+			}
+			
+			if(!nativeGhastBiomes.contains(biome))
+			{
+				if(ESM_Settings.GhastSpawn)
+				{
+					EntityRegistry.addSpawn(EntityGhast.class, 100/(ESM_Settings.GhastRarity <= 0? 1 : ESM_Settings.GhastRarity), 1, 4, EnumCreatureType.monster, biome);
+				} else
+				{
+					EntityRegistry.removeSpawn(EntityGhast.class, EnumCreatureType.monster, biome);
+				}
+			}
+		}
+	}
+	
+	static ArrayList<BiomeGenBase> nativeBlazeBiomes;
+	static ArrayList<BiomeGenBase> nativeGhastBiomes;
+	
+	public static void SetBiomeSpawnDefaults()
+	{
+		nativeBlazeBiomes = new ArrayList<BiomeGenBase>();
+		nativeGhastBiomes = new ArrayList<BiomeGenBase>();
+		
+		BiomeGenBase[] biomeList = BiomeGenBase.getBiomeGenArray();
+		
+		for(BiomeGenBase biome : biomeList)
+		{
+			if(biome == null)
+			{
+				continue;
+			}
+			@SuppressWarnings("unchecked")
+			List<SpawnListEntry> spawnList = biome.getSpawnableList(EnumCreatureType.monster);
+			
+			for(SpawnListEntry spawn : spawnList)
+			{
+				if(spawn.entityClass == EntityBlaze.class)
+				{
+					nativeBlazeBiomes.add(biome);
+				}
+				
+				if(spawn.entityClass == EntityGhast.class)
+				{
+					nativeGhastBiomes.add(biome);
+				}
+			}
 		}
 	}
 }

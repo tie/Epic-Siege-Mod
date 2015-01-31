@@ -37,6 +37,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -44,8 +45,10 @@ import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import net.minecraftforge.event.world.WorldEvent.Unload;
+import cpw.mods.fml.client.event.ConfigChangedEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
+import funwayguy.esm.client.gui.ESMGuiConfig;
 import funwayguy.esm.core.ESM;
 import funwayguy.esm.core.ESM_Settings;
 import funwayguy.esm.core.ESM_Utils;
@@ -112,61 +115,6 @@ public class ESM_EventManager
 			ESM_SkeletonHandler.onEntityJoinWorld((EntitySkeleton)event.entity);
 		} else if(event.entity instanceof EntityZombie)
 		{
-			if(!ESM_Settings.Apocalypse)
-			{
-				switch(event.world.rand.nextInt(3))
-				{
-					case 0:
-					{
-						if(ESM_Settings.GhastSpawn && ESM_Settings.GhastRarity <= 0 && event.world.canBlockSeeTheSky((int)event.entity.posX, (int)event.entity.posY, (int)event.entity.posZ) && event.entity.posY >= 64)
-						{
-							event.setCanceled(true);
-							EntityESMGhast newGhast = new EntityESMGhast(event.world);
-							newGhast.setLocationAndAngles(event.entity.posX, event.entity.posY + 32, event.entity.posZ, event.entity.rotationYaw, 0.0F);
-							event.world.spawnEntityInWorld(newGhast);
-							event.entity.setDead();
-						} else if(ESM_Settings.GhastSpawn && ESM_Settings.GhastRarity > 0 && event.world.canBlockSeeTheSky((int)event.entity.posX, (int)event.entity.posY, (int)event.entity.posZ) && event.entity.posY >= 64)
-						{
-							if(event.world.rand.nextInt(ESM_Settings.GhastRarity) == 0)
-							{
-								event.setCanceled(true);
-								EntityESMGhast newGhast = new EntityESMGhast(event.world);
-								newGhast.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
-								event.world.spawnEntityInWorld(newGhast);
-								event.entity.setDead();
-							}
-						}
-						break;
-					}
-					
-					case 1:
-					{
-						if(ESM_Settings.BlazeSpawn && ESM_Settings.BlazeRarity <= 0)
-						{
-							event.setCanceled(true);
-							EntityBlaze newBlaze = new EntityBlaze(event.world);
-							newBlaze.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
-							newBlaze.getEntityData().setBoolean("ESM_MODIFIED", true);
-							event.world.spawnEntityInWorld(newBlaze);
-							event.entity.setDead();
-						} else if(ESM_Settings.BlazeSpawn && ESM_Settings.BlazeRarity > 0)
-						{
-							if(event.world.rand.nextInt(ESM_Settings.BlazeRarity) == 0)
-							{
-								event.setCanceled(true);
-								EntityBlaze newBlaze = new EntityBlaze(event.world);
-								newBlaze.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
-								newBlaze.getEntityData().setBoolean("ESM_MODIFIED", true);
-								event.world.spawnEntityInWorld(newBlaze);
-								event.entity.setDead();
-							}
-						}
-						break;
-					}
-				}
-			}
-			
-
 			if(ESM_Settings.ZombieDiggers && event.world.rand.nextFloat() < 0.1F)
 			{
 				((EntityZombie)event.entity).setCanPickUpLoot(true);
@@ -312,7 +260,7 @@ public class ESM_EventManager
 	@SuppressWarnings("unchecked")
 	public static void searchForTarget(EntityCreature entity)
 	{
-		if(entity.targetTasks.taskEntries.size() >= 1)
+		if(entity.targetTasks.taskEntries.size() >= 1 || (entity instanceof EntityEnderman))
 		{
 			entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 0);
 			return;
@@ -351,7 +299,7 @@ public class ESM_EventManager
 			return;
 		} else
 		{
-			entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 30);
+			entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 60);
 		}
 		
 		EntityLivingBase closestTarget = null;
@@ -703,5 +651,17 @@ public class ESM_EventManager
 			}
 		}
 		return false;
+	}
+	
+	@SubscribeEvent
+	public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event)
+	{
+		if(event.modID.equals(ESM_Settings.ID))
+		{
+			for(Configuration config : ESMGuiConfig.tempConfigs)
+			{
+				config.save();
+			}
+		}
 	}
 }
