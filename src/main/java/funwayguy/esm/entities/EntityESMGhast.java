@@ -22,7 +22,7 @@ import funwayguy.esm.handlers.ESM_PathCapHandler;
 public class EntityESMGhast extends EntityGhast
 {
     private int explosionStrength = 1;
-    private Entity targetedEntity;
+    public Entity targetedEntity;
     /** Cooldown time between target loss and new target aquirement. */
     private int aggroCooldown;
     

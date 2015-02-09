@@ -42,10 +42,12 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import net.minecraftforge.event.world.WorldEvent.Unload;
 import cpw.mods.fml.client.event.ConfigChangedEvent;
+import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 import funwayguy.esm.client.gui.ESMGuiConfig;
@@ -126,6 +128,9 @@ public class ESM_EventManager
 				{
 					((EntityZombie)event.entity).setCurrentItemOrArmor(0, new ItemStack(Items.iron_pickaxe));
 				}
+			} else if(ESM_Settings.ZombieTraps && event.world.rand.nextFloat() < 0.1F)
+			{
+				((EntityZombie)event.entity).setCurrentItemOrArmor(0, new ItemStack(Blocks.stone_pressure_plate));
 			}
 		} else if(event.entity instanceof EntityArrow)
 		{
@@ -661,6 +666,30 @@ public class ESM_EventManager
 			for(Configuration config : ESMGuiConfig.tempConfigs)
 			{
 				config.save();
+			}
+		}
+	}
+	
+	@SubscribeEvent
+	public void allowDespawn(LivingSpawnEvent.AllowDespawn event)
+	{
+		if(event.entityLiving instanceof EntityCreature)
+		{
+			EntityCreature creature = (EntityCreature)event.entityLiving;
+			
+			if(creature.getEntityToAttack() != null && creature.getEntityToAttack() instanceof EntityPlayer)
+			{
+				event.setResult(Result.DENY);
+				return;
+			}
+		} else if(event.entityLiving instanceof EntityESMGhast)
+		{
+			EntityESMGhast ghast = (EntityESMGhast)event.entityLiving;
+			
+			if(ghast.targetedEntity != null && ghast.targetedEntity instanceof EntityPlayer)
+			{
+				event.setResult(Result.DENY);
+				return;
 			}
 		}
 	}

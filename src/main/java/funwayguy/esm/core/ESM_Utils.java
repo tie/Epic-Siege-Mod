@@ -49,11 +49,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.FMLControlledNamespacedRegistry;
 import cpw.mods.fml.common.registry.GameData;
-import funwayguy.esm.ai.ESM_EntityAIAvoidDetonatingCreepers;
-import funwayguy.esm.ai.ESM_EntityAICreeperSwell;
-import funwayguy.esm.ai.ESM_EntityAIDigging;
-import funwayguy.esm.ai.ESM_EntityAINearestAttackableTarget;
-import funwayguy.esm.ai.ESM_EntityAITorchBreak;
+import funwayguy.esm.ai.*;
 import funwayguy.esm.blocks.ESM_BlockEnderPortal;
 import funwayguy.esm.handlers.ESM_PathCapHandler;
 
@@ -461,7 +457,7 @@ public class ESM_Utils
 			entityLiving.tasks.addTask(1, new EntityAIAvoidEntity((EntityVillager)entityLiving, IMob.class, 12.0F, 0.6D, 0.6D));
 		}
 		
-		if(entityLiving instanceof EntityCreature && !(entityLiving instanceof EntityCreeper))
+		if(entityLiving instanceof EntityCreature)
 		{
 			if(entityLiving.targetTasks.taskEntries.size() > 0)
 			{
@@ -474,8 +470,13 @@ public class ESM_Utils
 		
 		if(entityLiving instanceof EntityZombie && ESM_Settings.ZombieDiggers)
 		{
-			entityLiving.targetTasks.addTask(3, new ESM_EntityAIDigging((EntityZombie)entityLiving));
-			entityLiving.tasks.addTask(5, new ESM_EntityAITorchBreak((EntityZombie)entityLiving));
+			if(ESM_Settings.ZombieDiggers)
+			{
+				entityLiving.targetTasks.addTask(3, new ESM_EntityAIDigging((EntityZombie)entityLiving));
+				entityLiving.tasks.addTask(5, new ESM_EntityAITorchBreak((EntityZombie)entityLiving));
+			}
+			
+			entityLiving.tasks.addTask(5, new ESM_EntityAIBuildTrap(entityLiving));
 		}
 	}
 

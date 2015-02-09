@@ -31,6 +31,11 @@ public class ESM_CreeperHandler
 		int fuseTime = getCreeperFuseTime(creeper);
 		int radius = getCreeperRadius(creeper);
 		
+		if(creeper.getAttackTarget() != null && creeper.getDistanceToEntity(creeper.getAttackTarget()) < 6 && creeper.ridingEntity != null)
+		{
+			creeper.dismountEntity(creeper.ridingEntity); // Creepers dismount when close to their target
+		}
+		
 		if(ESM_Settings.CreeperNapalm && fuseTime <= 1)
 		{
             boolean flag = creeper.worldObj.getGameRules().getGameRuleBooleanValue("mobGriefing");

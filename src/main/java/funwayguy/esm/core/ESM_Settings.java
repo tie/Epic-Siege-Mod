@@ -58,6 +58,7 @@ public class ESM_Settings
 	public static boolean ZombieInfectious; //DONE
 	public static boolean ZombieDiggers; //DONE
 	public static boolean ZombieDiggerTools; //DONE
+	public static boolean ZombieTraps; // DONE
 	
 	//Enderman
 	public static String EndermanMode; //DONE
@@ -116,9 +117,9 @@ public class ESM_Settings
 		defConfig.load();
 		
         //Main
-        Awareness = defConfig.get("Main", "Awareness Radius", 64).getInt(64);
+        Awareness = defConfig.get("Main", "Awareness Radius", 48).getInt(48);
         Xray = defConfig.get("Main", "Xray Mobs", true).getBoolean(true);
-        TargetCap = defConfig.get("Main", "Pathing Cap", 16).getInt(16);
+        TargetCap = defConfig.get("Main", "Pathing Cap", 8).getInt(8);
         VillagerTarget = defConfig.get("Main", "Villager Targeting", true).getBoolean(true);
         Apocalypse = defConfig.get("Main", "Apocalypse Mode", false).getBoolean(false);
         Chaos = defConfig.get("Main", "Chaos Mode", false).getBoolean(false);
@@ -141,6 +142,7 @@ public class ESM_Settings
         ZombieInfectious = defConfig.get("Zombie", "Infectious", true).getBoolean(true);
         ZombieDiggers = defConfig.get("Zombie", "Diggers", true).getBoolean(true);
         ZombieDiggerTools = defConfig.get("Zombie", "Need Required Tools", true).getBoolean(true);
+        ZombieTraps = defConfig.get("Zombie", "Zombies Build Traps", true).getBoolean(true);
         
         //Blazes
         BlazeSpawn = defConfig.get("Blaze", "Spawn", true).getBoolean(true);
@@ -241,6 +243,7 @@ public class ESM_Settings
         ZombieInfectious = config.get("Zombie", "Infectious", ZombieInfectious).getBoolean(ZombieInfectious);
         ZombieDiggers = config.get("Zombie", "Diggers", ZombieDiggers).getBoolean(ZombieDiggers);
         ZombieDiggerTools = config.get("Zombie", "Need Required Tools", ZombieDiggerTools).getBoolean(ZombieDiggerTools);
+        ZombieTraps = defConfig.get("Zombie", "Zombies Build Traps", ZombieTraps).getBoolean(ZombieTraps);
         
         //Blazes
         BlazeSpawn = config.get("Blaze", "Spawn", BlazeSpawn).getBoolean(BlazeSpawn);

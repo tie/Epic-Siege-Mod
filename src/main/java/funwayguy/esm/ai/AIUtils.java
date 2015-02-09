@@ -4,6 +4,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
+import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.MathHelper;
@@ -17,7 +20,6 @@ import net.minecraftforge.common.ForgeHooks;
  */
 public class AIUtils
 {
-	
 	public static float getBreakSpeed(EntityLiving entityLiving, Block p_146096_1_, boolean p_146096_2_, int meta, int x, int y, int z)
     {
         ItemStack stack = entityLiving.getEquipmentInSlot(0);
@@ -70,6 +72,8 @@ public class AIUtils
 
     public static float getBlockStrength(EntityLiving entityLiving, Block block, World world, int x, int y, int z, boolean ignoreTool)
     {
+    	// Returns true if something like Iguana Tweaks is nerfing the vanilla picks. This will then cause zombies to ignore the harvestability of blocks when holding picks
+    	boolean nerfedPick = !Items.iron_pickaxe.canHarvestBlock(Blocks.stone, new ItemStack(Items.iron_pickaxe));
         int metadata = world.getBlockMetadata(x, y, z);
         float hardness = block.getBlockHardness(world, x, y, z);
         
@@ -79,7 +83,7 @@ public class AIUtils
         }
         
 		ItemStack item = entityLiving.getEquipmentInSlot(0);
-		boolean canHarvest = ignoreTool || (item != null && item.getItem().canHarvestBlock(block, item)) || block.getMaterial().isToolNotRequired();
+		boolean canHarvest = ignoreTool || (item != null && (item.getItem().canHarvestBlock(block, item) || (item.getItem() instanceof ItemPickaxe && nerfedPick))) || block.getMaterial().isToolNotRequired();
 
         if (!canHarvest)
         {

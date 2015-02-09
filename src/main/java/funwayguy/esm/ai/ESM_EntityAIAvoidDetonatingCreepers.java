@@ -50,6 +50,14 @@ public class ESM_EntityAIAvoidDetonatingCreepers extends EntityAIBase
      */
     public boolean shouldExecute()
     {
+    	if(this.theEntity instanceof EntityCreeper)
+    	{
+    		EntityCreeper me = (EntityCreeper)this.theEntity;
+    		if(me.getCreeperState() == 1)
+    		{
+    			return false;
+    		}
+    	}
         @SuppressWarnings("unchecked")
 		List<EntityCreeper> list = this.theEntity.worldObj.selectEntitiesWithinAABB(EntityCreeper.class, this.theEntity.boundingBox.expand((double)this.distanceFromEntity, 3.0D, (double)this.distanceFromEntity), this.field_98218_a);
 
@@ -66,7 +74,7 @@ public class ESM_EntityAIAvoidDetonatingCreepers extends EntityAIBase
         {
         	EntityCreeper creeper = iterator.next();
         	
-        	if(creeper.getCreeperState() == 1 && creeper.ridingEntity != this.theEntity)
+        	if(creeper.getCreeperState() == 1 && creeper.ridingEntity != this.theEntity && creeper != this.theEntity)
         	{
         		this.closestLivingEntity = creeper;
         		break;
