@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.Level;
@@ -64,12 +65,17 @@ public class ESM_Settings
 	public static String EndermanMode; //DONE
 	public static boolean EndermanPlayerTele; //DONE
 	
+	//Spider
+	public static int SpiderWebChance; //DONE
+	
 	//Advanced
 	public static ArrayList<Integer> MobBombs; //DONE
 	public static int MobBombRarity; //DONE
 	public static boolean MobBombAll; // DONE
 	public static boolean WitherSkeletons; //DONE
 	public static int WitherSkeletonRarity; //DONE
+	public static int PotionMobs;
+	public static int[] PotionMobEffects;
 	
 	//Generation
     public static boolean NewEnd; //DONE
@@ -160,6 +166,8 @@ public class ESM_Settings
         EndermanMode = defConfig.get("Enderman", "Mode", "Slender", "Valid Endermen Modes (Slender, Normal)").getString();
     	EndermanPlayerTele = defConfig.get("Enderman", "Player Teleport", true).getBoolean(true);
         
+    	//Spider
+        SpiderWebChance = MathHelper.clamp_int(defConfig.get("Spider", "Webbing Chance (0-100)", 25).getInt(25), 0, 100);
         
         //Advanced
         int[] tmp = defConfig.get("Advanced Mobs", "Mob Bombs", new int[]{52}).getIntList();
@@ -172,6 +180,8 @@ public class ESM_Settings
         MobBombAll = defConfig.get("Advanced Mobs", "Mob Bomb All", true, "Skip the Mob Bomb list and allow everything!").getBoolean(true);
         WitherSkeletons = defConfig.get("Advanced Mobs", "Wither Skeletons", true).getBoolean(true);
         WitherSkeletonRarity = defConfig.get("Advanced Mobs", "Wither Skeleton Rarity", 9).getInt(9);
+        PotionMobs = defConfig.get("Advanced Mobs", "Potion Buff Chance (0-100)", 1).getInt(1);
+        PotionMobEffects = defConfig.get("Advanced Mobs", "Potion Buff List", new int[]{14, 12, 5, 1}, "List of all the valid potion IDs a mob can spawn with. Amplifier is always x1").getIntList();
         
         //World
         SpawnForts = defConfig.get("World", "Spawn Forts", true).getBoolean(true);
@@ -261,6 +271,9 @@ public class ESM_Settings
         EndermanMode = config.get("Enderman", "Mode", EndermanMode, "Valid Endermen Modes (Slender, Normal)").getString();
     	EndermanPlayerTele = config.get("Enderman", "Player Teleport", EndermanPlayerTele).getBoolean(EndermanPlayerTele);
         
+    	//Spider
+        SpiderWebChance = MathHelper.clamp_int(defConfig.get("Spider", "Webbing Chance (0-100)", SpiderWebChance).getInt(SpiderWebChance), 0, 100);
+        
         //Advanced
     	int[] tmpDef = new int[MobBombs.size()];
     	
@@ -278,6 +291,8 @@ public class ESM_Settings
         MobBombAll = config.get("Advanced Mobs", "Mob Bomb All", MobBombAll, "Skip the Mob Bomb list and allow everything!").getBoolean(MobBombAll);
         WitherSkeletons = config.get("Advanced Mobs", "Wither Skeletons", WitherSkeletons).getBoolean(WitherSkeletons);
         WitherSkeletonRarity = config.get("Advanced Mobs", "Wither Skeleton Rarity", WitherSkeletonRarity).getInt(WitherSkeletonRarity);
+        PotionMobs = defConfig.get("Advanced Mobs", "Potion Buff Chance (0-100)", PotionMobs).getInt(PotionMobs);
+        PotionMobEffects = defConfig.get("Advanced Mobs", "Potion Buff List", PotionMobEffects, "List of all the valid potion IDs a mob can spawn with. Amplifier is always x1").getIntList();
         
         //World
         SpawnForts = config.get("World", "Spawn Forts", SpawnForts).getBoolean(SpawnForts);

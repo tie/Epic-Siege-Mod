@@ -30,7 +30,7 @@ public class ESM_EntityAIBuildTrap extends EntityAIBase
 	public boolean shouldExecute()
 	{
 		ItemStack stack = builder.getEquipmentInSlot(0);
-		return stack != null && stack.getItem() == Item.getItemFromBlock(Blocks.stone_pressure_plate) && builder.getRNG().nextInt(10) == 0;
+		return stack != null && stack.getItem() == Item.getItemFromBlock(Blocks.stone_pressure_plate) && builder.getRNG().nextInt(100) == 0;
 	}
 	
 	@Override

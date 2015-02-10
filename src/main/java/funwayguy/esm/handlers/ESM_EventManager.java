@@ -42,6 +42,7 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.world.WorldEvent.Load;
@@ -185,6 +186,15 @@ public class ESM_EventManager
 			}
 		}
 		
+		if(event.entity instanceof IMob && event.entity instanceof EntityLivingBase && ESM_Settings.PotionMobs < event.world.rand.nextInt(100) && ESM_Settings.PotionMobEffects != null && ESM_Settings.PotionMobEffects.length > 0)
+		{
+			int id = ESM_Settings.PotionMobEffects[event.world.rand.nextInt(ESM_Settings.PotionMobEffects.length)];
+			if(Potion.potionTypes[id] != null)
+			{
+				((EntityLivingBase)event.entity).addPotionEffect(new PotionEffect(id, 999999, 1, true));
+			}
+		}
+		
 		event.entity.getEntityData().setBoolean("ESM_MODIFIED", true);
 	}
 	
@@ -236,6 +246,18 @@ public class ESM_EventManager
         shooter.playSound("random.bow", 1.0F, 1.0F / (shooter.getRNG().nextFloat() * 0.4F + 0.8F));
         entityarrow.getEntityData().setBoolean("ESM_MODIFIED", true);
         shooter.worldObj.spawnEntityInWorld(entityarrow);
+	}
+	
+	@SubscribeEvent
+	public void onEntityAttacked(LivingHurtEvent event)
+	{
+		if(!event.entityLiving.worldObj.isRemote && event.source != null && event.source.getEntity() instanceof EntitySpider && ESM_Settings.SpiderWebChance < event.entityLiving.getRNG().nextInt(100))
+		{
+			int i = MathHelper.floor_double(event.entityLiving.posX);
+			int j = MathHelper.floor_double(event.entityLiving.posY);
+			int k = MathHelper.floor_double(event.entityLiving.posZ);
+			event.entityLiving.worldObj.setBlock(i, j, k, Blocks.web);
+		}
 	}
 	
 	@SubscribeEvent
