@@ -11,6 +11,7 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
+import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityEnderman;
@@ -51,6 +52,7 @@ import cpw.mods.fml.client.event.ConfigChangedEvent;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
+import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import funwayguy.esm.client.gui.ESMGuiConfig;
 import funwayguy.esm.core.ESM;
 import funwayguy.esm.core.ESM_Settings;
@@ -186,12 +188,12 @@ public class ESM_EventManager
 			}
 		}
 		
-		if(event.entity instanceof IMob && event.entity instanceof EntityLivingBase && ESM_Settings.PotionMobs < event.world.rand.nextInt(100) && ESM_Settings.PotionMobEffects != null && ESM_Settings.PotionMobEffects.length > 0)
+		if(event.entity instanceof IMob && !(event.entity instanceof IBossDisplayData) && event.entity instanceof EntityLivingBase && ESM_Settings.PotionMobs > event.world.rand.nextInt(100) && ESM_Settings.PotionMobEffects != null && ESM_Settings.PotionMobEffects.length > 0)
 		{
 			int id = ESM_Settings.PotionMobEffects[event.world.rand.nextInt(ESM_Settings.PotionMobEffects.length)];
 			if(Potion.potionTypes[id] != null)
 			{
-				((EntityLivingBase)event.entity).addPotionEffect(new PotionEffect(id, 999999, 1, true));
+				((EntityLivingBase)event.entity).addPotionEffect(new PotionEffect(id, 999999));
 			}
 		}
 		
@@ -251,7 +253,7 @@ public class ESM_EventManager
 	@SubscribeEvent
 	public void onEntityAttacked(LivingHurtEvent event)
 	{
-		if(!event.entityLiving.worldObj.isRemote && event.source != null && event.source.getEntity() instanceof EntitySpider && ESM_Settings.SpiderWebChance < event.entityLiving.getRNG().nextInt(100))
+		if(!event.entityLiving.worldObj.isRemote && event.source != null && event.source.getEntity() instanceof EntitySpider && ESM_Settings.SpiderWebChance > event.entityLiving.getRNG().nextInt(100))
 		{
 			int i = MathHelper.floor_double(event.entityLiving.posX);
 			int j = MathHelper.floor_double(event.entityLiving.posY);
@@ -462,6 +464,15 @@ public class ESM_EventManager
 	
 	@SubscribeEvent
 	public void onDimensionChange(PlayerChangedDimensionEvent event)
+	{
+		if(ESM_Settings.ResistanceCoolDown > 0)
+		{
+			event.player.addPotionEffect(new PotionEffect(Potion.resistance.id, ESM_Settings.ResistanceCoolDown, 5));
+		}
+	}
+	
+	@SubscribeEvent
+	public void onRespawn(PlayerRespawnEvent event)
 	{
 		if(ESM_Settings.ResistanceCoolDown > 0)
 		{
