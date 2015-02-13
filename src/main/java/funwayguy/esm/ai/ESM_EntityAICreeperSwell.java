@@ -1,8 +1,14 @@
 package funwayguy.esm.ai;
 
+import java.util.Iterator;
+import java.util.List;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.monster.EntityZombie;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemPickaxe;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
@@ -72,7 +78,7 @@ public class ESM_EntityAICreeperSwell extends EntityAIBase
     	}
 
         MovingObjectPosition mop = GetMovingObjectPosition(this.swellingCreeper, false);
-    	boolean enableBreach = this.creeperAttackTarget != null && swellingCreeper.ridingEntity == null && !this.swellingCreeper.getEntitySenses().canSee(this.creeperAttackTarget) && ESM_Settings.CreeperBreaching && swellingCreeper.getNavigator().noPath() && mop != null && mop.typeOfHit == MovingObjectType.BLOCK;
+    	boolean enableBreach = this.creeperAttackTarget != null && swellingCreeper.ridingEntity == null && !this.swellingCreeper.getEntitySenses().canSee(this.creeperAttackTarget) && ESM_Settings.CreeperBreaching && swellingCreeper.getNavigator().noPath() && mop != null && mop.typeOfHit == MovingObjectType.BLOCK && !this.CheckForDiggers();
     	
         if (this.creeperAttackTarget == null)
         {
@@ -94,6 +100,35 @@ public class ESM_EntityAICreeperSwell extends EntityAIBase
         	}
             this.swellingCreeper.setCreeperState(1);
         }
+    }
+    
+    public boolean CheckForDiggers()
+    {
+    	if(!ESM_Settings.ZombieDiggers)
+    	{
+    		return false;
+    	}
+    	
+    	@SuppressWarnings("unchecked")
+		List<EntityZombie> zombieList = this.swellingCreeper.worldObj.getEntitiesWithinAABB(EntityZombie.class, this.swellingCreeper.boundingBox.expand(10D, 10D, 10D));
+    	Iterator<EntityZombie> iterator = zombieList.iterator();
+    	
+    	while(iterator.hasNext())
+    	{
+    		EntityZombie zombie = iterator.next();
+    		
+    		if(zombie != null && zombie.isEntityAlive())
+    		{
+    			ItemStack stack = zombie.getEquipmentInSlot(0);
+    			
+    			if(!ESM_Settings.ZombieDiggerTools || (stack != null && (stack.getItem().canHarvestBlock(Blocks.stone, stack) || stack.getItem() instanceof ItemPickaxe)))
+    			{
+    				return true;
+    			}
+    		}
+    	}
+    	
+    	return false;
     }
 
     public static MovingObjectPosition GetMovingObjectPosition(EntityLivingBase entityLiving, boolean liquids)

@@ -462,6 +462,10 @@ public class ESM_Utils
 			if(entityLiving.targetTasks.taskEntries.size() > 0)
 			{
 				entityLiving.targetTasks.addTask(0, new ESM_EntityAIAvoidDetonatingCreepers((EntityCreature)entityLiving, 12F, 1D, 1D));
+				if((entityLiving instanceof IMob || ESM_Settings.ambiguous_AI) && !(entityLiving instanceof EntityCreeper))
+				{
+					entityLiving.targetTasks.addTask(0, new ESM_EntityAIAttackEvasion((EntityCreature)entityLiving, 5F, 1D, 1.5D));
+				}
 			} else
 			{
 				entityLiving.tasks.addTask(0, new ESM_EntityAIAvoidDetonatingCreepers((EntityCreature)entityLiving, 12F, 0.75D, 0.75D));
@@ -476,6 +480,7 @@ public class ESM_Utils
 				entityLiving.tasks.addTask(5, new ESM_EntityAITorchBreak((EntityZombie)entityLiving));
 			}
 			
+			entityLiving.targetTasks.addTask(3, new ESM_EntityAIPillarUp(entityLiving));
 			entityLiving.tasks.addTask(5, new ESM_EntityAIBuildTrap(entityLiving));
 		}
 	}
@@ -603,7 +608,7 @@ public class ESM_Utils
 			{
 				if(ESM_Settings.BlazeSpawn)
 				{
-					EntityRegistry.addSpawn(EntityBlaze.class, 100/(ESM_Settings.BlazeRarity <= 0? 1: ESM_Settings.BlazeRarity), 1, 4, EnumCreatureType.monster, biome);
+					EntityRegistry.addSpawn(EntityBlaze.class, 100/(ESM_Settings.BlazeRarity <= 0? 1: ESM_Settings.BlazeRarity), 1, 1, EnumCreatureType.monster, biome);
 				} else
 				{
 					EntityRegistry.removeSpawn(EntityBlaze.class, EnumCreatureType.monster, biome);
@@ -614,7 +619,7 @@ public class ESM_Utils
 			{
 				if(ESM_Settings.GhastSpawn)
 				{
-					EntityRegistry.addSpawn(EntityGhast.class, 100/(ESM_Settings.GhastRarity <= 0? 1 : ESM_Settings.GhastRarity), 1, 4, EnumCreatureType.monster, biome);
+					EntityRegistry.addSpawn(EntityGhast.class, 100/(ESM_Settings.GhastRarity <= 0? 1 : ESM_Settings.GhastRarity), 1, 1, EnumCreatureType.monster, biome);
 				} else
 				{
 					EntityRegistry.removeSpawn(EntityGhast.class, EnumCreatureType.monster, biome);

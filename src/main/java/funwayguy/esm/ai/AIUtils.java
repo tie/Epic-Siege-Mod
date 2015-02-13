@@ -1,14 +1,18 @@
 package funwayguy.esm.ai;
 
+import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
@@ -95,7 +99,7 @@ public class AIUtils
         }
     }
     
-    public static MovingObjectPosition RayCastBlocks(World world, double x, double y, double z, float yaw, float pitch, double dist, boolean liquids)
+    public static Entity RayCastEntities(World world, double x, double y, double z, float yaw, float pitch, double dist, EntityLivingBase source)
     {
         Vec3 vec3 = Vec3.createVectorHelper(x, y, z);
         float f3 = MathHelper.cos(-yaw * 0.017453292F - (float)Math.PI);
@@ -106,11 +110,94 @@ public class AIUtils
         float f8 = f3 * f5;
         double d3 = dist; // Ray Distance
         Vec3 vec31 = vec3.addVector((double)f7 * d3, (double)f6 * d3, (double)f8 * d3);
-        return RayCastBlocks(world, vec3, vec31, liquids);
+        return RayCastEntities(world, vec3, vec31, source);
     }
     
-    public static MovingObjectPosition RayCastBlocks(World world, Vec3 vector1, Vec3 vector2, boolean liquids)
+    public static Entity RayCastEntities(World world, double x, double y, double z, float yaw, float pitch, double dist)
     {
-        return world.func_147447_a(vector1, vector2, liquids, !liquids, false);
+        Vec3 vec3 = Vec3.createVectorHelper(x, y, z);
+        float f3 = MathHelper.cos(-yaw * 0.017453292F - (float)Math.PI);
+        float f4 = MathHelper.sin(-yaw * 0.017453292F - (float)Math.PI);
+        float f5 = -MathHelper.cos(-pitch * 0.017453292F);
+        float f6 = MathHelper.sin(-pitch * 0.017453292F);
+        float f7 = f4 * f5;
+        float f8 = f3 * f5;
+        double d3 = dist; // Ray Distance
+        Vec3 vec31 = vec3.addVector((double)f7 * d3, (double)f6 * d3, (double)f8 * d3);
+        return RayCastEntities(world, vec3, vec31, null);
+    }
+    
+    public static Entity RayCastEntities(World world, Vec3 start, Vec3 end, EntityLivingBase source)
+    {
+        double d0 = start.distanceTo(end);
+        double d1 = d0;
+        Vec3 vec3 = start;
+        Vec3 vec32 = end;
+        Entity pointedEntity = null;
+        @SuppressWarnings("unchecked")
+		List<Entity> list = world.getEntitiesWithinAABBExcludingEntity(source, AxisAlignedBB.getBoundingBox(start.xCoord, start.yCoord, start.zCoord, start.xCoord, start.yCoord, start.zCoord).expand(d0, d0, d0));
+        double d2 = d1;
+
+        for (int i = 0; i < list.size(); ++i)
+        {
+            Entity entity = (Entity)list.get(i);
+
+            if (entity.canBeCollidedWith())
+            {
+                float f2 = entity.getCollisionBorderSize();
+                AxisAlignedBB axisalignedbb = entity.boundingBox.expand((double)f2, (double)f2, (double)f2);
+                MovingObjectPosition movingobjectposition = axisalignedbb.calculateIntercept(vec3, vec32);
+
+                if (axisalignedbb.isVecInside(vec3))
+                {
+                    if (0.0D < d2 || d2 == 0.0D)
+                    {
+                        pointedEntity = entity;
+                        d2 = 0.0D;
+                    }
+                }
+                else if (movingobjectposition != null)
+                {
+                    double d3 = vec3.distanceTo(movingobjectposition.hitVec);
+
+                    if (d3 < d2 || d2 == 0.0D)
+                    {
+                        if (source != null && entity == source.ridingEntity && !entity.canRiderInteract())
+                        {
+                            if (d2 == 0.0D)
+                            {
+                                pointedEntity = entity;
+                            }
+                        }
+                        else
+                        {
+                            pointedEntity = entity;
+                            d2 = d3;
+                        }
+                    }
+                }
+            }
+        }
+
+        return pointedEntity;
+    }
+    
+    public static MovingObjectPosition RayCastBlocks(World world, double x, double y, double z, float yaw, float pitch, double dist, boolean liquids, boolean entities)
+    {
+        Vec3 vec3 = Vec3.createVectorHelper(x, y, z);
+        float f3 = MathHelper.cos(-yaw * 0.017453292F - (float)Math.PI);
+        float f4 = MathHelper.sin(-yaw * 0.017453292F - (float)Math.PI);
+        float f5 = -MathHelper.cos(-pitch * 0.017453292F);
+        float f6 = MathHelper.sin(-pitch * 0.017453292F);
+        float f7 = f4 * f5;
+        float f8 = f3 * f5;
+        double d3 = dist; // Ray Distance
+        Vec3 vec31 = vec3.addVector((double)f7 * d3, (double)f6 * d3, (double)f8 * d3);
+        return RayCastBlocks(world, vec3, vec31, liquids, entities);
+    }
+    
+    public static MovingObjectPosition RayCastBlocks(World world, Vec3 vector1, Vec3 vector2, boolean liquids, boolean entities)
+    {
+        return world.func_147447_a(vector1, vector2, liquids, !liquids, entities);
     }
 }

@@ -60,6 +60,7 @@ public class ESM_Settings
 	public static boolean ZombieDiggers; //DONE
 	public static boolean ZombieDiggerTools; //DONE
 	public static boolean ZombieTraps; // DONE
+	public static int ZombiePillaring;
 	
 	//Enderman
 	public static String EndermanMode; //DONE
@@ -76,6 +77,7 @@ public class ESM_Settings
 	public static int WitherSkeletonRarity; //DONE
 	public static int PotionMobs;
 	public static int[] PotionMobEffects;
+	public static boolean attackEvasion;
 	
 	//Generation
     public static boolean NewEnd; //DONE
@@ -149,6 +151,7 @@ public class ESM_Settings
         ZombieDiggers = defConfig.get("Zombie", "Diggers", true).getBoolean(true);
         ZombieDiggerTools = defConfig.get("Zombie", "Need Required Tools", true).getBoolean(true);
         ZombieTraps = defConfig.get("Zombie", "Zombies Build Traps", true).getBoolean(true);
+        ZombiePillaring = defConfig.get("Zombie", "Pillaring Blocks", 64, "How many blocks to give zombies to pillar up with").getInt(64);
         
         //Blazes
         BlazeSpawn = defConfig.get("Blaze", "Spawn", true).getBoolean(true);
@@ -182,6 +185,7 @@ public class ESM_Settings
         WitherSkeletonRarity = defConfig.get("Advanced Mobs", "Wither Skeleton Rarity", 9).getInt(9);
         PotionMobs = defConfig.get("Advanced Mobs", "Potion Buff Chance (0-100)", 1).getInt(1);
         PotionMobEffects = defConfig.get("Advanced Mobs", "Potion Buff List", new int[]{14, 12, 5, 1}, "List of all the valid potion IDs a mob can spawn with. Amplifier is always x1").getIntList();
+        attackEvasion = defConfig.get("Advanced Mobs", "Attack Evasion", true).getBoolean(true);
         
         //World
         SpawnForts = defConfig.get("World", "Spawn Forts", true).getBoolean(true);
@@ -253,7 +257,8 @@ public class ESM_Settings
         ZombieInfectious = config.get("Zombie", "Infectious", ZombieInfectious).getBoolean(ZombieInfectious);
         ZombieDiggers = config.get("Zombie", "Diggers", ZombieDiggers).getBoolean(ZombieDiggers);
         ZombieDiggerTools = config.get("Zombie", "Need Required Tools", ZombieDiggerTools).getBoolean(ZombieDiggerTools);
-        ZombieTraps = defConfig.get("Zombie", "Zombies Build Traps", ZombieTraps).getBoolean(ZombieTraps);
+        ZombieTraps = config.get("Zombie", "Zombies Build Traps", ZombieTraps).getBoolean(ZombieTraps);
+        ZombiePillaring = config.get("Zombie", "Pillaring Blocks", ZombiePillaring, "How many blocks to give zombies to pillar up with").getInt(ZombiePillaring);
         
         //Blazes
         BlazeSpawn = config.get("Blaze", "Spawn", BlazeSpawn).getBoolean(BlazeSpawn);
@@ -272,7 +277,7 @@ public class ESM_Settings
     	EndermanPlayerTele = config.get("Enderman", "Player Teleport", EndermanPlayerTele).getBoolean(EndermanPlayerTele);
         
     	//Spider
-        SpiderWebChance = MathHelper.clamp_int(defConfig.get("Spider", "Webbing Chance (0-100)", SpiderWebChance).getInt(SpiderWebChance), 0, 100);
+        SpiderWebChance = MathHelper.clamp_int(config.get("Spider", "Webbing Chance (0-100)", SpiderWebChance).getInt(SpiderWebChance), 0, 100);
         
         //Advanced
     	int[] tmpDef = new int[MobBombs.size()];
@@ -291,8 +296,9 @@ public class ESM_Settings
         MobBombAll = config.get("Advanced Mobs", "Mob Bomb All", MobBombAll, "Skip the Mob Bomb list and allow everything!").getBoolean(MobBombAll);
         WitherSkeletons = config.get("Advanced Mobs", "Wither Skeletons", WitherSkeletons).getBoolean(WitherSkeletons);
         WitherSkeletonRarity = config.get("Advanced Mobs", "Wither Skeleton Rarity", WitherSkeletonRarity).getInt(WitherSkeletonRarity);
-        PotionMobs = defConfig.get("Advanced Mobs", "Potion Buff Chance (0-100)", PotionMobs).getInt(PotionMobs);
-        PotionMobEffects = defConfig.get("Advanced Mobs", "Potion Buff List", PotionMobEffects, "List of all the valid potion IDs a mob can spawn with. Amplifier is always x1").getIntList();
+        PotionMobs = config.get("Advanced Mobs", "Potion Buff Chance (0-100)", PotionMobs).getInt(PotionMobs);
+        PotionMobEffects = config.get("Advanced Mobs", "Potion Buff List", PotionMobEffects, "List of all the valid potion IDs a mob can spawn with. Amplifier is always x1").getIntList();
+        attackEvasion = config.get("Advanced Mobs", "Attack Evasion", attackEvasion).getBoolean(attackEvasion);
         
         //World
         SpawnForts = config.get("World", "Spawn Forts", SpawnForts).getBoolean(SpawnForts);

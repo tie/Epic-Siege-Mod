@@ -36,6 +36,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChunkCoordinates;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import net.minecraftforge.common.config.Configuration;
@@ -253,7 +254,17 @@ public class ESM_EventManager
 	@SubscribeEvent
 	public void onEntityAttacked(LivingHurtEvent event)
 	{
-		if(!event.entityLiving.worldObj.isRemote && event.source != null && event.source.getEntity() instanceof EntitySpider && ESM_Settings.SpiderWebChance > event.entityLiving.getRNG().nextInt(100))
+		if(event.entity.worldObj.isRemote)
+		{
+			return;
+		}
+		
+		if(!(event.entityLiving instanceof EntityPlayer) && event.entityLiving.ridingEntity != null && event.source == DamageSource.inWall)
+		{
+			event.entityLiving.dismountEntity(event.entityLiving.ridingEntity);
+		}
+		
+		if(event.source != null && event.source.getEntity() instanceof EntitySpider && ESM_Settings.SpiderWebChance > event.entityLiving.getRNG().nextInt(100))
 		{
 			int i = MathHelper.floor_double(event.entityLiving.posX);
 			int j = MathHelper.floor_double(event.entityLiving.posY);

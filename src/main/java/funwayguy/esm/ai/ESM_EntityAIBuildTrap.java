@@ -308,22 +308,22 @@ public class ESM_EntityAIBuildTrap extends EntityAIBase
 	public static boolean BuildTrapE(World world, int x, int y, int z)
 	{
 		ForgeDirection direction = null;
-		MovingObjectPosition mop = AIUtils.RayCastBlocks(world, Vec3.createVectorHelper(x, y + 1, z), Vec3.createVectorHelper(x, y + 1, z + 5), false);
+		MovingObjectPosition mop = AIUtils.RayCastBlocks(world, Vec3.createVectorHelper(x, y + 1, z), Vec3.createVectorHelper(x, y + 1, z + 5), false, false);
 		if(direction == null && mop != null && ValidWallTrap(world, mop, ForgeDirection.SOUTH))
 		{
 			direction = ForgeDirection.SOUTH;
 		}
-		mop = mop != null && mop.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK? mop : AIUtils.RayCastBlocks(world, Vec3.createVectorHelper(x, y + 1, z), Vec3.createVectorHelper(x, y + 1, z - 5), false);
+		mop = mop != null && mop.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK? mop : AIUtils.RayCastBlocks(world, Vec3.createVectorHelper(x, y + 1, z), Vec3.createVectorHelper(x, y + 1, z - 5), false, false);
 		if(direction == null && mop != null && ValidWallTrap(world, mop, ForgeDirection.NORTH))
 		{
 			direction = ForgeDirection.NORTH;
 		}
-		mop = mop != null && mop.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK? mop : AIUtils.RayCastBlocks(world, Vec3.createVectorHelper(x, y + 1, z), Vec3.createVectorHelper(x + 5, y + 1, z), false);
+		mop = mop != null && mop.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK? mop : AIUtils.RayCastBlocks(world, Vec3.createVectorHelper(x, y + 1, z), Vec3.createVectorHelper(x + 5, y + 1, z), false, false);
 		if(direction == null && mop != null && ValidWallTrap(world, mop, ForgeDirection.EAST))
 		{
 			direction = ForgeDirection.EAST;
 		}
-		mop = mop != null && mop.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK? mop : AIUtils.RayCastBlocks(world, Vec3.createVectorHelper(x, y + 1, z), Vec3.createVectorHelper(x - 5, y + 1, z), false);
+		mop = mop != null && mop.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK? mop : AIUtils.RayCastBlocks(world, Vec3.createVectorHelper(x, y + 1, z), Vec3.createVectorHelper(x - 5, y + 1, z), false, false);
 		if(direction == null && mop != null && ValidWallTrap(world, mop, ForgeDirection.WEST))
 		{
 			direction = ForgeDirection.WEST;
