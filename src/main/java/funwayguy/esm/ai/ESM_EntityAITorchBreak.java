@@ -47,7 +47,7 @@ public class ESM_EntityAITorchBreak extends EntityAIBase
 				for(int kk = k - 16; kk < k + 16; kk++)
 				{
 					Block block = entityLiving.worldObj.getBlock(ii, jj, kk);
-					if(block.getLightValue() > 0 && entityLiving.getDistance(ii, jj, kk) < dist && block.getBlockHardness(entityLiving.worldObj, ii, jj, kk) >= 0 && !block.getMaterial().isLiquid() && block.getSelectedBoundingBoxFromPool(entityLiving.worldObj, ii, jj, kk) != null)
+					if(block.getLightValue() > 0 && entityLiving.getDistance(ii, jj, kk) < dist && block.getBlockHardness(entityLiving.worldObj, ii, jj, kk) >= 0 && !block.getMaterial().isLiquid())
 					{
 						if(!ESM_Settings.ZombieDiggerTools || (item != null && (item.getItem().canHarvestBlock(block, item) || (item.getItem() instanceof ItemPickaxe && nerfedPick && block.getMaterial() == Material.rock))) || block.getMaterial().isToolNotRequired())
 						{
