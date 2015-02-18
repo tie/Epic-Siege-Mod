@@ -478,6 +478,7 @@ public class ESM_Utils
 			{
 				entityLiving.targetTasks.addTask(3, new ESM_EntityAIDigging((EntityZombie)entityLiving));
 				entityLiving.tasks.addTask(5, new ESM_EntityAITorchBreak((EntityZombie)entityLiving));
+				entityLiving.tasks.addTask(6, new ESM_EntityAIGrief((EntityZombie)entityLiving));
 			}
 			
 			entityLiving.targetTasks.addTask(3, new ESM_EntityAIPillarUp(entityLiving));

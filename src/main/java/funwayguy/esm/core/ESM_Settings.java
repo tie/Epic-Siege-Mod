@@ -12,6 +12,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.Level;
+import scala.actors.threadpool.Arrays;
 
 public class ESM_Settings
 {
@@ -59,8 +60,9 @@ public class ESM_Settings
 	public static boolean ZombieInfectious; //DONE
 	public static boolean ZombieDiggers; //DONE
 	public static boolean ZombieDiggerTools; //DONE
-	public static boolean ZombieTraps; // DONE
-	public static int ZombiePillaring;
+	public static boolean ZombieTraps; //DONE
+	public static int ZombiePillaring; //DONE
+	public static ArrayList<String> ZombieGriefBlocks; //DONE
 	
 	//Enderman
 	public static String EndermanMode; //DONE
@@ -152,6 +154,33 @@ public class ESM_Settings
         ZombieDiggerTools = defConfig.get("Zombie", "Need Required Tools", true).getBoolean(true);
         ZombieTraps = defConfig.get("Zombie", "Zombies Build Traps", true).getBoolean(true);
         ZombiePillaring = defConfig.get("Zombie", "Pillaring Blocks", 64, "How many blocks to give zombies to pillar up with").getInt(64);
+        String[] defGrief = new String[]{
+        	"minecraft:chest", // Might not be a good idea for loot reasons
+        	"minecraft:furnace",
+        	"minecraft:crafting_table",
+        	"minecraft:melon_stem",
+        	"minecraft:pumpkin_stem",
+        	"minecraft:fence_gate",
+        	"minecraft:melon_block",
+        	"minecraft:pumpkin",
+        	"minecraft:glass",
+        	"minecraft:glass_pane",
+        	"minecraft:stained_glass",
+        	"minecraft:stained_glass_pane",
+        	"minecraft:carrots",
+        	"minecraft:potatoes",
+        	"minecraft:brewing_stand",
+        	"minecraft:enchanting_table",
+        	"minecraft:cake",
+        	"minecraft:ladder",
+        	"minecraft:wooden_door",
+        	"minecraft:farmland",
+        	"minecraft:bookshelf",
+        	"minecraft:sapling",
+        	"minecraft:bed",
+        	"minecraft:fence"
+        };
+        ZombieGriefBlocks = new ArrayList<String>(Arrays.asList(defConfig.get("Zombie", "General Griefable Blocks", defGrief, "What blocks will be targeted for destruction when not attacking players (Does not affect general digging, light sources are included by default, add ':#' for metadata e.g. 'minecraft:wool:1')").getStringList()));
         
         //Blazes
         BlazeSpawn = defConfig.get("Blaze", "Spawn", true).getBoolean(true);
@@ -259,6 +288,7 @@ public class ESM_Settings
         ZombieDiggerTools = config.get("Zombie", "Need Required Tools", ZombieDiggerTools).getBoolean(ZombieDiggerTools);
         ZombieTraps = config.get("Zombie", "Zombies Build Traps", ZombieTraps).getBoolean(ZombieTraps);
         ZombiePillaring = config.get("Zombie", "Pillaring Blocks", ZombiePillaring, "How many blocks to give zombies to pillar up with").getInt(ZombiePillaring);
+        ZombieGriefBlocks = new ArrayList<String>(Arrays.asList(config.get("Zombie", "General Griefable Blocks", ZombieGriefBlocks.toArray(new String[]{}), "What blocks will be targeted for destruction when not attacking players (Does not affect general digging, light sources are included by default, add ':#' for metadata e.g. 'minecraft:wool:1')").getStringList()));
         
         //Blazes
         BlazeSpawn = config.get("Blaze", "Spawn", BlazeSpawn).getBoolean(BlazeSpawn);
