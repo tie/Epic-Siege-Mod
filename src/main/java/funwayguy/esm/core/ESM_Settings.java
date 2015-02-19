@@ -8,11 +8,11 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.Level;
-import scala.actors.threadpool.Arrays;
 
 public class ESM_Settings
 {
