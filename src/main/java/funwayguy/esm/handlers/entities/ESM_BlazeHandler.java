@@ -14,15 +14,18 @@ public class ESM_BlazeHandler
 	
 	public static void onLivingUpdate(EntityBlaze blaze)
 	{
-		int fireballs = getBlazeFireballs(blaze);
-		
-		if(fireballs > 1 && fireballs < 5 && blaze.getEntityData().getInteger("ESM_FIREBALLS") < ESM_Settings.BlazeFireballs)
+		if(blaze.attackTime == 6 && blaze.getEntityToAttack() != null)
 		{
-			setBlazeFireballs(blaze, 2);
-		} else if(fireballs > 1)
-		{
-			setBlazeFireballs(blaze, 5);
-			blaze.getEntityData().setInteger("ESM_FIREBALLS", 0);
+			int fireballs = getBlazeFireballs(blaze);
+			
+			if(fireballs > 1 && fireballs < 5 && blaze.getEntityData().getInteger("ESM_FIREBALLS") < ESM_Settings.BlazeFireballs)
+			{
+				setBlazeFireballs(blaze, 2);
+			} else if(fireballs > 1)
+			{
+				setBlazeFireballs(blaze, 5);
+				blaze.getEntityData().setInteger("ESM_FIREBALLS", 0);
+			}
 		}
 	}
 	

@@ -41,7 +41,7 @@ public class ESM_EntityAIPillarUp extends EntityAIBase
 			int j = MathHelper.floor_double(builder.posY);
 			int k = MathHelper.floor_double(builder.posZ);
 			
-			if(!builder.worldObj.getBlock(i, j - 1, k).isBlockNormalCube())
+			if(!builder.worldObj.getBlock(i, j - 1, k).isNormalCube())
 			{
 				return false;
 			}
@@ -81,7 +81,7 @@ public class ESM_EntityAIPillarUp extends EntityAIBase
 			int j = MathHelper.floor_double(builder.posY);
 			int k = MathHelper.floor_double(builder.posZ);
 
-			builder.addVelocity(0D, 0.5D, 0D);
+			builder.setPositionAndUpdate(builder.posX, builder.posY + 1, builder.posZ);
 			builder.worldObj.setBlock(i, j, k, Blocks.cobblestone);
 			blocks--;
 		}

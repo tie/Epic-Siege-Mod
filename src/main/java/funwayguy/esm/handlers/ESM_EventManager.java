@@ -21,6 +21,7 @@ import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayer.EnumStatus;
@@ -300,46 +301,56 @@ public class ESM_EventManager
 	@SuppressWarnings("unchecked")
 	public static void searchForTarget(EntityCreature entity)
 	{
-		if(entity.targetTasks.taskEntries.size() >= 1 || (entity instanceof EntityEnderman))
+		if(entity.targetTasks.taskEntries.size() >= 1 || (entity instanceof EntityEnderman) || (entity instanceof EntityTameable && ((EntityTameable)entity).isTamed()))
 		{
 			entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 0);
 			return;
 		}
 		
-		if(entity.getEntityToAttack() != null && ESM_Settings.Awareness > 16)
-		{
-			if(!entity.hasPath())
-			{
-				entity.setPathToEntity(entity.worldObj.getPathEntityToEntity(entity, entity.getEntityToAttack(), ESM_Settings.Awareness, true, false, false, true));
-			}
-			entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 0);
-			return;
-		} else if(entity.getEntityToAttack() != null)
-		{
-			if(entity.getDistanceToEntity(entity.getEntityToAttack()) < ESM_Settings.Awareness)
-			{
-				entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 0);
-				return;
-			}
-			
-			if(ESM_PathCapHandler.attackMap.get(entity.getEntityToAttack()) != null && ESM_PathCapHandler.attackMap.get(entity.getEntityToAttack()).size() >= ESM_Settings.TargetCap && ESM_Settings.TargetCap != -1 && (entity.getEntityToAttack() instanceof EntityLivingBase? !ESM_Utils.isCloserThanOtherAttackers(entity.worldObj, entity, (EntityLivingBase)entity.getEntityToAttack()) : true))
-			{
-				if(ESM_PathCapHandler.attackMap.get(entity.getEntityToAttack()).size() > ESM_Settings.TargetCap)
-				{
-					entity.setAttackTarget(null);
-				}
-				entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 0);
-				return;
-			}
-		}
+		int cooldown = entity.getEntityData().getInteger("ESM_TARGET_COOLDOWN");
 		
-		if(entity.getEntityData().getInteger("ESM_TARGET_COOLDOWN") > 0 && entity.getEntityToAttack() != null)
+		if(cooldown > 0)
 		{
-			entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", entity.getEntityData().getInteger("ESM_TARGET_COOLDOWN") - 1);
+			entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", cooldown - 1);
 			return;
 		} else
 		{
 			entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 60);
+		}
+		
+		EntityLivingBase target = entity.getAITarget();
+		target = target != null && target.isEntityAlive()? target : entity.getAttackTarget();
+		target = target != null && target.isEntityAlive()? target : (entity.getEntityToAttack() instanceof EntityLivingBase? (EntityLivingBase)entity.getEntityToAttack() : target);
+		
+		if(target != null && target.isEntityAlive())
+		{
+			if(ESM_Settings.TargetCap >= 0 && ESM_PathCapHandler.attackMap.get(target) != null && ESM_PathCapHandler.attackMap.get(target).size() > ESM_Settings.TargetCap && !ESM_Utils.isCloserThanOtherAttackers(entity.worldObj, entity, target))
+			{
+				entity.getNavigator().clearPathEntity();
+				entity.setAttackTarget(null);
+				entity.setTarget(null);
+				return;
+			}
+			
+			if(entity.getDistanceToEntity(target) > ESM_Settings.Awareness)
+			{
+				entity.getNavigator().clearPathEntity();
+				entity.setAttackTarget(null);
+				entity.setTarget(null);
+				return;
+			}
+			
+			if(!entity.hasPath())
+			{
+				// This entity may be auto-invalidating its current target/path so we ignore the delay to make sure that every tick its AI is on track
+				entity.setPathToEntity(entity.worldObj.getPathEntityToEntity(entity, target, ESM_Settings.Awareness, true, false, false, true));
+				entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 0);
+			}
+			
+			// In case the target hasn't been applied to both variables yet we just re-set both of them.
+			entity.setTarget(target);
+			entity.setAttackTarget(target);
+			return;
 		}
 		
 		EntityLivingBase closestTarget = null;
@@ -363,7 +374,7 @@ public class ESM_EventManager
 		{
 			EntityLivingBase subject = targets.get(i);
 			
-			if(subject.isDead)
+			if(subject.isDead || subject.getHealth() <= 0)
 			{
 				continue;
 			}
@@ -378,7 +389,7 @@ public class ESM_EventManager
 				}
 			}
 			
-			if(entity.getDistanceToEntity(subject) < dist && (ESM_Settings.Xray || entity instanceof EntitySpider || entity.canEntityBeSeen(subject)))
+			if(entity.getDistanceToEntity(subject) < dist && (ESM_Settings.Xray || entity instanceof EntitySpider || entity.canEntityBeSeen(subject)) && (ESM_Settings.TargetCap < 0 || ESM_PathCapHandler.attackMap.get(subject) == null || ESM_PathCapHandler.attackMap.get(subject).size() < ESM_Settings.TargetCap || ESM_Utils.isCloserThanOtherAttackers(entity.worldObj, entity, subject)))
 			{
 				closestTarget = subject;
 				dist = entity.getDistanceToEntity(subject);
@@ -386,10 +397,12 @@ public class ESM_EventManager
 		}
 		
 		entity.setTarget(closestTarget);
+		entity.setAttackTarget(closestTarget);
 		
 		if(closestTarget != null)
 		{
 			entity.setPathToEntity(entity.worldObj.getPathEntityToEntity(entity, closestTarget, ESM_Settings.Awareness, true, false, false, true));
+			ESM_PathCapHandler.AddNewAttack(entity, closestTarget);
 		}
 	}
 	
@@ -428,15 +441,15 @@ public class ESM_EventManager
 			return;
 		}
 		
-		if(event.entityLiving instanceof EntityLiving)
+		if(event.entityLiving instanceof EntityLiving && ((EntityLiving)event.entityLiving).getAttackTarget() != null)
 		{
-			if(((EntityLiving)event.entityLiving).getAttackTarget() != null)
-			{
-				ESM_PathCapHandler.AddNewAttack(event.entityLiving, ((EntityLiving)event.entityLiving).getAttackTarget());
-			} else if(event.entityLiving.getAITarget() != null)
-			{
-				ESM_PathCapHandler.AddNewAttack(event.entityLiving, event.entityLiving.getAITarget());
-			}
+			ESM_PathCapHandler.AddNewAttack(event.entityLiving, ((EntityLiving)event.entityLiving).getAttackTarget());
+		} else if(event.entityLiving.getAITarget() != null)
+		{
+			ESM_PathCapHandler.AddNewAttack(event.entityLiving, event.entityLiving.getAITarget());
+		} else if(event.entityLiving instanceof EntityCreature && ((EntityCreature)event.entityLiving).getEntityToAttack() != null && ((EntityCreature)event.entityLiving).getEntityToAttack() instanceof EntityLivingBase)
+		{
+			ESM_PathCapHandler.AddNewAttack(event.entityLiving, (EntityLivingBase)((EntityCreature)event.entityLiving).getEntityToAttack());
 		}
 		
 		if(ESM_Settings.Awareness != 16 && (event.entityLiving instanceof EntityMob || (event.entityLiving instanceof EntitySpider && !event.entityLiving.worldObj.isDaytime())))

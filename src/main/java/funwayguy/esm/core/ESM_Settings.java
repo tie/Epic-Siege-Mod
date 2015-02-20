@@ -127,9 +127,9 @@ public class ESM_Settings
 		defConfig.load();
 		
         //Main
-        Awareness = defConfig.get("Main", "Awareness Radius", 48).getInt(48);
+        Awareness = defConfig.get("Main", "Awareness Radius", 64).getInt(64);
         Xray = defConfig.get("Main", "Xray Mobs", true).getBoolean(true);
-        TargetCap = defConfig.get("Main", "Pathing Cap", 8).getInt(8);
+        TargetCap = defConfig.get("Main", "Pathing Cap", 16).getInt(16);
         VillagerTarget = defConfig.get("Main", "Villager Targeting", true).getBoolean(true);
         Apocalypse = defConfig.get("Main", "Apocalypse Mode", false).getBoolean(false);
         Chaos = defConfig.get("Main", "Chaos Mode", false).getBoolean(false);

@@ -362,25 +362,19 @@ public class ESM_Utils
 			return true;
 		}
 		
-		EntityLivingBase furthest = attacker;
+		float distance = attacker.getDistanceToEntity(target);
 		
-		for (int iteration = 0; iteration < attackerList.size(); ++iteration)
+		for (int i = 0; i < attackerList.size(); ++i)
 		{
-			EntityLivingBase subject = attackerList.get(iteration);
+			EntityLivingBase subject = attackerList.get(i);
 
-			if(target.getDistanceToEntity(subject) > target.getDistanceSqToEntity(furthest))
+			if(subject.getDistanceToEntity(target) > distance && subject != attacker)
 			{
-				furthest = (EntityLiving)subject;
+				return true;
 			}
 		}
 		
-		if(furthest != attacker)
-		{
-			return true;
-		} else
-		{
-			return false;
-		}
+		return false;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -461,14 +455,14 @@ public class ESM_Utils
 		{
 			if(entityLiving.targetTasks.taskEntries.size() > 0)
 			{
-				entityLiving.targetTasks.addTask(0, new ESM_EntityAIAvoidDetonatingCreepers((EntityCreature)entityLiving, 12F, 1D, 1D));
+				entityLiving.targetTasks.addTask(0, new ESM_EntityAIAvoidDetonatingCreepers((EntityCreature)entityLiving, 9F, 1.5D, 1.5D));
 				if((entityLiving instanceof IMob || ESM_Settings.ambiguous_AI) && !(entityLiving instanceof EntityCreeper))
 				{
-					entityLiving.targetTasks.addTask(0, new ESM_EntityAIAttackEvasion((EntityCreature)entityLiving, 5F, 1D, 1.5D));
+					entityLiving.targetTasks.addTask(0, new ESM_EntityAIAttackEvasion((EntityCreature)entityLiving, 5F, 1.5D, 1.5D));
 				}
 			} else
 			{
-				entityLiving.tasks.addTask(0, new ESM_EntityAIAvoidDetonatingCreepers((EntityCreature)entityLiving, 12F, 0.75D, 0.75D));
+				entityLiving.tasks.addTask(0, new ESM_EntityAIAvoidDetonatingCreepers((EntityCreature)entityLiving, 12F, 1D, 1D));
 			}
 		}
 		

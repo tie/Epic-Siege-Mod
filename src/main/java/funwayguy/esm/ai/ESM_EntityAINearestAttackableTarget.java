@@ -17,6 +17,7 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
 {
     private final Class<?> targetClass;
     private final int targetChance;
+    private int searchDelay = 0;
 
     /** Instance of EntityAINearestAttackableTargetSorter. */
     private final EntityAINearestAttackableTarget.Sorter theNearestAttackableTargetSorter;
@@ -47,6 +48,12 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
         this.setMutexBits(1);
         this.targetEntitySelector = new ESM_EntityAINearestAttackableTargetSelector(this, par6IEntitySelector);
     }
+    
+    public void resetTask()
+    {
+    	super.resetTask();
+    	this.searchDelay = 0;
+    }
 
     /**
      * Returns whether the EntityAIBase should begin execution.
@@ -54,6 +61,15 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
     @SuppressWarnings("unchecked")
 	public boolean shouldExecute()
     {
+    	if(searchDelay > 0)
+    	{
+    		searchDelay--;
+    		return false;
+    	} else
+    	{
+    		searchDelay = ESM_Settings.Awareness/2;
+    	}
+    	
         if (this.targetChance > 0 && this.taskOwner.getRNG().nextInt(this.targetChance) != 0)
         {
             return false;
@@ -106,6 +122,7 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
      */
     public void startExecuting()
     {
+    	this.searchDelay = 0;
         this.taskOwner.setAttackTarget(this.targetEntity);
         super.startExecuting();
     }
