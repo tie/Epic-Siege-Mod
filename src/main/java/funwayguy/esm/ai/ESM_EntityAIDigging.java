@@ -136,12 +136,19 @@ public class ESM_EntityAIDigging extends EntityAIBase
             {
         		for(double z = 0D; z <= pointsW; z += 0.5D)
                 {
-                	MovingObjectPosition mop = AIUtils.RayCastBlocks(entityLiving.worldObj, x + entityLiving.posX, y + entityLiving.posY, z + entityLiving.posZ, f2, f1, dist, false, false);
+                	MovingObjectPosition mop = AIUtils.RayCastBlocks(entityLiving.worldObj, x + entityLiving.posX, y + entityLiving.posY, z + entityLiving.posZ, f2, f1, dist, false);
                 	
                 	if(mop != null && mop.typeOfHit == MovingObjectType.BLOCK)
                 	{
                 		Block block = entityLiving.worldObj.getBlock(mop.blockX, mop.blockY, mop.blockZ);
+                		int meta = entityLiving.worldObj.getBlockMetadata(mop.blockX, mop.blockY, mop.blockZ);
                 		ItemStack item = entityLiving.getEquipmentInSlot(0);
+                		
+                		if(ESM_Settings.ZombieDigBlacklist.contains(Block.blockRegistry.getNameForObject(block)) || ESM_Settings.ZombieDigBlacklist.contains(Block.blockRegistry.getNameForObject(block) + ":" + meta))
+                		{
+                			continue;
+                		}
+                		
                 		if(!ESM_Settings.ZombieDiggerTools || (item != null && (item.getItem().canHarvestBlock(block, item) || (item.getItem() instanceof ItemPickaxe && nerfedPick && block.getMaterial() == Material.rock))) || block.getMaterial().isToolNotRequired())
                 		{
                 			return mop;

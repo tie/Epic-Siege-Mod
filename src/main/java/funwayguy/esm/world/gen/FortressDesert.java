@@ -3,6 +3,7 @@ package funwayguy.esm.world.gen;
 import java.util.ArrayList;
 import org.apache.logging.log4j.Level;
 import funwayguy.esm.core.ESM;
+import funwayguy.esm.core.ESM_Settings;
 import funwayguy.esm.core.ESM_Utils;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -16,7 +17,7 @@ public class FortressDesert extends FortressBase
 	Block castleMaterial = Blocks.stonebrick;
 	Block moatMaterial = Blocks.lava;
 	//static final Block moatBaseMaterial = Blocks.sandstone;
-	Block bridgeMaterial = Blocks.sandstone;
+	Block bridgeMaterial = Blocks.double_stone_slab;
 	Block grateMaterial = Blocks.iron_bars;
 	
     public FortressDesert(World par1World, int chunkX, int chunkZ, BiomeGenBase biome)
@@ -30,7 +31,7 @@ public class FortressDesert extends FortressBase
 			typeList.add(typeArray[i]);
 		}
 		
-    	if(typeList.contains(Type.SANDY) || typeList.contains(Type.WASTELAND))
+    	if(typeList.contains(Type.SANDY))
     	{
     		castleMaterial = Blocks.sandstone;
     	} else if(typeList.contains(Type.SNOWY))
@@ -329,39 +330,52 @@ public class FortressDesert extends FortressBase
 		}
 		
 		// Spawners
-		customGenerateSpawner(worldObj, 7, 1, 15, "Zombie");
-		customGenerateSpawner(worldObj, 7, 1, 16, "Creeper");
-		customGenerateSpawner(worldObj, 7, 1, 17, "Zombie");
+		String sp1 = "Zombie";
+		String sp2 = "Creeper";
+		String sp3 = "Skeleton";
+		String sp4 = "CaveSpider";
+		
+		if(ESM_Settings.fortSpawners.size() > 0)
+		{
+			sp1 = ESM_Settings.fortSpawners.get(worldObj.rand.nextInt(ESM_Settings.fortSpawners.size()));
+			sp2 = ESM_Settings.fortSpawners.get(worldObj.rand.nextInt(ESM_Settings.fortSpawners.size()));
+			sp3 = ESM_Settings.fortSpawners.get(worldObj.rand.nextInt(ESM_Settings.fortSpawners.size()));
+			sp4 = ESM_Settings.fortSpawners.get(worldObj.rand.nextInt(ESM_Settings.fortSpawners.size()));
+		}
+		
+		customGenerateSpawner(worldObj, 7, 1, 15, sp1);
+		customGenerateSpawner(worldObj, 7, 1, 16, sp2);
+		customGenerateSpawner(worldObj, 7, 1, 17, sp1);
 		
 		for(int i = 0; i <= 1; i++)
 		{
 			for(int j = 0; j <= 1; j ++)
 			{
-				customGenerateSpawner(worldObj, 7 + (i * 10), 5, 7 + (j * 18), "Skeleton");
+				customGenerateSpawner(worldObj, 7 + (i * 10), 5, 7 + (j * 18), sp3);
 			}
 		}
-		customGenerateSpawner(worldObj, 17, 5, 13, "Zombie");
-		customGenerateSpawner(worldObj, 17, 5, 19, "Zombie");
+		customGenerateSpawner(worldObj, 17, 5, 13, sp1);
+		customGenerateSpawner(worldObj, 17, 5, 19, sp1);
 		
 		for(int i = 0; i <= 1; i++)
 		{
 			for(int j = 0; j <= 1; j ++)
 			{
-				customGenerateSpawner(worldObj, 7 + (i * 10), 10, 13 + (j * 6), "Zombie");
+				customGenerateSpawner(worldObj, 7 + (i * 10), 10, 13 + (j * 6), sp1);
 			}
 		}
-		customGenerateSpawner(worldObj, 12, 10, 8, "CaveSpider");
-		customGenerateSpawner(worldObj, 12, 10, 24, "CaveSpider");
+		customGenerateSpawner(worldObj, 12, 10, 8, sp4);
+		customGenerateSpawner(worldObj, 12, 10, 24, sp4);
 		
 		for(int i = 0; i <= 1; i++)
 		{
 			for(int j = 0; j <= 1; j ++)
 			{
-				customGenerateSpawner(worldObj, 7 + (i * 10), 15, 7 + (j * 18), "Skeleton");
+				customGenerateSpawner(worldObj, 7 + (i * 10), 15, 7 + (j * 18), sp3);
 			}
 		}
-		customGenerateSpawner(worldObj, 12, 15, 14, "Zombie");
-		customGenerateSpawner(worldObj, 12, 15, 18, "Zombie");
+		//customGenerateSpawner(worldObj, 12, 15, 14, "Zombie");
+		//customGenerateSpawner(worldObj, 12, 15, 18, "Zombie");
 		
 		// Loot
 		customFillWithBlocks(worldObj, 11, 13, 15, 13, 13, 17, Blocks.iron_block, Blocks.iron_block, false);

@@ -40,6 +40,7 @@ import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
@@ -91,16 +92,17 @@ public class ESM_EventManager
 			}
 		}
 		
-		if(event.entity.getEntityData().getBoolean("ESM_MODIFIED"))
-		{
-			return;
-		}
-		
-		if(event.entity instanceof EntityLiving && isNearSpawner(event.world, MathHelper.floor_double(event.entity.posX), MathHelper.floor_double(event.entity.posY), MathHelper.floor_double(event.entity.posZ)))
+		if(event.entity.getEntityData().getBoolean("ESM_MODIFIED") || ESM_Settings.AIExempt.contains(EntityList.getEntityID(event.entity)))
 		{
 			event.entity.getEntityData().setBoolean("ESM_MODIFIED", true);
 			return;
 		}
+		
+		/*if(event.entity instanceof EntityLiving && isNearSpawner(event.world, MathHelper.floor_double(event.entity.posX), MathHelper.floor_double(event.entity.posY), MathHelper.floor_double(event.entity.posZ)))
+		{
+			event.entity.getEntityData().setBoolean("ESM_MODIFIED", true);
+			return;
+		}*/
 		
 		if(event.entity.getClass() == EntityGhast.class)
 		{
@@ -441,6 +443,11 @@ public class ESM_EventManager
 			return;
 		}
 		
+		if(ESM_Settings.AIExempt.contains(EntityList.getEntityID(event.entity)))
+		{
+			return;
+		}
+		
 		if(event.entityLiving instanceof EntityLiving && ((EntityLiving)event.entityLiving).getAttackTarget() != null)
 		{
 			ESM_PathCapHandler.AddNewAttack(event.entityLiving, ((EntityLiving)event.entityLiving).getAttackTarget());
@@ -748,6 +755,22 @@ public class ESM_EventManager
 				event.setResult(Result.DENY);
 				return;
 			}
+		}
+	}
+	
+	@SubscribeEvent
+	public void allowSpawn(LivingSpawnEvent.CheckSpawn event)
+	{
+		BiomeGenBase biome = event.world.getBiomeGenForCoords((int)event.x, (int)event.z);
+		
+		if(event.entityLiving instanceof EntityGhast && ESM_Settings.GhastDimensionBlacklist.contains(event.world.provider.dimensionId) && !ESM_Utils.nativeGhastBiomes.contains(biome))
+		{
+			event.setResult(Result.DENY);
+			return;
+		} else if(event.entityLiving instanceof EntityBlaze && ESM_Settings.BlazeDimensionBlacklist.contains(event.world.provider.dimensionId) && !ESM_Utils.nativeBlazeBiomes.contains(biome))
+		{
+			event.setResult(Result.DENY);
+			return;
 		}
 	}
 }

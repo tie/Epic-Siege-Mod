@@ -623,8 +623,8 @@ public class ESM_Utils
 		}
 	}
 	
-	static ArrayList<BiomeGenBase> nativeBlazeBiomes;
-	static ArrayList<BiomeGenBase> nativeGhastBiomes;
+	public static ArrayList<BiomeGenBase> nativeBlazeBiomes;
+	public static ArrayList<BiomeGenBase> nativeGhastBiomes;
 	
 	public static void SetBiomeSpawnDefaults()
 	{

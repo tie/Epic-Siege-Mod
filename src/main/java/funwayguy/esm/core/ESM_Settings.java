@@ -44,6 +44,7 @@ public class ESM_Settings
 	public static boolean BlazeSpawn; //DONE
 	public static int BlazeRarity; //DONE
 	public static int BlazeFireballs; //DONE
+	public static ArrayList<Integer> BlazeDimensionBlacklist; // DONE
 	
 	//Ghast
 	public static boolean GhastSpawn; //DONE
@@ -51,6 +52,7 @@ public class ESM_Settings
 	public static double GhastFireDelay; //DONE
 	public static boolean GhastBreaching; //DONE
 	public static double GhastFireDist; //DONE
+	public static ArrayList<Integer> GhastDimensionBlacklist; // DONE
 	
 	//Skeleton
 	public static int SkeletonDistance; //DONE
@@ -63,6 +65,7 @@ public class ESM_Settings
 	public static boolean ZombieTraps; //DONE
 	public static int ZombiePillaring; //DONE
 	public static ArrayList<String> ZombieGriefBlocks; //DONE
+	public static ArrayList<String> ZombieDigBlacklist; // DONE
 	
 	//Enderman
 	public static String EndermanMode; //DONE
@@ -89,6 +92,7 @@ public class ESM_Settings
     public static int fortDistance = 16;
     public static ArrayList<Integer> fortDimensions = new ArrayList<Integer>();
     public static boolean fallFromEnd = true;
+    public static ArrayList<String> fortSpawners = new ArrayList<String>();
     
     //Non-configurables
     public static ArrayList<String> fortDB = new ArrayList<String>();
@@ -96,6 +100,7 @@ public class ESM_Settings
     public static File worldDir = null;
 	public static boolean ambiguous_AI = true;
 	public static Configuration defConfig;
+	public static ArrayList<Integer> AIExempt = new ArrayList<Integer>();
 
 	public static void LoadMainConfig(File file)
 	{
@@ -137,6 +142,12 @@ public class ESM_Settings
         ambiguous_AI = defConfig.get("Main", "Ambiguous AI", true, "If set to true, ESM will not check whether the entity is a mob or not when setting up new AI").getBoolean(true);
         QuickPathing = defConfig.get("Main", "Quick Pathing", false, "If set to fales, mobs can use much longer routes to get to their target").getBoolean(false);
         ResistanceCoolDown = defConfig.get("Main", "Resistance Cooldown", 200, "The amount of ticks of resistance given to the player after changing dimensions").getInt(200);
+        int[] tmpAIE = defConfig.get("Main", "AI Exempt Mob IDs", new int[]{}).getIntList();
+        AIExempt = new ArrayList<Integer>();
+        for(int i : tmpAIE)
+        {
+        	AIExempt.add(i);
+        }
         
         //Creeper
         CreeperBreaching = defConfig.get("Creeper", "Breaching", true).getBoolean(true);
@@ -155,7 +166,7 @@ public class ESM_Settings
         ZombieTraps = defConfig.get("Zombie", "Zombies Build Traps", true).getBoolean(true);
         ZombiePillaring = defConfig.get("Zombie", "Pillaring Blocks", 64, "How many blocks to give zombies to pillar up with").getInt(64);
         String[] defGrief = new String[]{
-        	"minecraft:chest", // Might not be a good idea for loot reasons
+        	//"minecraft:chest", // Might not be a good idea for loot reasons
         	"minecraft:furnace",
         	"minecraft:crafting_table",
         	"minecraft:melon_stem",
@@ -181,11 +192,18 @@ public class ESM_Settings
         	"minecraft:fence"
         };
         ZombieGriefBlocks = new ArrayList<String>(Arrays.asList(defConfig.get("Zombie", "General Griefable Blocks", defGrief, "What blocks will be targeted for destruction when not attacking players (Does not affect general digging, light sources are included by default, add ':#' for metadata e.g. 'minecraft:wool:1')").getStringList()));
+        ZombieDigBlacklist = new ArrayList<String>(Arrays.asList(defConfig.get("Zombie", "General Griefable Blocks", new String[]{}, "Blacklisted blocks for digging (Add ':#' for metadata e.g. 'minecraft:wool:1')").getStringList()));
         
         //Blazes
         BlazeSpawn = defConfig.get("Blaze", "Spawn", true).getBoolean(true);
         BlazeRarity = defConfig.get("Blaze", "Rarity", 9).getInt(9);
         BlazeFireballs = defConfig.get("Blaze", "Fireballs", 9).getInt(9);
+        int[] tmpBDB = defConfig.get("Blaze", "Dimension Blacklist", new int[]{}).getIntList();
+        BlazeDimensionBlacklist = new ArrayList<Integer>();
+        for(int i : tmpBDB)
+        {
+        	BlazeDimensionBlacklist.add(i);
+        }
         
         //Ghasts
         GhastSpawn = defConfig.get("Ghast", "Spawn", false).getBoolean(false);
@@ -193,6 +211,12 @@ public class ESM_Settings
         GhastFireDelay = defConfig.get("Ghast", "Fire Delay", 1.0D).getDouble(1.0D);
         GhastBreaching = defConfig.get("Ghast", "Breaching", true).getBoolean(true);
         GhastFireDist = defConfig.get("Ghast", "Fire Distance", 64.0D).getDouble(64.0D);
+        int[] tmpGDB = defConfig.get("Ghast", "Dimension Blacklist", new int[]{}).getIntList();
+        GhastDimensionBlacklist = new ArrayList<Integer>();
+        for(int i : tmpGDB)
+        {
+        	GhastDimensionBlacklist.add(i);
+        }
         
         //Endermen
         EndermanMode = defConfig.get("Enderman", "Mode", "Slender", "Valid Endermen Modes (Slender, Normal)").getString();
@@ -220,6 +244,18 @@ public class ESM_Settings
         SpawnForts = defConfig.get("World", "Spawn Forts", true).getBoolean(true);
         fortRarity = defConfig.get("World", "Fort Rarity", 100).getInt(100);
         fortDistance = defConfig.get("World", "Fort Distance", 1024).getInt(1024);
+        String[] defSpawn = new String[]
+        {
+        	"Zombie",
+        	"Creeer",
+        	"Skeleton",
+        	"CaveSpider",
+        	"Silverfish",
+        	"Spider",
+        	"Slime",
+        	"Witch"
+        };
+        fortSpawners = new ArrayList<String>(Arrays.asList(defConfig.get("World", "Fort Spawner Types", defSpawn).getStringList()));
         fallFromEnd = defConfig.get("World", "Fall From End", true, "Whether the player should fall into the overworld from the new End").getBoolean(true);
         int[] tmpFD = defConfig.get("World", "Fort Dimensions", new int[]{0}).getIntList();
         
@@ -261,6 +297,17 @@ public class ESM_Settings
         config.load();
         
         //Main
+        int[] tmpAIE = new int[AIExempt.size()];
+        for(int i = 0; i < AIExempt.size(); i++)
+        {
+        	tmpAIE[i] = AIExempt.get(i);
+        }
+        tmpAIE = config.get("Main", "AI Exempt Mob IDs", tmpAIE).getIntList();
+        AIExempt = new ArrayList<Integer>();
+        for(int i : tmpAIE)
+        {
+        	AIExempt.add(i);
+        }
         Awareness = config.get("Main", "Awareness Radius", Awareness).getInt(Awareness);
         Xray = config.get("Main", "Xray Mobs", Xray).getBoolean(Xray);
         TargetCap = config.get("Main", "Pathing Cap", TargetCap).getInt(TargetCap);
@@ -289,11 +336,23 @@ public class ESM_Settings
         ZombieTraps = config.get("Zombie", "Zombies Build Traps", ZombieTraps).getBoolean(ZombieTraps);
         ZombiePillaring = config.get("Zombie", "Pillaring Blocks", ZombiePillaring, "How many blocks to give zombies to pillar up with").getInt(ZombiePillaring);
         ZombieGriefBlocks = new ArrayList<String>(Arrays.asList(config.get("Zombie", "General Griefable Blocks", ZombieGriefBlocks.toArray(new String[]{}), "What blocks will be targeted for destruction when not attacking players (Does not affect general digging, light sources are included by default, add ':#' for metadata e.g. 'minecraft:wool:1')").getStringList()));
+        ZombieDigBlacklist = new ArrayList<String>(Arrays.asList(config.get("Zombie", "General Griefable Blocks", ZombieDigBlacklist.toArray(new String[]{}), "Blacklisted blocks for digging (Add ':#' for metadata e.g. 'minecraft:wool:1')").getStringList()));
         
         //Blazes
         BlazeSpawn = config.get("Blaze", "Spawn", BlazeSpawn).getBoolean(BlazeSpawn);
         BlazeRarity = config.get("Blaze", "Rarity", BlazeRarity).getInt(BlazeRarity);
         BlazeFireballs = config.get("Blaze", "Fireballs", BlazeFireballs).getInt(BlazeFireballs);
+        int[] tmpBDB = new int[BlazeDimensionBlacklist.size()];
+        for(int i = 0; i < BlazeDimensionBlacklist.size(); i++)
+        {
+        	tmpBDB[i] = BlazeDimensionBlacklist.get(i);
+        }
+        tmpBDB = config.get("Blaze", "Dimension Blacklist", tmpBDB).getIntList();
+        BlazeDimensionBlacklist = new ArrayList<Integer>();
+        for(int i : tmpBDB)
+        {
+        	BlazeDimensionBlacklist.add(i);
+        }
         
         //Ghasts
         GhastSpawn = config.get("Ghast", "Spawn", GhastSpawn).getBoolean(GhastSpawn);
@@ -301,6 +360,17 @@ public class ESM_Settings
         GhastFireDelay = config.get("Ghast", "Fire Delay", GhastFireDelay).getDouble(GhastFireDelay);
         GhastBreaching = config.get("Ghast", "Breaching", GhastBreaching).getBoolean(GhastBreaching);
         GhastFireDist = config.get("Ghast", "Fire Distance", GhastFireDist).getDouble(GhastFireDist);
+        int[] tmpGDB = new int[GhastDimensionBlacklist.size()];
+        for(int i = 0; i < GhastDimensionBlacklist.size(); i++)
+        {
+        	tmpGDB[i] = GhastDimensionBlacklist.get(i);
+        }
+        tmpGDB = config.get("Ghast", "Dimension Blacklist", tmpGDB).getIntList();
+        GhastDimensionBlacklist = new ArrayList<Integer>();
+        for(int i : tmpGDB)
+        {
+        	GhastDimensionBlacklist.add(i);
+        }
         
         //Endermen
         EndermanMode = config.get("Enderman", "Mode", EndermanMode, "Valid Endermen Modes (Slender, Normal)").getString();
@@ -336,13 +406,12 @@ public class ESM_Settings
         fortDistance = config.get("World", "Fort Distance", fortDistance).getInt(fortDistance);
         fallFromEnd = config.get("World", "Fall From End", fallFromEnd, "Whether the player should fall into the overworld from the new End").getBoolean(fallFromEnd);
     	int[] tmpFDDef = new int[fortDimensions.size()];
-    	
     	for(int i = 0; i < fortDimensions.size(); i++)
     	{
     		tmpFDDef[i] = fortDimensions.get(i);
     	}
         int[] tmpFD = config.get("World", "Fort Dimensions", tmpFDDef).getIntList();
-        
+        fortDimensions = new ArrayList<Integer>();
         for(int dimID : tmpFD)
         {
         	fortDimensions.add(dimID);

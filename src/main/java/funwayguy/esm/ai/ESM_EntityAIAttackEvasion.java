@@ -7,6 +7,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.RandomPositionGenerator;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.pathfinding.PathNavigate;
@@ -55,6 +56,22 @@ public class ESM_EntityAIAttackEvasion extends EntityAIBase
     	{
     		return false;
     	}
+    	
+
+		@SuppressWarnings("unchecked")
+		List<EntityMob> attackers = this.theEntity.worldObj.selectEntitiesWithinAABB(EntityMob.class, this.theEntity.boundingBox.expand(16D, 16D, 16D), this.field_98218_a);
+		Iterator<EntityMob> attIter = attackers.iterator();
+		
+		while(attIter.hasNext())
+		{
+			if(attIter.next() == this.theEntity)
+			{
+				continue;
+			} else
+			{
+				return false; // We have backup so don't flee
+			}
+		}
     	
         @SuppressWarnings("unchecked")
 		List<EntityPlayer> list = this.theEntity.worldObj.selectEntitiesWithinAABB(EntityPlayer.class, this.theEntity.boundingBox.expand((double)this.distanceFromEntity, (double)this.distanceFromEntity, (double)this.distanceFromEntity), this.field_98218_a);

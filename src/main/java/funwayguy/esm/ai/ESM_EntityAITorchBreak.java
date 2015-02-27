@@ -1,15 +1,20 @@
 package funwayguy.esm.ai;
 
-import funwayguy.esm.core.ESM_Settings;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemStack;
+import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.MovingObjectPosition.MovingObjectType;
+import net.minecraft.util.Vec3;
+import funwayguy.esm.core.ESM_Settings;
 
 public class ESM_EntityAITorchBreak extends EntityAIBase
 {
@@ -31,7 +36,7 @@ public class ESM_EntityAITorchBreak extends EntityAIBase
 		int j = MathHelper.floor_double(entityLiving.posY);
 		int k = MathHelper.floor_double(entityLiving.posZ);
 		
-		if(entityLiving.worldObj.getBlockLightValue(i, j, k) <= 0 || entityLiving.getAttackTarget() != null)
+		if(entityLiving.worldObj.getBlockLightValue(i, j, k) <= 0 || entityLiving.getAttackTarget() != null || (entityLiving instanceof EntityCreature && ((EntityCreature)entityLiving).getEntityToAttack() != null))
 		{
 			return false;
 		}
@@ -47,8 +52,24 @@ public class ESM_EntityAITorchBreak extends EntityAIBase
 				for(int kk = k - 16; kk < k + 16; kk++)
 				{
 					Block block = entityLiving.worldObj.getBlock(ii, jj, kk);
+					int meta = entityLiving.worldObj.getBlockMetadata(ii, jj, kk);
+					
+					if(ESM_Settings.ZombieDigBlacklist.contains(Block.blockRegistry.getNameForObject(block)) || ESM_Settings.ZombieDigBlacklist.contains(Block.blockRegistry.getNameForObject(block) + ":" + meta))
+            		{
+            			continue;
+            		}
+					
 					if(block.getLightValue() > 0 && entityLiving.getDistance(ii, jj, kk) < dist && block.getBlockHardness(entityLiving.worldObj, ii, jj, kk) >= 0 && !block.getMaterial().isLiquid())
 					{
+						PathPoint pp = entityLiving.getNavigator().getPathToXYZ(ii, jj, kk).getFinalPathPoint();
+						MovingObjectPosition mop = AIUtils.RayCastBlocks(entityLiving.worldObj, Vec3.createVectorHelper(pp.xCoord + entityLiving.height, pp.yCoord + 0.5D, pp.zCoord + 0.5D), Vec3.createVectorHelper(ii + 0.5D, jj + 0.5D, kk + 0.5D), true);
+						if((pp.xCoord == ii && pp.yCoord == jj && pp.zCoord == kk)/* || mop == null*/ || (mop != null && mop.typeOfHit == MovingObjectType.BLOCK && mop.blockX == ii && mop.blockY == jj && mop.blockZ == kk)) // Check if path reaches a point at which the light source is accessible
+						{
+						} else
+						{
+							continue; // We cannot easily reach this object so we'll ignore it for now
+						}
+						
 						if(!ESM_Settings.ZombieDiggerTools || (item != null && (item.getItem().canHarvestBlock(block, item) || (item.getItem() instanceof ItemPickaxe && nerfedPick && block.getMaterial() == Material.rock))) || block.getMaterial().isToolNotRequired())
 						{
 							candidate = new int[]{ii, jj, kk};

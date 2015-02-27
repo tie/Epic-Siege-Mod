@@ -182,7 +182,7 @@ public class AIUtils
         return pointedEntity;
     }
     
-    public static MovingObjectPosition RayCastBlocks(World world, double x, double y, double z, float yaw, float pitch, double dist, boolean liquids, boolean entities)
+    public static MovingObjectPosition RayCastBlocks(World world, double x, double y, double z, float yaw, float pitch, double dist, boolean liquids)
     {
         Vec3 vec3 = Vec3.createVectorHelper(x, y, z);
         float f3 = MathHelper.cos(-yaw * 0.017453292F - (float)Math.PI);
@@ -193,11 +193,11 @@ public class AIUtils
         float f8 = f3 * f5;
         double d3 = dist; // Ray Distance
         Vec3 vec31 = vec3.addVector((double)f7 * d3, (double)f6 * d3, (double)f8 * d3);
-        return RayCastBlocks(world, vec3, vec31, liquids, entities);
+        return RayCastBlocks(world, vec3, vec31, liquids);
     }
     
-    public static MovingObjectPosition RayCastBlocks(World world, Vec3 vector1, Vec3 vector2, boolean liquids, boolean entities)
+    public static MovingObjectPosition RayCastBlocks(World world, Vec3 vector1, Vec3 vector2, boolean liquids)
     {
-        return world.func_147447_a(vector1, vector2, liquids, !liquids, entities);
+        return world.func_147447_a(vector1, vector2, liquids, !liquids, false);
     }
 }
