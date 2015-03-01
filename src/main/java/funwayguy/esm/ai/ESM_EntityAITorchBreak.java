@@ -9,6 +9,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemStack;
+import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
@@ -61,7 +62,14 @@ public class ESM_EntityAITorchBreak extends EntityAIBase
 					
 					if(block.getLightValue() > 0 && entityLiving.getDistance(ii, jj, kk) < dist && block.getBlockHardness(entityLiving.worldObj, ii, jj, kk) >= 0 && !block.getMaterial().isLiquid())
 					{
-						PathPoint pp = entityLiving.getNavigator().getPathToXYZ(ii, jj, kk).getFinalPathPoint();
+						PathEntity path = entityLiving.getNavigator() == null? null : entityLiving.getNavigator().getPathToXYZ(ii, jj, kk);
+						
+						if(path == null)
+						{
+							continue;
+						}
+						
+						PathPoint pp = path.getFinalPathPoint();
 						MovingObjectPosition mop = AIUtils.RayCastBlocks(entityLiving.worldObj, Vec3.createVectorHelper(pp.xCoord + entityLiving.height, pp.yCoord + 0.5D, pp.zCoord + 0.5D), Vec3.createVectorHelper(ii + 0.5D, jj + 0.5D, kk + 0.5D), true);
 						if((pp.xCoord == ii && pp.yCoord == jj && pp.zCoord == kk)/* || mop == null*/ || (mop != null && mop.typeOfHit == MovingObjectType.BLOCK && mop.blockX == ii && mop.blockY == jj && mop.blockZ == kk)) // Check if path reaches a point at which the light source is accessible
 						{
