@@ -737,11 +737,16 @@ public class ESM_EventManager
 	@SubscribeEvent
 	public void allowDespawn(LivingSpawnEvent.AllowDespawn event)
 	{
+		if(!ESM_Settings.keepLoaded)
+		{
+			return;
+		}
+		
 		if(event.entityLiving instanceof EntityCreature)
 		{
 			EntityCreature creature = (EntityCreature)event.entityLiving;
 			
-			if(creature.getEntityToAttack() != null && creature.getEntityToAttack() instanceof EntityPlayer)
+			if(creature.getEntityToAttack() != null && creature.getEntityToAttack() instanceof EntityPlayer && !creature.getEntityToAttack().isDead)
 			{
 				event.setResult(Result.DENY);
 				return;
@@ -750,7 +755,7 @@ public class ESM_EventManager
 		{
 			EntityESMGhast ghast = (EntityESMGhast)event.entityLiving;
 			
-			if(ghast.targetedEntity != null && ghast.targetedEntity instanceof EntityPlayer)
+			if(ghast.targetedEntity != null && ghast.targetedEntity instanceof EntityPlayer && !ghast.targetedEntity.isDead)
 			{
 				event.setResult(Result.DENY);
 				return;

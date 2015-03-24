@@ -33,6 +33,7 @@ public class ESM_Settings
 	public static boolean AllowSleep; //DONE
 	public static boolean QuickPathing; //DONE
 	public static int ResistanceCoolDown; //DONE
+	public static boolean keepLoaded; // DONE
 	
 	//Creeper
 	public static boolean CreeperBreaching; //DONE
@@ -142,6 +143,8 @@ public class ESM_Settings
         ambiguous_AI = defConfig.get("Main", "Ambiguous AI", true, "If set to true, ESM will not check whether the entity is a mob or not when setting up new AI").getBoolean(true);
         QuickPathing = defConfig.get("Main", "Quick Pathing", false, "If set to fales, mobs can use much longer routes to get to their target").getBoolean(false);
         ResistanceCoolDown = defConfig.get("Main", "Resistance Cooldown", 200, "The amount of ticks of resistance given to the player after changing dimensions").getInt(200);
+        keepLoaded = defConfig.get("Main", "Keep Loaded", false, "Keeps mobs with an active target from despawning. Can causes issues with chunk loading/unloading").getBoolean(false);
+        
         int[] tmpAIE = defConfig.get("Main", "AI Exempt Mob IDs", new int[]{}).getIntList();
         AIExempt = new ArrayList<Integer>();
         for(int i : tmpAIE)
@@ -318,6 +321,7 @@ public class ESM_Settings
         ambiguous_AI = config.get("Main", "Ambiguous AI", ambiguous_AI, "If set to true, ESM will not check whether the entity is a mob or not when setting up new AI").getBoolean(ambiguous_AI);
         QuickPathing = config.get("Main", "Quick Pathing", QuickPathing, "If set to fales, mobs can use much longer routes to get to their target").getBoolean(QuickPathing);
         ResistanceCoolDown = config.get("Main", "Resistance Cooldown", ResistanceCoolDown, "The amount of ticks of resistance given to the player after changing dimensions").getInt(ResistanceCoolDown);
+        keepLoaded = config.get("Main", "Keep Loaded", false, "Keeps mobs with an active target from despawning. Can causes issues with chunk loading/unloading").getBoolean(false);
         
         //Creeper
         CreeperBreaching = config.get("Creeper", "Breaching", CreeperBreaching).getBoolean(CreeperBreaching);
