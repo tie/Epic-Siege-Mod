@@ -34,7 +34,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
 		MovingObjectPosition mop = GetNextObstical(entityDigger, 3D);
 		target = entityDigger.getAttackTarget();
 		
-		if(target != null && mop != null && mop.typeOfHit == MovingObjectType.BLOCK && entityDigger.getNavigator().noPath() && entityDigger.getNavigator().getPathToEntityLiving(target) == null && !(entityDigger.canEntityBeSeen(target) && entityDigger.getDistanceToEntity(target) < 2D))
+		if(target != null && mop != null && mop.typeOfHit == MovingObjectType.BLOCK && entityDigger.getNavigator().noPath() && !(entityDigger.canEntityBeSeen(target) && entityDigger.getDistanceToEntity(target) < 2D))
 		{
 			ItemStack item = entityDigger.getEquipmentInSlot(0);
 			Block block = entityDigger.worldObj.getBlock(mop.blockX, mop.blockY, mop.blockZ);
@@ -56,7 +56,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
 	@Override
 	public boolean continueExecuting()
 	{
-		boolean flag = target != null && entityDigger != null && target.isEntityAlive() && entityDigger.isEntityAlive() && markedLoc != null && entityDigger.getNavigator().noPath() && entityDigger.getNavigator().getPathToEntityLiving(target) == null && !(entityDigger.canEntityBeSeen(target) && entityDigger.getDistanceToEntity(target) < 2D);
+		boolean flag = target != null && entityDigger != null && target.isEntityAlive() && entityDigger.isEntityAlive() && markedLoc != null && entityDigger.getNavigator().noPath() && !(entityDigger.canEntityBeSeen(target) && entityDigger.getDistanceToEntity(target) < 2D);
 		return flag;
 	}
 	

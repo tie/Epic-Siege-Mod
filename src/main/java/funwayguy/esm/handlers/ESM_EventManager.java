@@ -3,6 +3,7 @@ package funwayguy.esm.handlers;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -51,11 +52,14 @@ import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import net.minecraftforge.event.world.WorldEvent.Unload;
+import org.apache.logging.log4j.Level;
+import com.google.common.base.Stopwatch;
 import cpw.mods.fml.client.event.ConfigChangedEvent;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import funwayguy.esm.client.gui.ESMGuiConfig;
 import funwayguy.esm.core.ESM;
 import funwayguy.esm.core.ESM_Settings;
@@ -405,6 +409,37 @@ public class ESM_EventManager
 		{
 			entity.setPathToEntity(entity.worldObj.getPathEntityToEntity(entity, closestTarget, ESM_Settings.Awareness, true, false, false, true));
 			ESM_PathCapHandler.AddNewAttack(entity, closestTarget);
+		}
+	}
+	
+	Stopwatch timer = Stopwatch.createUnstarted();
+	int ticks = 0;
+	float TPS = 0;
+	
+	@SubscribeEvent
+	public void onTick(TickEvent.WorldTickEvent event)
+	{
+		if(event.phase == TickEvent.Phase.END)
+		{
+			if(!timer.isRunning())
+			{
+				timer.start();
+			}
+			
+			ticks++;
+			
+			if(ticks >= 100)
+			{
+				timer.stop();
+				
+				TPS = (float)ticks/timer.elapsed(TimeUnit.MILLISECONDS)*1000F;
+				
+				ESM.log.log(Level.INFO, "TPms: " + TPS + " (" + ticks + "/" + (timer.elapsed(TimeUnit.MILLISECONDS)/1000F) + ")");
+				ticks = 0;
+				
+				timer.reset();
+				timer.start();
+			}
 		}
 	}
 	

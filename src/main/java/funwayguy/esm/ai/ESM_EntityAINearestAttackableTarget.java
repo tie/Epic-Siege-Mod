@@ -3,19 +3,18 @@ package funwayguy.esm.ai;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import funwayguy.esm.core.ESM_Settings;
-import funwayguy.esm.core.ESM_Utils;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
-import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityVillager;
+import funwayguy.esm.core.ESM_Settings;
+import funwayguy.esm.core.ESM_Utils;
 
 public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
 {
-    private final Class<?> targetClass;
+    private final List<Class<? extends EntityLivingBase>> targetClass;
     private final int targetChance;
     private int searchDelay = 0;
 
@@ -29,24 +28,24 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
     private final IEntitySelector targetEntitySelector;
     private EntityLivingBase targetEntity;
 
-    public ESM_EntityAINearestAttackableTarget(EntityCreature par1EntityCreature, Class<?> par2Class, int par3, boolean par4)
+    public ESM_EntityAINearestAttackableTarget(EntityCreature par1EntityCreature, List<Class<? extends EntityLivingBase>> par2Class, int par3, boolean par4)
     {
         this(par1EntityCreature, par2Class, par3, par4, false);
     }
 
-    public ESM_EntityAINearestAttackableTarget(EntityCreature par1EntityCreature, Class<?> par2Class, int par3, boolean par4, boolean par5)
+    public ESM_EntityAINearestAttackableTarget(EntityCreature par1EntityCreature, List<Class<? extends EntityLivingBase>> par2Class, int par3, boolean par4, boolean par5)
     {
         this(par1EntityCreature, par2Class, par3, par4, par5, (IEntitySelector)null);
     }
 
-    public ESM_EntityAINearestAttackableTarget(EntityCreature par1EntityCreature, Class<?> par2Class, int par3, boolean par4, boolean par5, IEntitySelector par6IEntitySelector)
+    public ESM_EntityAINearestAttackableTarget(EntityCreature par1EntityCreature, List<Class<? extends EntityLivingBase>> par2Class, int par3, boolean par4, boolean par5, IEntitySelector par6IEntitySelector)
     {
-        super(par1EntityCreature, par4, par5);
+        super(par1EntityCreature, par2Class.contains(EntityVillager.class) && par1EntityCreature instanceof EntityZombie, par5);
         this.targetClass = par2Class;
         this.targetChance = par3;
         this.theNearestAttackableTargetSorter = new EntityAINearestAttackableTarget.Sorter(par1EntityCreature);
         this.setMutexBits(1);
-        this.targetEntitySelector = new ESM_EntityAINearestAttackableTargetSelector(this, par6IEntitySelector);
+        this.targetEntitySelector = new ESM_EntityAINearestAttackableTargetSelector(par1EntityCreature, this, par6IEntitySelector, this.targetClass);
     }
     
     public void resetTask()
@@ -67,22 +66,16 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
     		return false;
     	} else
     	{
-    		searchDelay = ESM_Settings.Awareness/2;
+    		searchDelay = ESM_Settings.Awareness;
     	}
     	
         if (this.targetChance > 0 && this.taskOwner.getRNG().nextInt(this.targetChance) != 0)
         {
             return false;
-        } else if(targetClass == EntityVillager.class && (!(taskOwner instanceof EntityZombie) || taskOwner instanceof EntityPigZombie) && !ESM_Settings.VillagerTarget)
-    	{
-    		return false;
-    	} else if(targetClass == EntityCreature.class && !ESM_Settings.Chaos)
-    	{
-    		return false;
-    	} else
+        } else
         {
             double d0 = this.getTargetDistance();
-            List<?> list = this.taskOwner.worldObj.selectEntitiesWithinAABB(this.targetClass, this.taskOwner.boundingBox.expand(d0, d0, d0), this.targetEntitySelector);
+            List<?> list = this.taskOwner.worldObj.selectEntitiesWithinAABB(EntityLivingBase.class, this.taskOwner.boundingBox.expand(d0, d0, d0), this.targetEntitySelector);
             Collections.sort(list, this.theNearestAttackableTargetSorter);
 
             if (list.isEmpty())

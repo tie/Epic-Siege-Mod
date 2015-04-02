@@ -25,6 +25,11 @@ public class ESM_EntityAIGrief extends EntityAIBase
 	@Override
 	public boolean shouldExecute()
 	{
+		if(this.entityLiving.getRNG().nextInt(10) != 0) // Severely nerfs how many time the next part of the script can run
+		{
+			return false;
+		}
+		
     	// Returns true if something like Iguana Tweaks is nerfing the vanilla picks. This will then cause zombies to ignore the harvestability of blocks when holding picks
     	boolean nerfedPick = !Items.iron_pickaxe.canHarvestBlock(Blocks.stone, new ItemStack(Items.iron_pickaxe));
 		int i = MathHelper.floor_double(entityLiving.posX);

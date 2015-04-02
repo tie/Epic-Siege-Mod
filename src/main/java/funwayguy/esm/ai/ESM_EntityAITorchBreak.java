@@ -31,6 +31,11 @@ public class ESM_EntityAITorchBreak extends EntityAIBase
 	@Override
 	public boolean shouldExecute()
 	{
+		if(this.entityLiving.getRNG().nextInt(10) != 0) // Severely nerfs how many time the next part of the script can run
+		{
+			return false;
+		}
+		
     	// Returns true if something like Iguana Tweaks is nerfing the vanilla picks. This will then cause zombies to ignore the harvestability of blocks when holding picks
     	boolean nerfedPick = !Items.iron_pickaxe.canHarvestBlock(Blocks.stone, new ItemStack(Items.iron_pickaxe));
 		int i = MathHelper.floor_double(entityLiving.posX);
@@ -71,7 +76,7 @@ public class ESM_EntityAITorchBreak extends EntityAIBase
 						
 						PathPoint pp = path.getFinalPathPoint();
 						MovingObjectPosition mop = AIUtils.RayCastBlocks(entityLiving.worldObj, Vec3.createVectorHelper(pp.xCoord + entityLiving.height, pp.yCoord + 0.5D, pp.zCoord + 0.5D), Vec3.createVectorHelper(ii + 0.5D, jj + 0.5D, kk + 0.5D), true);
-						if((pp.xCoord == ii && pp.yCoord == jj && pp.zCoord == kk)/* || mop == null*/ || (mop != null && mop.typeOfHit == MovingObjectType.BLOCK && mop.blockX == ii && mop.blockY == jj && mop.blockZ == kk)) // Check if path reaches a point at which the light source is accessible
+						if((pp.xCoord == ii && pp.yCoord == jj && pp.zCoord == kk) || (mop != null && mop.typeOfHit == MovingObjectType.BLOCK && mop.blockX == ii && mop.blockY == jj && mop.blockZ == kk)) // Check if path reaches a point at which the light source is accessible
 						{
 						} else
 						{

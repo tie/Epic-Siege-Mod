@@ -430,7 +430,13 @@ public class ESM_Utils
 		{
 			if(!(entityLiving instanceof EntityZombie) || ESM_Settings.Awareness > 40)
 			entityLiving.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(ESM_Settings.Awareness);
-			entityLiving.targetTasks.addTask(2, new ESM_EntityAINearestAttackableTarget((EntityCreature)entityLiving, EntityPlayer.class, 0, true));
+			
+			ArrayList<Class<? extends EntityLivingBase>> targetable = new ArrayList<Class<? extends EntityLivingBase>>();
+			targetable.add(EntityPlayer.class);
+			targetable.add(EntityVillager.class);
+			targetable.add(EntityCreature.class);
+			entityLiving.targetTasks.addTask(2, new ESM_EntityAINearestAttackableTarget((EntityCreature)entityLiving, targetable, 0, true));
+			/*entityLiving.targetTasks.addTask(2, new ESM_EntityAINearestAttackableTarget((EntityCreature)entityLiving, EntityPlayer.class, 0, true));
 			if(entityLiving instanceof EntityZombie)
 			{
 				entityLiving.targetTasks.addTask(2, new ESM_EntityAINearestAttackableTarget((EntityCreature)entityLiving, EntityVillager.class, 0, false));
@@ -438,7 +444,7 @@ public class ESM_Utils
 			{
 				entityLiving.targetTasks.addTask(2, new ESM_EntityAINearestAttackableTarget((EntityCreature)entityLiving, EntityVillager.class, 0, true));
 			}
-			entityLiving.targetTasks.addTask(2, new ESM_EntityAINearestAttackableTarget((EntityCreature)entityLiving, EntityCreature.class, 0, true));
+			entityLiving.targetTasks.addTask(2, new ESM_EntityAINearestAttackableTarget((EntityCreature)entityLiving, EntityCreature.class, 0, true));*/
 		}
 		
 		if(replaceCS)

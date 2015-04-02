@@ -10,7 +10,7 @@ import net.minecraft.util.MathHelper;
 
 public class ESM_EntityAIPillarUp extends EntityAIBase
 {
-	public int placeDelay = 0;
+	public int placeDelay = 15;
 	public int blocks = ESM_Settings.ZombiePillaring;
 	public EntityLiving builder;
 	public EntityLivingBase target;
@@ -35,7 +35,7 @@ public class ESM_EntityAIPillarUp extends EntityAIBase
 			return false;
 		}
 		
-		if(builder.getNavigator().getPathToEntityLiving(target) == null && builder.getDistance(target.posX, builder.posY, target.posZ) < 8D)
+		if(builder.getNavigator().noPath() && builder.getDistance(target.posX, builder.posY, target.posZ) < 8D)
 		{
 			int i = MathHelper.floor_double(builder.posX);
 			int j = MathHelper.floor_double(builder.posY);
@@ -59,6 +59,12 @@ public class ESM_EntityAIPillarUp extends EntityAIBase
 		}
 		
 		return false;
+	}
+	
+	@Override
+	public void startExecuting()
+	{
+		placeDelay = 15;
 	}
 	
 	@Override
