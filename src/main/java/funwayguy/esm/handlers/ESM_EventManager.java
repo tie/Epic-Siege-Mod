@@ -434,7 +434,8 @@ public class ESM_EventManager
 				
 				TPS = (float)ticks/timer.elapsed(TimeUnit.MILLISECONDS)*1000F;
 				
-				ESM.log.log(Level.INFO, "TPms: " + TPS + " (" + ticks + "/" + (timer.elapsed(TimeUnit.MILLISECONDS)/1000F) + ")");
+				// Debugging TPS counter
+				//ESM.log.log(Level.INFO, "TPms: " + TPS + " (" + ticks + "/" + (timer.elapsed(TimeUnit.MILLISECONDS)/1000F) + ")");
 				ticks = 0;
 				
 				timer.reset();
