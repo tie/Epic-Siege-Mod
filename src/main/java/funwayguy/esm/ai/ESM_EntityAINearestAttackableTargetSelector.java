@@ -3,11 +3,7 @@ package funwayguy.esm.ai;
 import java.util.List;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityPigZombie;
-import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.entity.passive.EntityVillager;
 import funwayguy.esm.core.ESM_Settings;
 
 class ESM_EntityAINearestAttackableTargetSelector implements IEntitySelector
@@ -17,7 +13,7 @@ class ESM_EntityAINearestAttackableTargetSelector implements IEntitySelector
     final List<Class<? extends EntityLivingBase>> targetable;
     final ESM_EntityAINearestAttackableTarget field_111102_d;
 
-    ESM_EntityAINearestAttackableTargetSelector(EntityLivingBase owner, ESM_EntityAINearestAttackableTarget targetAINearestAttackableTarget, IEntitySelector par2IEntitySelector, List<Class<? extends EntityLivingBase>> targetable)
+    public ESM_EntityAINearestAttackableTargetSelector(EntityLivingBase owner, ESM_EntityAINearestAttackableTarget targetAINearestAttackableTarget, IEntitySelector par2IEntitySelector, List<Class<? extends EntityLivingBase>> targetable)
     {
     	this.owner = owner;
         this.field_111102_d = targetAINearestAttackableTarget;
@@ -35,27 +31,23 @@ class ESM_EntityAINearestAttackableTargetSelector implements IEntitySelector
     		return false;
     	}
     	
-    	boolean flag = true;
-    	
-    	for(Class<? extends EntityLivingBase> clazz : targetable)
+    	if(!ESM_Settings.Chaos) // Should we even check if the target is applicable or just allow every little thing to be targeted
     	{
-    		if(clazz.isAssignableFrom(target.getClass()))
-    		//if(target.getClass().isAssignableFrom(clazz))
-    		{
-    			flag = false;
-    			break;
-    		}
-    	}
-    	
-    	if(flag)
-    	{
-    		return false;
-    	} else if(target instanceof EntityVillager && (!(owner instanceof EntityZombie) || owner instanceof EntityPigZombie) && !ESM_Settings.VillagerTarget) // You aren't permitted to target this unless enabled
-    	{
-    		return false;
-    	} else if(target instanceof EntityCreature && !ESM_Settings.Chaos) // You aren't permitted to target this unless enabled
-    	{
-    		return false;
+	    	boolean flag = true;
+	    	
+	    	for(Class<? extends EntityLivingBase> clazz : targetable)
+	    	{
+	    		if(clazz.isAssignableFrom(target.getClass()))
+	    		{
+	    			flag = false;
+	    			break;
+	    		}
+	    	}
+	    	
+	    	if(flag)
+	    	{
+	    		return false;
+	    	}
     	}
     	
         return !(target instanceof EntityLivingBase) ? false : (this.field_111103_c != null && !this.field_111103_c.isEntityApplicable(target) ? false : this.field_111102_d.isSuitableTarget((EntityLivingBase)target, false));

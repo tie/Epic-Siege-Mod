@@ -15,6 +15,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.EnumSkyBlock;
 import funwayguy.esm.core.ESM_Settings;
 
 public class ESM_EntityAITorchBreak extends EntityAIBase
@@ -42,7 +43,7 @@ public class ESM_EntityAITorchBreak extends EntityAIBase
 		int j = MathHelper.floor_double(entityLiving.posY);
 		int k = MathHelper.floor_double(entityLiving.posZ);
 		
-		if(entityLiving.worldObj.getBlockLightValue(i, j, k) <= 0 || entityLiving.getAttackTarget() != null || (entityLiving instanceof EntityCreature && ((EntityCreature)entityLiving).getEntityToAttack() != null))
+		if(entityLiving.worldObj.getSavedLightValue(EnumSkyBlock.Block, i, j, k) <= 0 || entityLiving.getAttackTarget() != null || (entityLiving instanceof EntityCreature && ((EntityCreature)entityLiving).getEntityToAttack() != null))
 		{
 			return false;
 		}

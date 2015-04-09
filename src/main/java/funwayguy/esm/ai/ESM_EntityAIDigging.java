@@ -21,6 +21,8 @@ public class ESM_EntityAIDigging extends EntityAIBase
 	EntityLiving entityDigger;
 	int digTick = 0;
 	
+	int refresh = 0; // Tracks the refresh rate for the assigned block to dig
+	
 	public ESM_EntityAIDigging(EntityLiving entity)
 	{
 		this.entityDigger = entity;
@@ -29,9 +31,18 @@ public class ESM_EntityAIDigging extends EntityAIBase
 	@Override
 	public boolean shouldExecute()
 	{
+		if(refresh > 0)
+		{
+			refresh -= 1;
+			return false;
+		} else
+		{
+			refresh = 60;
+		}
+		
     	// Returns true if something like Iguana Tweaks is nerfing the vanilla picks. This will then cause zombies to ignore the harvestability of blocks when holding picks
     	boolean nerfedPick = !Items.iron_pickaxe.canHarvestBlock(Blocks.stone, new ItemStack(Items.iron_pickaxe));
-		MovingObjectPosition mop = GetNextObstical(entityDigger, 3D);
+		MovingObjectPosition mop = GetNextObstical(entityDigger, 2D);
 		target = entityDigger.getAttackTarget();
 		
 		if(target != null && mop != null && mop.typeOfHit == MovingObjectType.BLOCK && entityDigger.getNavigator().noPath() && !(entityDigger.canEntityBeSeen(target) && entityDigger.getDistanceToEntity(target) < 2D))
@@ -65,12 +76,21 @@ public class ESM_EntityAIDigging extends EntityAIBase
 	{
     	// Returns true if something like Iguana Tweaks is nerfing the vanilla picks. This will then cause zombies to ignore the harvestability of blocks when holding picks
     	boolean nerfedPick = !Items.iron_pickaxe.canHarvestBlock(Blocks.stone, new ItemStack(Items.iron_pickaxe));
-		MovingObjectPosition mop = GetNextObstical(entityDigger, 3D);
-		
-		if(mop != null && mop.typeOfHit == MovingObjectType.BLOCK)
-		{
-			markedLoc = new int[]{mop.blockX, mop.blockY, mop.blockZ};
-		}
+    	
+    	if(refresh <= 0)
+    	{
+    		refresh = 60;
+    		
+			MovingObjectPosition mop = GetNextObstical(entityDigger, 2D);
+			
+			if(mop != null && mop.typeOfHit == MovingObjectType.BLOCK)
+			{
+				markedLoc = new int[]{mop.blockX, mop.blockY, mop.blockZ};
+			}
+    	} else
+    	{
+    		refresh -= 1;
+    	}
 		
 		if(markedLoc == null || entityDigger.worldObj.getBlock(markedLoc[0], markedLoc[1], markedLoc[2]) == Blocks.air)
 		{

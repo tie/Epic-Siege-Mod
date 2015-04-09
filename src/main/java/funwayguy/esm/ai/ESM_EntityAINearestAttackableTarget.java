@@ -14,7 +14,7 @@ import funwayguy.esm.core.ESM_Utils;
 
 public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
 {
-    private final List<Class<? extends EntityLivingBase>> targetClass;
+    public final List<Class<? extends EntityLivingBase>> targetClass;
     private final int targetChance;
     private int searchDelay = 0;
 

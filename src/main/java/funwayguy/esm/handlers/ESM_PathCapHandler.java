@@ -1,12 +1,13 @@
 package funwayguy.esm.handlers;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import funwayguy.esm.core.ESM_Settings;
 
 public class ESM_PathCapHandler
@@ -38,6 +39,7 @@ public class ESM_PathCapHandler
 		UpdateAttackers(target);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static void UpdateAttackers(EntityLivingBase target)
 	{
 		if(attackMap.containsKey(target))
@@ -48,7 +50,7 @@ public class ESM_PathCapHandler
 				return;
 			}
 			
-			List<EntityLivingBase> attackers = attackMap.get(target);
+			ArrayList<EntityLivingBase> attackers = attackMap.get(target);
 			
 			for(int i = attackers.size() - 1; i >= 0; i--)
 			{
@@ -116,6 +118,9 @@ public class ESM_PathCapHandler
 					}
 				}
 			}
+
+			Collections.sort(attackers, new EntityAINearestAttackableTarget.Sorter(target));
+			attackMap.put(target, attackers); // Apply changes after sorting the list
 		}
 	}
 	

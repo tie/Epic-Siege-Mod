@@ -15,9 +15,11 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.EntityAIAttackOnCollide;
 import net.minecraft.entity.ai.EntityAIAvoidEntity;
 import net.minecraft.entity.ai.EntityAICreeperSwell;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityCreeper;
@@ -46,10 +48,21 @@ import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.BiomeGenBase.SpawnListEntry;
 import org.apache.logging.log4j.Level;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.FMLControlledNamespacedRegistry;
 import cpw.mods.fml.common.registry.GameData;
-import funwayguy.esm.ai.*;
+import funwayguy.esm.ai.ESM_EntityAIAttackEvasion;
+import funwayguy.esm.ai.ESM_EntityAIAttackOnCollide;
+import funwayguy.esm.ai.ESM_EntityAIAvoidDetonatingCreepers;
+import funwayguy.esm.ai.ESM_EntityAIBuildTrap;
+import funwayguy.esm.ai.ESM_EntityAICreeperSwell;
+import funwayguy.esm.ai.ESM_EntityAIDigging;
+import funwayguy.esm.ai.ESM_EntityAIGrief;
+import funwayguy.esm.ai.ESM_EntityAINearestAttackableTarget;
+import funwayguy.esm.ai.ESM_EntityAIPillarUp;
+import funwayguy.esm.ai.ESM_EntityAISwimming;
+import funwayguy.esm.ai.ESM_EntityAITorchBreak;
 import funwayguy.esm.blocks.ESM_BlockEnderPortal;
 import funwayguy.esm.handlers.ESM_PathCapHandler;
 
@@ -354,7 +367,6 @@ public class ESM_Utils
 	
 	public static boolean isCloserThanOtherAttackers(World world, EntityLivingBase attacker, EntityLivingBase target)
 	{
-		ESM_PathCapHandler.UpdateAttackers(target);
 		List<EntityLivingBase> attackerList = ESM_PathCapHandler.attackMap.get(target);
 		
 		if(attackerList == null || attackerList.size() <= 0)
@@ -364,14 +376,14 @@ public class ESM_Utils
 		
 		float distance = attacker.getDistanceToEntity(target);
 		
-		for (int i = 0; i < attackerList.size(); ++i)
-		{
-			EntityLivingBase subject = attackerList.get(i);
+		EntityLivingBase subject = attackerList.get(attackerList.size() - 1); // We only need to check the farthest, the rest are unnecessary to check
 
-			if(subject.getDistanceToEntity(target) > distance && subject != attacker)
-			{
-				return true;
-			}
+		if(subject != null && subject.getDistanceToEntity(target) > distance && subject != attacker)
+		{
+			return true;
+		} else if(subject == null) // This is bad and needs to be resolved immediately
+		{
+			ESM_PathCapHandler.UpdateAttackers(target);
 		}
 		
 		return false;
@@ -384,77 +396,93 @@ public class ESM_Utils
 		boolean replaceCS = false;
 		boolean replaceAE = false;
 		
-		if(entityLiving.targetTasks.taskEntries.size() >= 1)
+		ESM_EntityAINearestAttackableTarget esmTargetAI = null;
+		
+		for(int i = entityLiving.targetTasks.taskEntries.size() - 1; i >= 0 ; i--)
 		{
-			List<EntityAITaskEntry> taskList = entityLiving.targetTasks.taskEntries;
+			EntityAITaskEntry task = (EntityAITaskEntry)entityLiving.targetTasks.taskEntries.get(i);
 			
-			for(int i = taskList.size()-1; i >= 0; i--)
+			if(task == null || task.action == null)
 			{
-				if(taskList.get(i).action instanceof EntityAINearestAttackableTarget && entityLiving instanceof EntityCreature)
+				continue;
+			}
+			
+			if(task.action.getClass() == EntityAINearestAttackableTarget.class && entityLiving instanceof EntityCreature) // Changed to allow other targeting based AI
+			{
+				if(esmTargetAI == null)
 				{
-					entityLiving.targetTasks.removeTask(taskList.get(i).action);
+					esmTargetAI = new ESM_EntityAINearestAttackableTarget((EntityCreature)entityLiving, new ArrayList<Class<? extends EntityLivingBase>>(), 0, true);
+					if(ESM_Settings.ambiguous_AI)
+					{
+						esmTargetAI.targetClass.add(EntityPlayer.class); // Attacking players is a must in ESM
+					}
+				}
+				
+				Class<?> targetType = ObfuscationReflectionHelper.getPrivateValue(EntityAINearestAttackableTarget.class, (EntityAINearestAttackableTarget)task.action, "field_75307_b", "targetClass");
+				
+				if(targetType != null && !esmTargetAI.targetClass.contains(targetType))
+				{
+					esmTargetAI.targetClass.add((Class<? extends EntityLivingBase>)targetType); // Accounts for custom targets. Adds to batched AI
+				}
+				
+				if(!replaceNAT)
+				{
 					replaceNAT = true;
+					EntityAITaskEntry replacement = entityLiving.targetTasks.new EntityAITaskEntry(task.priority, esmTargetAI);
+					entityLiving.targetTasks.taskEntries.set(i, replacement);
+					entityLiving.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(ESM_Settings.Awareness);
+				} else
+				{
+					entityLiving.targetTasks.taskEntries.remove(i); // Remove redundant AI
 				}
+			} else if(task.action.getClass() == EntityAIAttackOnCollide.class && entityLiving instanceof EntityCreature)
+			{
+				boolean longMemory = ObfuscationReflectionHelper.getPrivateValue(EntityAIAttackOnCollide.class, (EntityAIAttackOnCollide)task.action, "field_75437_f", "longMemory");
+				Class<?> targetType = ObfuscationReflectionHelper.getPrivateValue(EntityAIAttackOnCollide.class, (EntityAIAttackOnCollide)task.action, "field_75444_h", "classTarget");
+				double speed = ObfuscationReflectionHelper.getPrivateValue(EntityAIAttackOnCollide.class, (EntityAIAttackOnCollide)task.action, "field_75440_e", "speedTowardsTarget");
+				
+				ESM_EntityAIAttackOnCollide esmAOC = new ESM_EntityAIAttackOnCollide((EntityCreature)entityLiving, targetType, speed, longMemory);
+				EntityAITaskEntry replacement = entityLiving.targetTasks.new EntityAITaskEntry(task.priority, esmAOC);
+				entityLiving.targetTasks.taskEntries.set(i, replacement);
 			}
 		}
 		
-		if(entityLiving.tasks.taskEntries.size() >= 1)
+		for(int i = entityLiving.tasks.taskEntries.size() - 1; i >= 0; i--)
 		{
-			List<EntityAITaskEntry> taskList = entityLiving.tasks.taskEntries;
+			EntityAITaskEntry task = (EntityAITaskEntry)entityLiving.tasks.taskEntries.get(i);
 			
-			for(int i = taskList.size()-1; i >= 0; i--)
+			if(task == null || task.action == null)
 			{
-				if(taskList.get(i).action instanceof EntityAICreeperSwell && entityLiving instanceof EntityCreeper)
+				continue;
+			}
+			
+			if(task.action.getClass() == EntityAICreeperSwell.class && entityLiving instanceof EntityCreeper)
+			{
+				if(!replaceCS)
 				{
-					entityLiving.tasks.removeTask(taskList.get(i).action);
 					replaceCS = true;
-				}
-			}
-		}
-		
-		if(entityLiving.tasks.taskEntries.size() >= 1)
-		{
-			List<EntityAITaskEntry> taskList = entityLiving.tasks.taskEntries;
-			
-			for(int i = taskList.size()-1; i >= 0; i--)
-			{
-				if(taskList.get(i).action instanceof EntityAIAvoidEntity && entityLiving instanceof EntityVillager)
+					EntityAITaskEntry replacement = entityLiving.tasks.new EntityAITaskEntry(task.priority, new ESM_EntityAICreeperSwell((EntityCreeper)entityLiving));
+					entityLiving.tasks.taskEntries.set(i, replacement);
+				} else
 				{
-					entityLiving.tasks.removeTask(taskList.get(i).action);
-					replaceAE = true;
+					entityLiving.tasks.taskEntries.remove(i);
 				}
-			}
-		}
-		
-		if(replaceNAT)
-		{
-			if(!(entityLiving instanceof EntityZombie) || ESM_Settings.Awareness > 40)
-			entityLiving.getEntityAttribute(SharedMonsterAttributes.followRange).setBaseValue(ESM_Settings.Awareness);
-			
-			ArrayList<Class<? extends EntityLivingBase>> targetable = new ArrayList<Class<? extends EntityLivingBase>>();
-			targetable.add(EntityPlayer.class);
-			targetable.add(EntityVillager.class);
-			targetable.add(EntityCreature.class);
-			entityLiving.targetTasks.addTask(2, new ESM_EntityAINearestAttackableTarget((EntityCreature)entityLiving, targetable, 0, true));
-			/*entityLiving.targetTasks.addTask(2, new ESM_EntityAINearestAttackableTarget((EntityCreature)entityLiving, EntityPlayer.class, 0, true));
-			if(entityLiving instanceof EntityZombie)
+			} else if(task.action.getClass() == EntityAIAvoidEntity.class && entityLiving instanceof EntityVillager)
 			{
-				entityLiving.targetTasks.addTask(2, new ESM_EntityAINearestAttackableTarget((EntityCreature)entityLiving, EntityVillager.class, 0, false));
-			} else
+				if(!replaceAE)
+				{
+					replaceAE = true;
+					EntityAITaskEntry replacement = entityLiving.tasks.new EntityAITaskEntry(task.priority, new EntityAIAvoidEntity((EntityVillager)entityLiving, IMob.class, 12.0F, 0.6D, 0.6D));
+					entityLiving.tasks.taskEntries.set(i, replacement);
+				} else
+				{
+					entityLiving.tasks.taskEntries.remove(i);
+				}
+			} else if(task.action.getClass() == EntityAISwimming.class)
 			{
-				entityLiving.targetTasks.addTask(2, new ESM_EntityAINearestAttackableTarget((EntityCreature)entityLiving, EntityVillager.class, 0, true));
+				EntityAITaskEntry replacement = entityLiving.tasks.new EntityAITaskEntry(task.priority, new ESM_EntityAISwimming(entityLiving)); // Test this <<<
+				entityLiving.tasks.taskEntries.set(i, replacement);
 			}
-			entityLiving.targetTasks.addTask(2, new ESM_EntityAINearestAttackableTarget((EntityCreature)entityLiving, EntityCreature.class, 0, true));*/
-		}
-		
-		if(replaceCS)
-		{
-			entityLiving.tasks.addTask(2, new ESM_EntityAICreeperSwell((EntityCreeper)entityLiving));
-		}
-		
-		if(replaceAE)
-		{
-			entityLiving.tasks.addTask(1, new EntityAIAvoidEntity((EntityVillager)entityLiving, IMob.class, 12.0F, 0.6D, 0.6D));
 		}
 		
 		if(entityLiving instanceof EntityCreature)
@@ -474,12 +502,9 @@ public class ESM_Utils
 		
 		if(entityLiving instanceof EntityZombie && ESM_Settings.ZombieDiggers)
 		{
-			if(ESM_Settings.ZombieDiggers)
-			{
-				entityLiving.targetTasks.addTask(3, new ESM_EntityAIDigging((EntityZombie)entityLiving));
-				entityLiving.tasks.addTask(5, new ESM_EntityAITorchBreak((EntityZombie)entityLiving));
-				entityLiving.tasks.addTask(6, new ESM_EntityAIGrief((EntityZombie)entityLiving));
-			}
+			entityLiving.targetTasks.addTask(3, new ESM_EntityAIDigging((EntityZombie)entityLiving));
+			entityLiving.tasks.addTask(5, new ESM_EntityAITorchBreak((EntityZombie)entityLiving));
+			entityLiving.tasks.addTask(6, new ESM_EntityAIGrief((EntityZombie)entityLiving));
 			
 			entityLiving.targetTasks.addTask(3, new ESM_EntityAIPillarUp(entityLiving));
 			entityLiving.tasks.addTask(5, new ESM_EntityAIBuildTrap(entityLiving));

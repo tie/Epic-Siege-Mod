@@ -40,19 +40,12 @@ public class ESM_EntityAIPillarUp extends EntityAIBase
 			int i = MathHelper.floor_double(builder.posX);
 			int j = MathHelper.floor_double(builder.posY);
 			int k = MathHelper.floor_double(builder.posZ);
+
+			Block block = builder.worldObj.getBlock(i, j + 2, k);
 			
-			if(!builder.worldObj.getBlock(i, j - 1, k).isNormalCube())
+			if(!builder.worldObj.getBlock(i, j - 1, k).isNormalCube() || !block.getMaterial().isReplaceable())
 			{
 				return false;
-			}
-			
-			for(int jj = 0; jj <= 2; jj++)
-			{
-				Block block = builder.worldObj.getBlock(i, j + jj, k);
-				if(!block.getMaterial().isReplaceable() && block != Blocks.air)
-				{
-					return false;
-				}
 			}
 			
 			return true;
@@ -79,6 +72,7 @@ public class ESM_EntityAIPillarUp extends EntityAIBase
 		if(placeDelay > 0)
 		{
 			placeDelay--;
+			return;
 		} else
 		{
 			placeDelay = 15;
@@ -88,7 +82,11 @@ public class ESM_EntityAIPillarUp extends EntityAIBase
 			int k = MathHelper.floor_double(builder.posZ);
 
 			builder.setPositionAndUpdate(builder.posX, builder.posY + 1, builder.posZ);
-			builder.worldObj.setBlock(i, j, k, Blocks.cobblestone);
+			
+			if(builder.worldObj.getBlock(i, j, k).getMaterial().isReplaceable())
+			{
+				builder.worldObj.setBlock(i, j, k, Blocks.cobblestone);
+			}
 			blocks--;
 		}
 	}

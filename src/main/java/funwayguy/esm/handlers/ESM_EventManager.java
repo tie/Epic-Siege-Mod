@@ -2,6 +2,7 @@ package funwayguy.esm.handlers;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import net.minecraft.enchantment.Enchantment;
@@ -12,6 +13,7 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityLivingData;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityCreeper;
@@ -23,7 +25,6 @@ import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityTameable;
-import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayer.EnumStatus;
 import net.minecraft.entity.projectile.EntityArrow;
@@ -60,6 +61,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
+import funwayguy.esm.ai.GenericEntitySelector;
 import funwayguy.esm.client.gui.ESMGuiConfig;
 import funwayguy.esm.core.ESM;
 import funwayguy.esm.core.ESM_Settings;
@@ -290,6 +292,16 @@ public class ESM_EventManager
 		
 		ESM_PathCapHandler.RemoveTarget(event.entityLiving);
 		
+		if(event.entityLiving instanceof EntityLiving)
+		{
+			EntityLivingBase target = ((EntityLiving)event.entityLiving).getAttackTarget();
+			
+			if(target != null)
+			{
+				ESM_PathCapHandler.UpdateAttackers(target);
+			}
+		}
+		
 		if(event.entity instanceof EntityPlayer)
 		{
 			if(event.source.getSourceOfDamage() instanceof EntityZombie && ESM_Settings.ZombieInfectious)
@@ -335,6 +347,7 @@ public class ESM_EventManager
 				entity.getNavigator().clearPathEntity();
 				entity.setAttackTarget(null);
 				entity.setTarget(null);
+				entity.setRevengeTarget(null);
 				return;
 			}
 			
@@ -343,67 +356,44 @@ public class ESM_EventManager
 				entity.getNavigator().clearPathEntity();
 				entity.setAttackTarget(null);
 				entity.setTarget(null);
+				entity.setRevengeTarget(null);
 				return;
 			}
 			
 			if(!entity.hasPath())
 			{
-				// This entity may be auto-invalidating its current target/path so we ignore the delay to make sure that every tick its AI is on track
+				// This entity may be auto-invalidating its current target/path
 				entity.setPathToEntity(entity.worldObj.getPathEntityToEntity(entity, target, ESM_Settings.Awareness, true, false, false, true));
-				entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 0);
+				entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 10);
 			}
 			
 			// In case the target hasn't been applied to both variables yet we just re-set both of them.
 			entity.setTarget(target);
 			entity.setAttackTarget(target);
+			entity.setRevengeTarget(target);
 			return;
 		}
 		
 		EntityLivingBase closestTarget = null;
 		ArrayList<EntityLiving> targets = new ArrayList<EntityLiving>();
 		
-		targets.addAll(entity.worldObj.getEntitiesWithinAABB(EntityPlayer.class, entity.boundingBox.expand(ESM_Settings.Awareness, ESM_Settings.Awareness, ESM_Settings.Awareness)));
-		
-		if(ESM_Settings.VillagerTarget)
-		{
-			targets.addAll(entity.worldObj.getEntitiesWithinAABB(EntityVillager.class, entity.boundingBox.expand(ESM_Settings.Awareness, ESM_Settings.Awareness, ESM_Settings.Awareness)));
-		}
-		
-		if(ESM_Settings.Chaos)
-		{
-			targets.addAll(entity.worldObj.getEntitiesWithinAABB(EntityCreature.class, entity.boundingBox.expand(ESM_Settings.Awareness, ESM_Settings.Awareness, ESM_Settings.Awareness)));
-		}
-		
-		double dist = ESM_Settings.Awareness + 1;
+		targets.addAll(entity.worldObj.selectEntitiesWithinAABB(EntityLivingBase.class, entity.boundingBox.expand(ESM_Settings.Awareness, ESM_Settings.Awareness, ESM_Settings.Awareness), new GenericEntitySelector(entity)));
+		Collections.sort(targets, new EntityAINearestAttackableTarget.Sorter(entity));
 		
 		for(int i = 0; i < targets.size(); i++)
 		{
 			EntityLivingBase subject = targets.get(i);
 			
-			if(subject.isDead || subject.getHealth() <= 0)
-			{
-				continue;
-			}
-			
-			if(subject instanceof EntityPlayer)
-			{
-				EntityPlayer tmpPlayer = (EntityPlayer)subject;
-				
-				if(tmpPlayer.capabilities.isCreativeMode)
-				{
-					continue;
-				}
-			}
-			
-			if(entity.getDistanceToEntity(subject) < dist && (ESM_Settings.Xray || entity instanceof EntitySpider || entity.canEntityBeSeen(subject)) && (ESM_Settings.TargetCap < 0 || ESM_PathCapHandler.attackMap.get(subject) == null || ESM_PathCapHandler.attackMap.get(subject).size() < ESM_Settings.TargetCap || ESM_Utils.isCloserThanOtherAttackers(entity.worldObj, entity, subject)))
+			if(ESM_Settings.TargetCap < 0 || ESM_PathCapHandler.attackMap.get(subject) == null || ESM_PathCapHandler.attackMap.get(subject).size() < ESM_Settings.TargetCap || ESM_Utils.isCloserThanOtherAttackers(entity.worldObj, entity, subject))
 			{
 				closestTarget = subject;
-				dist = entity.getDistanceToEntity(subject);
+				break; // List is sorted, no need to continue looping through everything
 			}
 		}
 		
 		entity.setTarget(closestTarget);
 		entity.setAttackTarget(closestTarget);
+		entity.setRevengeTarget(closestTarget);
 		
 		if(closestTarget != null)
 		{
