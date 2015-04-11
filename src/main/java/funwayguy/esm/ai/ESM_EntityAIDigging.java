@@ -37,7 +37,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
 			return false;
 		} else
 		{
-			refresh = 60;
+			refresh = 30;
 		}
 		
     	// Returns true if something like Iguana Tweaks is nerfing the vanilla picks. This will then cause zombies to ignore the harvestability of blocks when holding picks
@@ -79,7 +79,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
     	
     	if(refresh <= 0)
     	{
-    		refresh = 60;
+    		refresh = 30;
     		
 			MovingObjectPosition mop = GetNextObstical(entityDigger, 2D);
 			

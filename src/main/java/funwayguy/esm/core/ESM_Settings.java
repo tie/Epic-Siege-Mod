@@ -34,6 +34,8 @@ public class ESM_Settings
 	public static boolean QuickPathing; //DONE
 	public static int ResistanceCoolDown; //DONE
 	public static boolean keepLoaded; // DONE
+	public static boolean moreSpawning; // DONE
+	public static boolean forcePath; // DONE
 	
 	//Creeper
 	public static boolean CreeperBreaching; //DONE
@@ -102,7 +104,6 @@ public class ESM_Settings
 	public static boolean ambiguous_AI = true;
 	public static Configuration defConfig;
 	public static ArrayList<Integer> AIExempt = new ArrayList<Integer>();
-	public static boolean moreSpawning = true;
 
 	public static void LoadMainConfig(File file)
 	{
@@ -145,6 +146,8 @@ public class ESM_Settings
         QuickPathing = defConfig.get("Main", "Quick Pathing", false, "If set to fales, mobs can use much longer routes to get to their target").getBoolean(false);
         ResistanceCoolDown = defConfig.get("Main", "Resistance Cooldown", 200, "The amount of ticks of resistance given to the player after changing dimensions").getInt(200);
         keepLoaded = defConfig.get("Main", "Keep Loaded", false, "Keeps mobs with an active target from despawning. Can causes issues with chunk loading/unloading").getBoolean(false);
+        moreSpawning = defConfig.get("Main", "More Spawning", true, "Reduces spawning safe zone from 24 blocks to 8 and makes mobs require only basic conditions to spawn").getBoolean(true);
+        forcePath = defConfig.get("Main", "Force Non-AI Pathing", false, "Forces non pathing mobs to attack from further away. Can cause additional lag").getBoolean(false);
         
         int[] tmpAIE = defConfig.get("Main", "AI Exempt Mob IDs", new int[]{}).getIntList();
         AIExempt = new ArrayList<Integer>();
@@ -323,6 +326,8 @@ public class ESM_Settings
         QuickPathing = config.get("Main", "Quick Pathing", QuickPathing, "If set to fales, mobs can use much longer routes to get to their target").getBoolean(QuickPathing);
         ResistanceCoolDown = config.get("Main", "Resistance Cooldown", ResistanceCoolDown, "The amount of ticks of resistance given to the player after changing dimensions").getInt(ResistanceCoolDown);
         keepLoaded = config.get("Main", "Keep Loaded", false, "Keeps mobs with an active target from despawning. Can causes issues with chunk loading/unloading").getBoolean(false);
+        moreSpawning = config.get("Main", "More Spawning", true, "Reduces spawning safe zone from 24 blocks to 8 and makes mobs require only basic conditions to spawn").getBoolean(true);
+        forcePath = config.get("Main", "Force Non-AI Pathing", false, "Forces non pathing mobs to attack from further away. Can cause additional lag").getBoolean(false);
         
         //Creeper
         CreeperBreaching = config.get("Creeper", "Breaching", CreeperBreaching).getBoolean(CreeperBreaching);

@@ -60,19 +60,11 @@ public class ESM_EntityAIAttackEvasion extends EntityAIBase
 
 		@SuppressWarnings("unchecked")
 		List<EntityMob> attackers = this.theEntity.worldObj.selectEntitiesWithinAABB(EntityMob.class, this.theEntity.boundingBox.expand(16D, 16D, 16D), this.field_98218_a);
-		Iterator<EntityMob> attIter = attackers.iterator();
-		
-		while(attIter.hasNext())
+		if(attackers.size() > 1)
 		{
-			if(attIter.next() == this.theEntity)
-			{
-				continue;
-			} else
-			{
-				return false; // We have backup so don't flee
-			}
+			return false;
 		}
-    	
+		
         @SuppressWarnings("unchecked")
 		List<EntityPlayer> list = this.theEntity.worldObj.selectEntitiesWithinAABB(EntityPlayer.class, this.theEntity.boundingBox.expand((double)this.distanceFromEntity, (double)this.distanceFromEntity, (double)this.distanceFromEntity), this.field_98218_a);
 

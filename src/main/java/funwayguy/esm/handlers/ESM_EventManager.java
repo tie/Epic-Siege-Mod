@@ -364,7 +364,7 @@ public class ESM_EventManager
 				return;
 			}
 			
-			if(!entity.hasPath())
+			if(!entity.hasPath() && ESM_Settings.forcePath)
 			{
 				// This entity may be auto-invalidating its current target/path
 				entity.setPathToEntity(entity.worldObj.getPathEntityToEntity(entity, target, ESM_Settings.Awareness, true, false, false, true));
@@ -652,6 +652,7 @@ public class ESM_EventManager
 			
 			if(!mc.isServerRunning())
 			{
+				ESM_PathCapHandler.attackMap.clear();
 				ESM_Settings.currentWorlds = null;
 				ESM_Settings.worldDir = null;
 			}

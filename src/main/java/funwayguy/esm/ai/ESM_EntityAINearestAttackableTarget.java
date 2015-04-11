@@ -69,6 +69,21 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
     		searchDelay = ESM_Settings.Awareness;
     	}
     	
+    	if(targetEntity != null)
+    	{
+            int pathCount = ESM_Utils.getAIPathCount(this.taskOwner.worldObj, targetEntity);
+            
+    		if(targetEntity.isEntityAlive() && this.taskOwner.getDistanceToEntity(targetEntity) <= this.getTargetDistance() && (pathCount < ESM_Settings.TargetCap || ESM_Settings.TargetCap == -1 || ESM_Utils.isCloserThanOtherAttackers(this.taskOwner.worldObj, taskOwner, targetEntity)))
+    		{
+    			return true;
+    		} else
+    		{
+        		searchDelay = ESM_Settings.Awareness;
+    			targetEntity = null;
+    			return false;
+    		}
+    	}
+    	
         if (this.targetChance > 0 && this.taskOwner.getRNG().nextInt(this.targetChance) != 0)
         {
             return false;

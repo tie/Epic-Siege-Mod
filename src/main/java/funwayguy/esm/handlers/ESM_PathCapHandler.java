@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import org.apache.logging.log4j.Level;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import funwayguy.esm.core.ESM;
 import funwayguy.esm.core.ESM_Settings;
 
 public class ESM_PathCapHandler
@@ -16,7 +18,12 @@ public class ESM_PathCapHandler
 	
 	public static void AddNewAttack(EntityLivingBase source, EntityLivingBase target)
 	{
-		if(!source.isEntityAlive() || !target.isEntityAlive())
+		if(source == null || target == null || !source.isEntityAlive() || !target.isEntityAlive())
+		{
+			return;
+		}
+		
+		if(attackMap.size() >= 128)
 		{
 			return;
 		}
@@ -29,14 +36,22 @@ public class ESM_PathCapHandler
 			} else
 			{
 				attackMap.get(target).add(source);
+				
+				UpdateAttackers(target);
 			}
 		} else
 		{
 			attackMap.put(target, new ArrayList<EntityLivingBase>());
 			attackMap.get(target).add(source);
+			
+			UpdateAttackers(target);
 		}
 		
-		UpdateAttackers(target);
+		if(attackMap.size() >= 128)
+		{
+			ESM.log.log(Level.WARN, "Hard limit of 128 active targets has been reached!");
+			return;
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -44,7 +59,7 @@ public class ESM_PathCapHandler
 	{
 		if(attackMap.containsKey(target))
 		{
-			if(!target.isEntityAlive())
+			if(!target.isDead || target.getHealth() <= 0)
 			{
 				attackMap.remove(target);
 				return;
@@ -52,11 +67,12 @@ public class ESM_PathCapHandler
 			
 			ArrayList<EntityLivingBase> attackers = attackMap.get(target);
 			
+			// Clear all invalid attackers
 			for(int i = attackers.size() - 1; i >= 0; i--)
 			{
 				EntityLivingBase subject = attackers.get(i);
 				
-				if(subject.isDead || subject.getHealth() <= 0 || subject.dimension != target.dimension)
+				if(subject == null || subject.isDead || subject.getHealth() <= 0 || subject.dimension != target.dimension)
 				{
 					attackers.remove(i);
 					continue;

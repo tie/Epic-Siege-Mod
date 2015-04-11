@@ -353,7 +353,6 @@ public class ESM_Utils
 
 	public static int getAIPathCount(World world, EntityLivingBase targetEntity)
 	{
-		ESM_PathCapHandler.UpdateAttackers(targetEntity);
 		List<EntityLivingBase> attackerList = ESM_PathCapHandler.attackMap.get(targetEntity);
 		
 		if(attackerList == null)
