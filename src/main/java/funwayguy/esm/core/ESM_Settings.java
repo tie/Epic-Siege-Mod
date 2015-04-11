@@ -102,6 +102,7 @@ public class ESM_Settings
 	public static boolean ambiguous_AI = true;
 	public static Configuration defConfig;
 	public static ArrayList<Integer> AIExempt = new ArrayList<Integer>();
+	public static boolean moreSpawning = true;
 
 	public static void LoadMainConfig(File file)
 	{

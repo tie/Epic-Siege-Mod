@@ -12,6 +12,7 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.boss.IBossDisplayData;
@@ -41,9 +42,13 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.SpawnerAnimals;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.BiomeGenBase;
+import net.minecraft.world.biome.BiomeGenBase.SpawnListEntry;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.EnderTeleportEvent;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
@@ -53,7 +58,6 @@ import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import net.minecraftforge.event.world.WorldEvent.Unload;
-import org.apache.logging.log4j.Level;
 import com.google.common.base.Stopwatch;
 import cpw.mods.fml.client.event.ConfigChangedEvent;
 import cpw.mods.fml.common.eventhandler.Event.Result;
@@ -434,6 +438,7 @@ public class ESM_EventManager
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	@SubscribeEvent
 	public void onLivingUpdate(LivingUpdateEvent event)
 	{
@@ -502,6 +507,35 @@ public class ESM_EventManager
 		} else if(event.entityLiving instanceof EntityEnderman)
 		{
 			ESM_EndermanHandler.onLivingUpdate((EntityEnderman)event.entityLiving);
+		} else if(ESM_Settings.moreSpawning && event.entityLiving instanceof EntityPlayer && event.entityLiving.getRNG().nextInt(25) == 0 && event.entityLiving.worldObj instanceof WorldServer)
+		{
+			int x = MathHelper.floor_double(event.entityLiving.posX) + event.entityLiving.getRNG().nextInt(48) - 24;
+			int y = MathHelper.floor_double(event.entityLiving.posY) + event.entityLiving.getRNG().nextInt(48) - 24;
+			int z = MathHelper.floor_double(event.entityLiving.posZ) + event.entityLiving.getRNG().nextInt(48) - 24;
+			
+			if(event.entityLiving.worldObj.getClosestPlayer(x, y, z, 8D) == null && SpawnerAnimals.canCreatureTypeSpawnAtLocation(EnumCreatureType.monster, event.entityLiving.worldObj, x, y, z))
+			{
+                SpawnListEntry spawnlistentry = ((WorldServer)event.entityLiving.worldObj).spawnRandomCreature(EnumCreatureType.monster, x, y, z);
+                
+                EntityLiving entityliving;
+
+                try
+                {
+                    entityliving = (EntityLiving)spawnlistentry.entityClass.getConstructor(new Class[] {World.class}).newInstance(new Object[] {event.entityLiving.worldObj});
+
+                    entityliving.setLocationAndAngles((double)x, (double)y, (double)z, event.entityLiving.getRNG().nextFloat() * 360.0F, 0.0F);
+
+                    Result canSpawn = ForgeEventFactory.canEntitySpawn(entityliving, event.entityLiving.worldObj, x, y, z);
+                    if (canSpawn == Result.ALLOW || (canSpawn == Result.DEFAULT && entityliving.getCanSpawnHere()))
+                    {
+                    	event.entityLiving.worldObj.spawnEntityInWorld(entityliving);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    exception.printStackTrace();
+                }
+			}
 		}
 		
 		return;
@@ -802,6 +836,15 @@ public class ESM_EventManager
 		{
 			event.setResult(Result.DENY);
 			return;
+		} else if(event.entityLiving instanceof EntityMob && ESM_Settings.moreSpawning)
+		{
+	        int i = MathHelper.floor_double(event.entityLiving.posX);
+	        int j = MathHelper.floor_double(event.entityLiving.boundingBox.minY);
+	        int k = MathHelper.floor_double(event.entityLiving.posZ);
+			if(event.world.checkNoEntityCollision(event.entityLiving.boundingBox) && event.world.getCollidingBoundingBoxes(event.entityLiving, event.entityLiving.boundingBox).isEmpty() && !event.world.isAnyLiquid(event.entityLiving.boundingBox) && ((EntityMob)event.entityLiving).getBlockPathWeight(i, j, k) >= 0.0F)
+			{
+				event.setResult(Result.ALLOW); // Let's kill some peoples
+			}
 		}
 	}
 }
