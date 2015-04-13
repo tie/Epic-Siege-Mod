@@ -25,10 +25,10 @@ public class ESM_EntityAIGrief extends EntityAIBase
 	@Override
 	public boolean shouldExecute()
 	{
-		if(this.entityLiving.getRNG().nextInt(10) != 0) // Severely nerfs how many time the next part of the script can run
+		/*if(this.entityLiving.getRNG().nextInt(10) != 0) // Severely nerfs how many time the next part of the script can run
 		{
 			return false;
-		}
+		}*/
 		
     	// Returns true if something like Iguana Tweaks is nerfing the vanilla picks. This will then cause zombies to ignore the harvestability of blocks when holding picks
     	boolean nerfedPick = !Items.iron_pickaxe.canHarvestBlock(Blocks.stone, new ItemStack(Items.iron_pickaxe));
@@ -42,27 +42,21 @@ public class ESM_EntityAIGrief extends EntityAIBase
 		}
 		
 		int[] candidate = null;
-		double dist = 99;
 		ItemStack item = entityLiving.getEquipmentInSlot(0);
 		
-		for(int ii = i - 16; ii < i + 16; ii++)
+		int ii = i + entityLiving.getRNG().nextInt(32) - 16;
+		int jj = j + entityLiving.getRNG().nextInt(16) - 8;
+		int kk = k + entityLiving.getRNG().nextInt(32) - 16;
+		
+		Block block = entityLiving.worldObj.getBlock(ii, jj, kk);
+		int meta = entityLiving.worldObj.getBlockMetadata(ii, jj, kk);
+		String regName = Block.blockRegistry.getNameForObject(block);
+		
+		if((ESM_Settings.ZombieGriefBlocks.contains(regName) || ESM_Settings.ZombieGriefBlocks.contains(regName + ":" + meta) || block.getLightValue() > 0) && block.getBlockHardness(entityLiving.worldObj, ii, jj, kk) >= 0 && !block.getMaterial().isLiquid())
 		{
-			for(int jj = j - 16; jj < j + 16; jj++)
+			if(!ESM_Settings.ZombieDiggerTools || (item != null && (item.getItem().canHarvestBlock(block, item) || (item.getItem() instanceof ItemPickaxe && nerfedPick && block.getMaterial() == Material.rock))) || block.getMaterial().isToolNotRequired())
 			{
-				for(int kk = k - 16; kk < k + 16; kk++)
-				{
-					Block block = entityLiving.worldObj.getBlock(ii, jj, kk);
-					int meta = entityLiving.worldObj.getBlockMetadata(ii, jj, kk);
-					String regName = Block.blockRegistry.getNameForObject(block);
-					if((ESM_Settings.ZombieGriefBlocks.contains(regName) || ESM_Settings.ZombieGriefBlocks.contains(regName + ":" + meta)) && entityLiving.getDistance(ii, jj, kk) < dist && block.getBlockHardness(entityLiving.worldObj, ii, jj, kk) >= 0 && !block.getMaterial().isLiquid())
-					{
-						if(!ESM_Settings.ZombieDiggerTools || (item != null && (item.getItem().canHarvestBlock(block, item) || (item.getItem() instanceof ItemPickaxe && nerfedPick && block.getMaterial() == Material.rock))) || block.getMaterial().isToolNotRequired())
-						{
-							candidate = new int[]{ii, jj, kk};
-							dist = entityLiving.getDistance(ii, jj, kk);
-						}
-					}
-				}
+				candidate = new int[]{ii, jj, kk};
 			}
 		}
 		
@@ -86,6 +80,7 @@ public class ESM_EntityAIGrief extends EntityAIBase
     	
 		if(markedLoc == null || !entityLiving.isEntityAlive() || entityLiving.getAttackTarget() != null)
 		{
+			markedLoc = null;
 			return false;
 		}
 		
@@ -93,8 +88,9 @@ public class ESM_EntityAIGrief extends EntityAIBase
 		int meta = entityLiving.worldObj.getBlockMetadata(markedLoc[0], markedLoc[1], markedLoc[2]);
 		String regName = Block.blockRegistry.getNameForObject(block);
 		
-		if(block == null || block == Blocks.air || (!ESM_Settings.ZombieGriefBlocks.contains(regName) && !ESM_Settings.ZombieGriefBlocks.contains(regName + ":" + meta)))
+		if(block == null || block == Blocks.air || (!ESM_Settings.ZombieGriefBlocks.contains(regName) && !ESM_Settings.ZombieGriefBlocks.contains(regName + ":" + meta) && block.getLightValue() <= 0))
 		{
+			markedLoc = null;
 			return false;
 		}
 		
@@ -116,7 +112,10 @@ public class ESM_EntityAIGrief extends EntityAIBase
 		
 		if(entityLiving.getDistance(markedLoc[0], markedLoc[1], markedLoc[2]) >= 3)
 		{
-			entityLiving.getNavigator().tryMoveToXYZ(markedLoc[0], markedLoc[1], markedLoc[2], 1D);
+			if(entityLiving.getNavigator().noPath())
+			{
+				entityLiving.getNavigator().tryMoveToXYZ(markedLoc[0], markedLoc[1], markedLoc[2], 1D);
+			}
 			digTick = 0;
 			return;
 		}

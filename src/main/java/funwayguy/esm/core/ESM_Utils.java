@@ -52,17 +52,7 @@ import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.FMLControlledNamespacedRegistry;
 import cpw.mods.fml.common.registry.GameData;
-import funwayguy.esm.ai.ESM_EntityAIAttackEvasion;
-import funwayguy.esm.ai.ESM_EntityAIAttackOnCollide;
-import funwayguy.esm.ai.ESM_EntityAIAvoidDetonatingCreepers;
-import funwayguy.esm.ai.ESM_EntityAIBuildTrap;
-import funwayguy.esm.ai.ESM_EntityAICreeperSwell;
-import funwayguy.esm.ai.ESM_EntityAIDigging;
-import funwayguy.esm.ai.ESM_EntityAIGrief;
-import funwayguy.esm.ai.ESM_EntityAINearestAttackableTarget;
-import funwayguy.esm.ai.ESM_EntityAIPillarUp;
-import funwayguy.esm.ai.ESM_EntityAISwimming;
-import funwayguy.esm.ai.ESM_EntityAITorchBreak;
+import funwayguy.esm.ai.*;
 import funwayguy.esm.blocks.ESM_BlockEnderPortal;
 import funwayguy.esm.handlers.ESM_PathCapHandler;
 
@@ -502,7 +492,6 @@ public class ESM_Utils
 		if(entityLiving instanceof EntityZombie && ESM_Settings.ZombieDiggers)
 		{
 			entityLiving.targetTasks.addTask(3, new ESM_EntityAIDigging((EntityZombie)entityLiving));
-			entityLiving.tasks.addTask(5, new ESM_EntityAITorchBreak((EntityZombie)entityLiving));
 			entityLiving.tasks.addTask(6, new ESM_EntityAIGrief((EntityZombie)entityLiving));
 			
 			entityLiving.targetTasks.addTask(3, new ESM_EntityAIPillarUp(entityLiving));

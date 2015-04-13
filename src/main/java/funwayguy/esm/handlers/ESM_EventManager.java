@@ -275,6 +275,8 @@ public class ESM_EventManager
 		if(!(event.entityLiving instanceof EntityPlayer) && event.entityLiving.ridingEntity != null && event.source == DamageSource.inWall)
 		{
 			event.entityLiving.dismountEntity(event.entityLiving.ridingEntity);
+			event.entityLiving.ridingEntity.riddenByEntity = null;
+			event.entityLiving.ridingEntity = null;
 		}
 		
 		if(event.source != null && event.source.getEntity() instanceof EntitySpider && ESM_Settings.SpiderWebChance > event.entityLiving.getRNG().nextInt(100))
@@ -842,7 +844,18 @@ public class ESM_EventManager
 	        int i = MathHelper.floor_double(event.entityLiving.posX);
 	        int j = MathHelper.floor_double(event.entityLiving.boundingBox.minY);
 	        int k = MathHelper.floor_double(event.entityLiving.posZ);
-			if(event.world.checkNoEntityCollision(event.entityLiving.boundingBox) && event.world.getCollidingBoundingBoxes(event.entityLiving, event.entityLiving.boundingBox).isEmpty() && !event.world.isAnyLiquid(event.entityLiving.boundingBox) && ((EntityMob)event.entityLiving).getBlockPathWeight(i, j, k) >= 0.0F)
+	        
+	        int l = event.entityLiving.worldObj.getBlockLightValue(i, j, k);
+
+            if (event.entityLiving.worldObj.isThundering())
+            {
+                int i1 = event.entityLiving.worldObj.skylightSubtracted;
+                event.entityLiving.worldObj.skylightSubtracted = 10;
+                l = event.entityLiving.worldObj.getBlockLightValue(i, j, k);
+                event.entityLiving.worldObj.skylightSubtracted = i1;
+            }
+            
+			if(event.world.checkNoEntityCollision(event.entityLiving.boundingBox) && event.world.getCollidingBoundingBoxes(event.entityLiving, event.entityLiving.boundingBox).isEmpty() && !event.world.isAnyLiquid(event.entityLiving.boundingBox) && ((EntityMob)event.entityLiving).getBlockPathWeight(i, j, k) >= 0.0F && l <= 7)
 			{
 				event.setResult(Result.ALLOW); // Let's kill some peoples
 			}
