@@ -17,6 +17,7 @@ import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackOnCollide;
 import net.minecraft.entity.ai.EntityAIAvoidEntity;
+import net.minecraft.entity.ai.EntityAIBreakDoor;
 import net.minecraft.entity.ai.EntityAICreeperSwell;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
@@ -436,6 +437,8 @@ public class ESM_Utils
 			}
 		}
 		
+		ESM_EntityAIBreakDoor_Proxy esmBD = null; // Cached for zombies who switch out their AI dynamically
+		
 		for(int i = entityLiving.tasks.taskEntries.size() - 1; i >= 0; i--)
 		{
 			EntityAITaskEntry task = (EntityAITaskEntry)entityLiving.tasks.taskEntries.get(i);
@@ -469,19 +472,24 @@ public class ESM_Utils
 				}
 			} else if(task.action.getClass() == EntityAISwimming.class)
 			{
-				EntityAITaskEntry replacement = entityLiving.tasks.new EntityAITaskEntry(task.priority, new ESM_EntityAISwimming(entityLiving)); // Test this <<<
+				EntityAITaskEntry replacement = entityLiving.tasks.new EntityAITaskEntry(task.priority, new ESM_EntityAISwimming(entityLiving));
+				entityLiving.tasks.taskEntries.set(i, replacement);
+			} else if(task.action.getClass() == EntityAIBreakDoor.class)
+			{
+				esmBD = new ESM_EntityAIBreakDoor_Proxy(entityLiving);
+				EntityAITaskEntry replacement = entityLiving.tasks.new EntityAITaskEntry(task.priority, esmBD);
 				entityLiving.tasks.taskEntries.set(i, replacement);
 			}
 		}
 		
 		if(entityLiving instanceof EntityCreature)
 		{
-			if(entityLiving.targetTasks.taskEntries.size() > 0)
+			if(entityLiving.tasks.taskEntries.size() > 0)
 			{
-				entityLiving.targetTasks.addTask(0, new ESM_EntityAIAvoidDetonatingCreepers((EntityCreature)entityLiving, 9F, 1.5D, 1.5D));
+				entityLiving.tasks.addTask(0, new ESM_EntityAIAvoidDetonatingCreepers((EntityCreature)entityLiving, 9F, 1.5D, 1.5D));
 				if((entityLiving instanceof IMob || ESM_Settings.ambiguous_AI) && !(entityLiving instanceof EntityCreeper))
 				{
-					entityLiving.targetTasks.addTask(0, new ESM_EntityAIAttackEvasion((EntityCreature)entityLiving, 5F, 1.5D, 1.5D));
+					entityLiving.tasks.addTask(0, new ESM_EntityAIAttackEvasion((EntityCreature)entityLiving, 5F, 1.5D, 1.5D));
 				}
 			} else
 			{
@@ -489,13 +497,34 @@ public class ESM_Utils
 			}
 		}
 		
-		if(entityLiving instanceof EntityZombie && ESM_Settings.ZombieDiggers)
+		if(entityLiving instanceof EntityZombie)
 		{
-			entityLiving.targetTasks.addTask(3, new ESM_EntityAIDigging((EntityZombie)entityLiving));
-			entityLiving.tasks.addTask(6, new ESM_EntityAIGrief((EntityZombie)entityLiving));
+			try
+			{
+				Object tmp = esmBD != null? esmBD : new ESM_EntityAIBreakDoor_Proxy(entityLiving);
+				Field aiField = EntityZombie.class.getDeclaredField("field_146075_bs");
+				aiField.setAccessible(true);
+				aiField.set(entityLiving, tmp);
+				
+				if(aiField.get(entityLiving) != tmp)
+				{
+					throw new Exception();
+				}
+				
+				((EntityZombie)entityLiving).func_146070_a(true);
+			} catch(Exception e)
+			{
+				ESM.log.log(Level.ERROR, "Unable to modify Zombie door breaking AI", e);
+			}
 			
-			entityLiving.targetTasks.addTask(3, new ESM_EntityAIPillarUp(entityLiving));
-			entityLiving.tasks.addTask(5, new ESM_EntityAIBuildTrap(entityLiving));
+			if(ESM_Settings.ZombieDiggers)
+			{
+				entityLiving.tasks.addTask(1, new ESM_EntityAIDigging((EntityZombie)entityLiving));
+				entityLiving.tasks.addTask(6, new ESM_EntityAIGrief((EntityZombie)entityLiving));
+				
+				entityLiving.tasks.addTask(3, new ESM_EntityAIPillarUp(entityLiving));
+				entityLiving.tasks.addTask(5, new ESM_EntityAIBuildTrap(entityLiving));
+			}
 		}
 	}
 

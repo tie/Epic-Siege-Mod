@@ -66,7 +66,7 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
     		return false;
     	} else
     	{
-    		searchDelay = ESM_Settings.Awareness;
+    		searchDelay = ESM_Settings.Awareness/2;
     	}
     	
     	if(targetEntity != null)
@@ -78,7 +78,7 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
     			return true;
     		} else
     		{
-        		searchDelay = ESM_Settings.Awareness;
+        		searchDelay = ESM_Settings.Awareness/2;
     			targetEntity = null;
     			return false;
     		}
@@ -99,8 +99,6 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
             }
             else
             {
-                //this.targetEntity = (EntityLivingBase)list.get(0);
-                //return true;
             	Iterator<?> var2 = list.iterator();
             	while (var2.hasNext())
                 {

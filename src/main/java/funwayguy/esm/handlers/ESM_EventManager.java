@@ -839,14 +839,14 @@ public class ESM_EventManager
 		{
 			event.setResult(Result.DENY);
 			return;
-		} else if(event.entityLiving instanceof EntityMob && ESM_Settings.moreSpawning)
+		} else if(event.entityLiving instanceof EntityMob && ESM_Settings.moreSpawning && event.getResult() != Result.DENY)
 		{
 	        int i = MathHelper.floor_double(event.entityLiving.posX);
 	        int j = MathHelper.floor_double(event.entityLiving.boundingBox.minY);
 	        int k = MathHelper.floor_double(event.entityLiving.posZ);
 	        
 	        int l = event.entityLiving.worldObj.getBlockLightValue(i, j, k);
-
+	        
             if (event.entityLiving.worldObj.isThundering())
             {
                 int i1 = event.entityLiving.worldObj.skylightSubtracted;

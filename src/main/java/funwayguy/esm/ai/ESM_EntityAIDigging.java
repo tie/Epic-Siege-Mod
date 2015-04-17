@@ -21,7 +21,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
 	EntityLiving entityDigger;
 	int digTick = 0;
 	
-	int refresh = 0; // Tracks the refresh rate for the assigned block to dig
+	int refresh = 15; // Tracks the refresh rate for the assigned block to dig
 	
 	public ESM_EntityAIDigging(EntityLiving entity)
 	{
@@ -35,25 +35,28 @@ public class ESM_EntityAIDigging extends EntityAIBase
 		{
 			refresh -= 1;
 			return false;
-		} else
-		{
-			refresh = 30;
 		}
 		
     	// Returns true if something like Iguana Tweaks is nerfing the vanilla picks. This will then cause zombies to ignore the harvestability of blocks when holding picks
     	boolean nerfedPick = !Items.iron_pickaxe.canHarvestBlock(Blocks.stone, new ItemStack(Items.iron_pickaxe));
-		MovingObjectPosition mop = GetNextObstical(entityDigger, 2D);
 		target = entityDigger.getAttackTarget();
 		
-		if(target != null && mop != null && mop.typeOfHit == MovingObjectType.BLOCK && entityDigger.getNavigator().noPath() && !(entityDigger.canEntityBeSeen(target) && entityDigger.getDistanceToEntity(target) < 2D))
+		if(target != null && entityDigger.getNavigator().noPath() && !(entityDigger.canEntityBeSeen(target) && entityDigger.getDistanceToEntity(target) < 1D))
 		{
+			refresh = 15;
+			MovingObjectPosition mop = GetNextObstical(entityDigger, 2D);
+			
+			if(mop == null || mop.typeOfHit != MovingObjectType.BLOCK)
+			{
+				return false;
+			}
+			
 			ItemStack item = entityDigger.getEquipmentInSlot(0);
 			Block block = entityDigger.worldObj.getBlock(mop.blockX, mop.blockY, mop.blockZ);
 			
 			if(!ESM_Settings.ZombieDiggerTools || (item != null && (item.getItem().canHarvestBlock(block, item) || (item.getItem() instanceof ItemPickaxe && nerfedPick && block.getMaterial() == Material.rock))) || block.getMaterial().isToolNotRequired())
 			{
 				markedLoc = new int[]{mop.blockX, mop.blockY, mop.blockZ};
-				
 				return true;
 			} else
 			{
@@ -67,7 +70,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
 	@Override
 	public boolean continueExecuting()
 	{
-		boolean flag = target != null && entityDigger != null && target.isEntityAlive() && entityDigger.isEntityAlive() && markedLoc != null && entityDigger.getNavigator().noPath() && !(entityDigger.canEntityBeSeen(target) && entityDigger.getDistanceToEntity(target) < 2D);
+		boolean flag = target != null && entityDigger != null && target.isEntityAlive() && entityDigger.isEntityAlive() && markedLoc != null && entityDigger.getNavigator().noPath() && !(entityDigger.canEntityBeSeen(target) && entityDigger.getDistanceToEntity(target) < 1D);
 		return flag;
 	}
 	
@@ -79,7 +82,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
     	
     	if(refresh <= 0)
     	{
-    		refresh = 30;
+    		refresh = 15;
     		
 			MovingObjectPosition mop = GetNextObstical(entityDigger, 2D);
 			
@@ -147,16 +150,20 @@ public class ESM_EntityAIDigging extends EntityAIBase
         float f1 = entityLiving.prevRotationPitch + (entityLiving.rotationPitch - entityLiving.prevRotationPitch) * f;
         float f2 = entityLiving.prevRotationYaw + (entityLiving.rotationYaw - entityLiving.prevRotationYaw) * f;
         
-        double pointsW = MathHelper.ceiling_double_int(entityLiving.width);
-        double pointsH = MathHelper.ceiling_double_int(entityLiving.height);
+        double digWidth = MathHelper.ceiling_double_int(entityLiving.width);
+        double digHeight = MathHelper.ceiling_double_int(entityLiving.height);
         
-        for(double x = 0D; x <= pointsW; x += 0.5D)
+        for(double x = -digWidth/2D; x <= digWidth/2D; x += 0.5D)
         {
-        	for(double y = 0D; y <= pointsH; y += 0.5D)
+        	for(double y = 0D; y <= digHeight; y += 0.5D)
             {
-        		for(double z = 0D; z <= pointsW; z += 0.5D)
+        		for(double z = -digWidth/2D; z <= digWidth/2D; z += 0.5D)
                 {
-                	MovingObjectPosition mop = AIUtils.RayCastBlocks(entityLiving.worldObj, x + entityLiving.posX, y + entityLiving.posY, z + entityLiving.posZ, f2, f1, dist, false);
+        			double rayX = entityLiving.posX + x;
+        			double rayY = entityLiving.posY + y;
+        			double rayZ = entityLiving.posZ + z;
+        			
+                	MovingObjectPosition mop = AIUtils.RayCastBlocks(entityLiving.worldObj, rayX, rayY, rayZ, f2, f1, dist, false);
                 	
                 	if(mop != null && mop.typeOfHit == MovingObjectType.BLOCK)
                 	{
