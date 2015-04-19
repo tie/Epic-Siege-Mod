@@ -1,5 +1,7 @@
 package funwayguy.esm.ai;
 
+import org.apache.logging.log4j.Level;
+import funwayguy.esm.core.ESM;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -67,7 +69,7 @@ public class ESM_EntityAIAttackOnCollide extends EntityAIBase
             if (-- this.field_75445_i <= 0)
             {
                 this.entityPathEntity = this.attacker.getNavigator().getPathToEntityLiving(entitylivingbase);
-               this.field_75445_i = MathHelper.ceiling_float_int(this.attacker.getDistanceToEntity(entitylivingbase)/2F) + this.attacker.getRNG().nextInt(7);
+               this.field_75445_i = MathHelper.ceiling_float_int(this.attacker.getDistanceToEntity(entitylivingbase)/4F) + this.attacker.getRNG().nextInt(7);
                 return this.entityPathEntity != null;
             }
             else
@@ -109,6 +111,13 @@ public class ESM_EntityAIAttackOnCollide extends EntityAIBase
     public void updateTask()
     {
         EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
+        
+        if(entitylivingbase == null)
+        {
+        	ESM.log.log(Level.ERROR, "Tried to update taks with NULL target:", new NullPointerException());
+        	return;
+        }
+        
         this.attacker.getLookHelper().setLookPositionWithEntity(entitylivingbase, 30.0F, 30.0F);
         double d0 = this.attacker.getDistanceSq(entitylivingbase.posX, entitylivingbase.boundingBox.minY, entitylivingbase.posZ);
         double d1 = (double)(this.attacker.width * 2.0F * this.attacker.width * 2.0F + entitylivingbase.width);
@@ -119,7 +128,7 @@ public class ESM_EntityAIAttackOnCollide extends EntityAIBase
             this.field_151497_i = entitylivingbase.posX;
             this.field_151495_j = entitylivingbase.boundingBox.minY;
             this.field_151496_k = entitylivingbase.posZ;
-            this.field_75445_i = failedPathFindingPenalty + MathHelper.ceiling_float_int(this.attacker.getDistanceToEntity(entitylivingbase)/2F) + this.attacker.getRNG().nextInt(7);
+            this.field_75445_i = failedPathFindingPenalty + MathHelper.ceiling_float_int(this.attacker.getDistanceToEntity(entitylivingbase)/4F) + this.attacker.getRNG().nextInt(7);
 
             if (this.attacker.getNavigator().getPath() != null)
             {
@@ -138,7 +147,7 @@ public class ESM_EntityAIAttackOnCollide extends EntityAIBase
                 failedPathFindingPenalty += 10;
             }
             
-            this.field_75445_i += MathHelper.ceiling_float_int(this.attacker.getDistanceToEntity(entitylivingbase)/8F * 5F);
+            this.field_75445_i += MathHelper.ceiling_float_int(this.attacker.getDistanceToEntity(entitylivingbase)/16F * 5F);
 
             if (!this.attacker.getNavigator().tryMoveToEntityLiving(entitylivingbase, this.speedTowardsTarget))
             {

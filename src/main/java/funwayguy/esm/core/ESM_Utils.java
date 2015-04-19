@@ -425,15 +425,6 @@ public class ESM_Utils
 				{
 					entityLiving.targetTasks.taskEntries.remove(i); // Remove redundant AI
 				}
-			} else if(task.action.getClass() == EntityAIAttackOnCollide.class && entityLiving instanceof EntityCreature)
-			{
-				boolean longMemory = ObfuscationReflectionHelper.getPrivateValue(EntityAIAttackOnCollide.class, (EntityAIAttackOnCollide)task.action, "field_75437_f", "longMemory");
-				Class<?> targetType = ObfuscationReflectionHelper.getPrivateValue(EntityAIAttackOnCollide.class, (EntityAIAttackOnCollide)task.action, "field_75444_h", "classTarget");
-				double speed = ObfuscationReflectionHelper.getPrivateValue(EntityAIAttackOnCollide.class, (EntityAIAttackOnCollide)task.action, "field_75440_e", "speedTowardsTarget");
-				
-				ESM_EntityAIAttackOnCollide esmAOC = new ESM_EntityAIAttackOnCollide((EntityCreature)entityLiving, targetType, speed, longMemory);
-				EntityAITaskEntry replacement = entityLiving.targetTasks.new EntityAITaskEntry(task.priority, esmAOC);
-				entityLiving.targetTasks.taskEntries.set(i, replacement);
 			}
 		}
 		
@@ -479,21 +470,30 @@ public class ESM_Utils
 				esmBD = new ESM_EntityAIBreakDoor_Proxy(entityLiving);
 				EntityAITaskEntry replacement = entityLiving.tasks.new EntityAITaskEntry(task.priority, esmBD);
 				entityLiving.tasks.taskEntries.set(i, replacement);
+			} else if(task.action.getClass() == EntityAIAttackOnCollide.class && entityLiving instanceof EntityCreature)
+			{
+				boolean longMemory = ObfuscationReflectionHelper.getPrivateValue(EntityAIAttackOnCollide.class, (EntityAIAttackOnCollide)task.action, "field_75437_f", "longMemory");
+				Class<?> targetType = ObfuscationReflectionHelper.getPrivateValue(EntityAIAttackOnCollide.class, (EntityAIAttackOnCollide)task.action, "field_75444_h", "classTarget");
+				double speed = ObfuscationReflectionHelper.getPrivateValue(EntityAIAttackOnCollide.class, (EntityAIAttackOnCollide)task.action, "field_75440_e", "speedTowardsTarget");
+				
+				ESM_EntityAIAttackOnCollide esmAOC = new ESM_EntityAIAttackOnCollide((EntityCreature)entityLiving, targetType, speed, longMemory);
+				EntityAITaskEntry replacement = entityLiving.tasks.new EntityAITaskEntry(task.priority, esmAOC);
+				entityLiving.tasks.taskEntries.set(i, replacement);
 			}
 		}
 		
 		if(entityLiving instanceof EntityCreature)
 		{
-			if(entityLiving.tasks.taskEntries.size() > 0)
+			if(entityLiving.targetTasks.taskEntries.size() > 0)
 			{
-				entityLiving.tasks.addTask(0, new ESM_EntityAIAvoidDetonatingCreepers((EntityCreature)entityLiving, 9F, 1.5D, 1.5D));
+				entityLiving.targetTasks.addTask(0, new ESM_EntityAIAvoidDetonatingCreepers((EntityCreature)entityLiving, 9F, 1.5D, 1.5D));
 				if((entityLiving instanceof IMob || ESM_Settings.ambiguous_AI) && !(entityLiving instanceof EntityCreeper))
 				{
-					entityLiving.tasks.addTask(0, new ESM_EntityAIAttackEvasion((EntityCreature)entityLiving, 5F, 1.5D, 1.5D));
+					entityLiving.targetTasks.addTask(0, new ESM_EntityAIAttackEvasion((EntityCreature)entityLiving, 5F, 1.5D, 1.5D));
 				}
 			} else
 			{
-				entityLiving.tasks.addTask(0, new ESM_EntityAIAvoidDetonatingCreepers((EntityCreature)entityLiving, 12F, 1D, 1D));
+				entityLiving.targetTasks.addTask(0, new ESM_EntityAIAvoidDetonatingCreepers((EntityCreature)entityLiving, 12F, 1D, 1D));
 			}
 		}
 		

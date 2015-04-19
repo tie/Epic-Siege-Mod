@@ -141,7 +141,6 @@ public class ESM_EntityAIAvoidDetonatingCreepers extends EntityAIBase
      */
     public void updateTask()
     {
-    	this.theEntity.setAttackTarget(null);
         if (this.theEntity.getDistanceSqToEntity(this.closestLivingEntity) < 49.0D)
         {
             this.theEntity.getNavigator().setSpeed(this.nearSpeed);
