@@ -23,17 +23,20 @@ import net.minecraft.entity.monster.EntityGhast;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntitySpider;
+import net.minecraft.entity.monster.EntityWitch;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayer.EnumStatus;
 import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.entity.projectile.EntitySmallFireball;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
@@ -60,6 +63,7 @@ import net.minecraftforge.event.world.WorldEvent.Load;
 import net.minecraftforge.event.world.WorldEvent.Unload;
 import com.google.common.base.Stopwatch;
 import cpw.mods.fml.client.event.ConfigChangedEvent;
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import cpw.mods.fml.common.eventhandler.Event.Result;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerChangedDimensionEvent;
@@ -75,6 +79,7 @@ import funwayguy.esm.handlers.entities.ESM_BlazeHandler;
 import funwayguy.esm.handlers.entities.ESM_CreeperHandler;
 import funwayguy.esm.handlers.entities.ESM_EndermanHandler;
 import funwayguy.esm.handlers.entities.ESM_SkeletonHandler;
+import funwayguy.esm.handlers.entities.ESM_ZombieHandler;
 
 public class ESM_EventManager
 {	
@@ -163,6 +168,40 @@ public class ESM_EventManager
 					event.setCanceled(true);
 					event.entity.setDead();
 				}
+			}
+		} else if(event.entity instanceof EntityPotion)
+		{
+			EntityPotion potion = (EntityPotion)event.entity;
+			
+			PotionEffect effect = null;
+			
+			if(ESM_Settings.customPotions.length > 0)
+			{
+				String[] type = ESM_Settings.customPotions[event.world.rand.nextInt(ESM_Settings.customPotions.length)].split(":");
+				
+				if(type.length == 3)
+				{
+					try
+					{
+						effect = new PotionEffect(Integer.parseInt(type[0]), Integer.parseInt(type[1]), Integer.parseInt(type[2]));
+					} catch(Exception e)
+					{
+						effect = null;
+					}
+				}
+			}
+			
+			if(potion.getThrower() instanceof EntityWitch && effect != null)
+			{
+				NBTTagList nbtList = new NBTTagList();
+				nbtList.appendTag(effect.writeCustomPotionEffectToNBT(new NBTTagCompound()));
+				
+				ItemStack effectStack = new ItemStack(Items.potionitem);
+				NBTTagCompound itemTags = new NBTTagCompound();
+				itemTags.setTag("CustomPotionEffects", nbtList);
+				effectStack.setTagCompound(itemTags);
+				
+				ObfuscationReflectionHelper.setPrivateValue(EntityPotion.class, potion, effectStack, "field_70197_d", "potionDamage");
 			}
 		} else if(event.entity instanceof EntityBlaze)
 		{
@@ -497,7 +536,10 @@ public class ESM_EventManager
 			searchForTarget((EntityCreature)event.entityLiving);
 		}
 		
-		if(event.entityLiving instanceof EntityCreeper)
+		if(event.entityLiving instanceof EntityZombie)
+		{
+			ESM_ZombieHandler.onLivingUpdate((EntityZombie)event.entityLiving);
+		} else if(event.entityLiving instanceof EntityCreeper)
 		{
 			ESM_CreeperHandler.onLivingUpdate((EntityCreeper)event.entityLiving);
 		} else if(event.entityLiving instanceof EntitySkeleton)
@@ -509,7 +551,7 @@ public class ESM_EventManager
 		} else if(event.entityLiving instanceof EntityEnderman)
 		{
 			ESM_EndermanHandler.onLivingUpdate((EntityEnderman)event.entityLiving);
-		} else if(ESM_Settings.moreSpawning && event.entityLiving instanceof EntityPlayer && event.entityLiving.getRNG().nextInt(25) == 0 && event.entityLiving.worldObj instanceof WorldServer)
+		} else if(ESM_Settings.moreSpawning && event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("doMobSpawning") && event.entityLiving instanceof EntityPlayer && event.entityLiving.getRNG().nextInt(25) == 0 && event.entityLiving.worldObj instanceof WorldServer)
 		{
 			int x = MathHelper.floor_double(event.entityLiving.posX) + event.entityLiving.getRNG().nextInt(48) - 24;
 			int y = MathHelper.floor_double(event.entityLiving.posY) + event.entityLiving.getRNG().nextInt(48) - 24;

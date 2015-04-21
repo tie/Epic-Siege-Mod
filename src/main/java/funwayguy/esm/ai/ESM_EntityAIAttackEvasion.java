@@ -81,7 +81,7 @@ public class ESM_EntityAIAttackEvasion extends EntityAIBase
         {
         	EntityPlayer player = iterator.next();
         	
-        	if(player != null && player.isEntityAlive())// && !player.capabilities.isCreativeMode)
+        	if(player != null && player.isEntityAlive() && !player.capabilities.disableDamage)
         	{
                 double dist = 5D;
                 Vec3 vectorA = Vec3.createVectorHelper(player.posX, player.posY + player.eyeHeight, player.posZ);

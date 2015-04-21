@@ -41,7 +41,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
     	boolean nerfedPick = !Items.iron_pickaxe.canHarvestBlock(Blocks.stone, new ItemStack(Items.iron_pickaxe));
 		target = entityDigger.getAttackTarget();
 		
-		if(target != null && entityDigger.getNavigator().noPath() && !(entityDigger.canEntityBeSeen(target) && entityDigger.getDistanceToEntity(target) < 1D))
+		if(target != null && entityDigger.getNavigator().noPath() && entityDigger.getDistanceToEntity(target) > 1D && (target.onGround || !entityDigger.canEntityBeSeen(target)))
 		{
 			refresh = 15;
 			MovingObjectPosition mop = GetNextObstical(entityDigger, 2D);
@@ -70,8 +70,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
 	@Override
 	public boolean continueExecuting()
 	{
-		boolean flag = target != null && entityDigger != null && target.isEntityAlive() && entityDigger.isEntityAlive() && markedLoc != null && entityDigger.getNavigator().noPath() && !(entityDigger.canEntityBeSeen(target) && entityDigger.getDistanceToEntity(target) < 1D);
-		return flag;
+		return target != null && entityDigger != null && target.isEntityAlive() && entityDigger.isEntityAlive() && markedLoc != null && entityDigger.getNavigator().noPath() && entityDigger.getDistanceToEntity(target) > 1D && (target.onGround || !entityDigger.canEntityBeSeen(target));
 	}
 	
 	@Override
@@ -117,6 +116,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
 				entityDigger.worldObj.func_147480_a(markedLoc[0], markedLoc[1], markedLoc[2], canHarvest);
 				markedLoc = null;
 				entityDigger.getNavigator().setPath(entityDigger.getNavigator().getPathToEntityLiving(target), 1D);
+				refresh = 0;
 			} else
 			{
 				markedLoc = null;
@@ -136,6 +136,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
 	{
 		markedLoc = null;
 		digTick = 0;
+		refresh = 0;
 	}
 	
 	/**

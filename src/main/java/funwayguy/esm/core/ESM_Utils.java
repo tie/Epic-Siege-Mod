@@ -517,6 +517,8 @@ public class ESM_Utils
 				ESM.log.log(Level.ERROR, "Unable to modify Zombie door breaking AI", e);
 			}
 			
+			((EntityZombie)entityLiving).setCanPickUpLoot(true);
+			
 			if(ESM_Settings.ZombieDiggers)
 			{
 				entityLiving.tasks.addTask(1, new ESM_EntityAIDigging((EntityZombie)entityLiving));

@@ -34,7 +34,7 @@ public class GenericEntitySelector implements IEntitySelector
 		{
 			EntityPlayer tmpPlayer = (EntityPlayer)subject;
 			
-			if(tmpPlayer.capabilities.isCreativeMode)
+			if(tmpPlayer.capabilities.disableDamage)
 			{
 				return false;
 			}

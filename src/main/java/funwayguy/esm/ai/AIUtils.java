@@ -24,10 +24,9 @@ import net.minecraftforge.common.ForgeHooks;
  */
 public class AIUtils
 {
-	public static float getBreakSpeed(EntityLiving entityLiving, Block p_146096_1_, boolean p_146096_2_, int meta, int x, int y, int z)
+	public static float getBreakSpeed(EntityLiving entityLiving, ItemStack stack, Block block, int meta)
     {
-        ItemStack stack = entityLiving.getEquipmentInSlot(0);
-        float f = (stack == null ? 1.0F : stack.getItem().getDigSpeed(stack, p_146096_1_, meta));
+        float f = (stack == null ? 1.0F : stack.getItem().getDigSpeed(stack, block, meta));
 
         if (f > 1.0F)
         {
@@ -38,7 +37,7 @@ public class AIUtils
             {
                 float f1 = (float)(i * i + 1);
 
-                boolean canHarvest = ForgeHooks.canToolHarvestBlock(p_146096_1_, meta, itemstack);
+                boolean canHarvest = ForgeHooks.canToolHarvestBlock(block, meta, itemstack);
 
                 if (!canHarvest && f <= 1.0F)
                 {
@@ -91,11 +90,11 @@ public class AIUtils
 
         if (!canHarvest)
         {
-            return getBreakSpeed(entityLiving, block, true, metadata, x, y, z) / hardness / 100F;
+            return getBreakSpeed(entityLiving, item, block, metadata) / hardness / 100F;
         }
         else
         {
-            return getBreakSpeed(entityLiving, block, false, metadata, x, y, z) / hardness / 30F;
+            return getBreakSpeed(entityLiving, item, block, metadata) / hardness / 30F;
         }
     }
     

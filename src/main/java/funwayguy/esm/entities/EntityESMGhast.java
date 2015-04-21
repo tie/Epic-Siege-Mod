@@ -262,7 +262,7 @@ public class EntityESMGhast extends EntityGhast
 			{
 				EntityPlayer tmpPlayer = (EntityPlayer)subject;
 				
-				if(tmpPlayer.capabilities.isCreativeMode)
+				if(tmpPlayer.capabilities.disableDamage)
 				{
 					continue;
 				}

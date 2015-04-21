@@ -52,6 +52,7 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
     {
     	super.resetTask();
     	this.searchDelay = 0;
+		targetEntity = null;
     }
 
     /**
@@ -95,6 +96,7 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
 
             if (list.isEmpty())
             {
+    			targetEntity = null;
                 return false;
             }
             else
@@ -117,7 +119,8 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
                 		return true;
                 	}
                 }
-            	
+
+    			targetEntity = null;
             	return false;
             }
         }

@@ -9,6 +9,7 @@ import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.player.EntityPlayer;
 import funwayguy.esm.core.ESM;
 import funwayguy.esm.core.ESM_Settings;
 
@@ -72,7 +73,7 @@ public class ESM_PathCapHandler
 			{
 				EntityLivingBase subject = attackers.get(i);
 				
-				if(subject == null || subject.isDead || subject.getHealth() <= 0 || subject.dimension != target.dimension)
+				if(subject == null || subject.isDead || subject.getHealth() <= 0 || subject.dimension != target.dimension || (subject instanceof EntityPlayer && ((EntityPlayer)subject).capabilities.disableDamage))
 				{
 					attackers.remove(i);
 					continue;
