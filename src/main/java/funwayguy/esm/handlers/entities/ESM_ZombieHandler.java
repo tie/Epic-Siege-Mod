@@ -49,9 +49,11 @@ public class ESM_ZombieHandler
 
                         if (flag)
                         {
-
-                            zombie.entityDropItem(itemstack1, 0.0F);
-
+                        	if(itemstack1 != null)
+                        	{
+                        		zombie.entityDropItem(itemstack1, 0.0F);
+                        	}
+                        	
                             zombie.setCurrentItemOrArmor(i, itemstack);
                             zombie.setEquipmentDropChance(i, 2.0F);
                             zombie.func_110163_bv();
