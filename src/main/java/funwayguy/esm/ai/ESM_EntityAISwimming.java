@@ -2,6 +2,7 @@ package funwayguy.esm.ai;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.util.MathHelper;
 
 public class ESM_EntityAISwimming extends EntityAIBase
@@ -24,14 +25,22 @@ public class ESM_EntityAISwimming extends EntityAIBase
     	int y = MathHelper.floor_double(this.theEntity.posY);
     	int z = MathHelper.floor_double(this.theEntity.posZ);
     	
-    	if(this.theEntity.isInWater() && this.theEntity.getAttackTarget() != null)
+    	if(!this.theEntity.worldObj.getBlock(x, y, z).getMaterial().isLiquid())
     	{
-    		if(this.theEntity.getAir() >= 150 && this.theEntity.getAttackTarget().posY < this.theEntity.posY && this.theEntity.worldObj.getBlock(x, y, z).getMaterial().isLiquid())
-    		{
-    			return false;
-    		}
+    		return false;
     	}
-        return this.theEntity.isInWater() || this.theEntity.handleLavaMovement();
+    	
+    	PathEntity path = this.theEntity.getNavigator().getPath();
+		
+		if(path != null && path.getFinalPathPoint().yCoord > this.theEntity.posY) // If our navigation says to go up then we do it
+		{
+	        return true;
+		} else if(this.theEntity.getAttackTarget() != null && this.theEntity.getAir() >= 150 && this.theEntity.getAttackTarget().posY < this.theEntity.posY) // Our target is under water, swim down
+		{
+			return false;
+		}
+    	
+    	return true;
     }
     
     /**
@@ -39,9 +48,6 @@ public class ESM_EntityAISwimming extends EntityAIBase
      */
     public void updateTask()
     {
-        //if (this.theEntity.getRNG().nextFloat() < 0.8F)
-        {
-            this.theEntity.getJumpHelper().setJumping();
-        }
+        this.theEntity.getJumpHelper().setJumping();
     }
 }

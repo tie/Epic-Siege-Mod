@@ -45,6 +45,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.SpawnerAnimals;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
@@ -154,7 +155,7 @@ public class ESM_EventManager
 			{
 				((EntityZombie)event.entity).setCurrentItemOrArmor(0, new ItemStack(Blocks.stone_pressure_plate));
 			}
-		} else if(event.entity instanceof EntityArrow)
+		} else if(event.entity.getClass() == EntityArrow.class) // Changed because other people like replacing arrows and not saying they did
 		{
 			EntityArrow arrow = (EntityArrow)event.entity;
 			if(arrow.shootingEntity instanceof EntityLiving && arrow.shootingEntity instanceof IMob)
@@ -218,7 +219,7 @@ public class ESM_EventManager
 			ESM_EndermanHandler.onEntityJoinWorld((EntityEnderman)event.entity);
 		}
 		
-		if((ESM_Settings.MobBombAll || (ESM_Settings.MobBombs != null && ESM_Settings.MobBombs.contains(EntityList.getEntityID(event.entity)))) && event.entity.riddenByEntity == null && event.entity instanceof IMob && !event.isCanceled() && !event.entity.isDead)
+		if((ESM_Settings.MobBombAll || (ESM_Settings.MobBombs != null && ESM_Settings.MobBombs.contains(EntityList.getEntityID(event.entity)))) && event.entity.riddenByEntity == null && event.entity instanceof IMob && !event.isCanceled() && !event.entity.isDead && event.world.loadedEntityList.size() < 512)
 		{
 			event.entity.getEntityData().setBoolean("ESM_MODIFIED", true);
 			if(ESM_Settings.MobBombRarity <= 0)
@@ -551,7 +552,7 @@ public class ESM_EventManager
 		} else if(event.entityLiving instanceof EntityEnderman)
 		{
 			ESM_EndermanHandler.onLivingUpdate((EntityEnderman)event.entityLiving);
-		} else if(ESM_Settings.moreSpawning && event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("doMobSpawning") && event.entityLiving instanceof EntityPlayer && event.entityLiving.getRNG().nextInt(25) == 0 && event.entityLiving.worldObj instanceof WorldServer)
+		} else if(ESM_Settings.moreSpawning && event.entityLiving.worldObj.difficultySetting != EnumDifficulty.PEACEFUL && event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("doMobSpawning") && event.entityLiving instanceof EntityPlayer && event.entityLiving.getRNG().nextInt(25) == 0 && event.entityLiving.worldObj instanceof WorldServer && event.entityLiving.worldObj.loadedEntityList.size() < 512)
 		{
 			int x = MathHelper.floor_double(event.entityLiving.posX) + event.entityLiving.getRNG().nextInt(48) - 24;
 			int y = MathHelper.floor_double(event.entityLiving.posY) + event.entityLiving.getRNG().nextInt(48) - 24;
@@ -881,25 +882,48 @@ public class ESM_EventManager
 		{
 			event.setResult(Result.DENY);
 			return;
-		} else if(event.entityLiving instanceof EntityMob && ESM_Settings.moreSpawning && event.getResult() != Result.DENY)
+		} else if(event.entityLiving instanceof EntityMob && event.getResult() != Result.DENY)
 		{
+			
+			boolean flag = false;
+			int day = (int)(event.world.getWorldTime()/24000);
+			
+			if(ESM_Settings.hardDay != 0 && day != 0 && day%ESM_Settings.hardDay == 0)
+			{
+				flag = true;
+			}
+			
+			if(!flag && ESM_Settings.timedDifficulty > 0 && event.world.getTotalWorldTime()/(ESM_Settings.timedDifficulty*24000D) < event.world.rand.nextFloat())
+			{
+				event.setResult(Result.DENY);
+				return;
+			} else if(!ESM_Settings.moreSpawning && !flag)
+			{
+				return;
+			}
+			
 	        int i = MathHelper.floor_double(event.entityLiving.posX);
 	        int j = MathHelper.floor_double(event.entityLiving.boundingBox.minY);
 	        int k = MathHelper.floor_double(event.entityLiving.posZ);
 	        
-	        int l = event.entityLiving.worldObj.getBlockLightValue(i, j, k);
+	        int l = event.world.getBlockLightValue(i, j, k);
 	        
-            if (event.entityLiving.worldObj.isThundering())
+            if (event.world.isThundering())
             {
-                int i1 = event.entityLiving.worldObj.skylightSubtracted;
-                event.entityLiving.worldObj.skylightSubtracted = 10;
-                l = event.entityLiving.worldObj.getBlockLightValue(i, j, k);
-                event.entityLiving.worldObj.skylightSubtracted = i1;
+                int i1 = event.world.skylightSubtracted;
+                event.world.skylightSubtracted = 10;
+                l = event.world.getBlockLightValue(i, j, k);
+                event.world.skylightSubtracted = i1;
+            }
+            
+            if(flag) // Hard day! Ignoring lighting D:
+            {
+            	l = 0;
             }
             
 			if(event.world.checkNoEntityCollision(event.entityLiving.boundingBox) && event.world.getCollidingBoundingBoxes(event.entityLiving, event.entityLiving.boundingBox).isEmpty() && !event.world.isAnyLiquid(event.entityLiving.boundingBox) && ((EntityMob)event.entityLiving).getBlockPathWeight(i, j, k) >= 0.0F && l <= 7)
 			{
-				event.setResult(Result.ALLOW); // Let's kill some peoples
+				event.setResult(Result.ALLOW);
 			}
 		}
 	}

@@ -528,6 +528,8 @@ public class ESM_Utils
 				entityLiving.tasks.addTask(5, new ESM_EntityAIBuildTrap(entityLiving));
 			}
 		}
+		
+		ObfuscationReflectionHelper.setPrivateValue(EntityLiving.class, entityLiving, new ESMPathNavigator(entityLiving, entityLiving.worldObj), "field_70699_by", "navigator");
 	}
 
 	public static EntityLivingBase GetNearestValidTarget(EntityLiving entityLiving)
