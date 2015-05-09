@@ -9,6 +9,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import net.minecraft.entity.EntityList;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.WorldServer;
@@ -84,7 +85,7 @@ public class ESM_Settings
 	public static int SpiderWebChance;
 	
 	//Advanced
-	public static ArrayList<Integer> MobBombs;
+	public static ArrayList<String> MobBombs;
 	public static int MobBombRarity;
 	public static boolean MobBombAll;
 	public static boolean WitherSkeletons;
@@ -109,7 +110,7 @@ public class ESM_Settings
 	public static File worldDir = null;
 	public static boolean ambiguous_AI = true;
 	public static Configuration defConfig;
-	public static ArrayList<Integer> AIExempt = new ArrayList<Integer>();
+	public static ArrayList<String> AIExempt = new ArrayList<String>();
 	
 	public static void LoadMainConfig(File file)
 	{
@@ -157,12 +158,9 @@ public class ESM_Settings
 		moreSpawning = defConfig.get("Main", "More Spawning", true, "Reduces spawning safe zone from 24 blocks to 8 and makes mobs require only basic conditions to spawn").getBoolean(true);
 		forcePath = defConfig.get("Main", "Force Non-AI Pathing", false, "Forces non pathing mobs to attack from further away. Can cause additional lag").getBoolean(false);
 		
-		int[] tmpAIE = defConfig.get("Main", "AI Exempt Mob IDs", new int[]{}).getIntList();
-		AIExempt = new ArrayList<Integer>();
-		for(int i : tmpAIE)
-		{
-			AIExempt.add(i);
-		}
+		String[] tmpAIE = defConfig.get("Main", "AI Exempt Mob IDs", new String[]{}).getStringList();
+		AIExempt = new ArrayList<String>();
+		AIExempt.addAll(Arrays.asList(tmpAIE));
 		
 		//Witch
 		String[] defPot = new String[]
@@ -253,12 +251,9 @@ public class ESM_Settings
 		SpiderWebChance = MathHelper.clamp_int(defConfig.get("Spider", "Webbing Chance (0-100)", 25).getInt(25), 0, 100);
 		
 		//Advanced
-		int[] tmp = defConfig.get("Advanced Mobs", "Mob Bombs", new int[]{52}).getIntList();
-		MobBombs = new ArrayList<Integer>();
-		for(int id : tmp)
-		{
-			MobBombs.add(id);
-		}
+		String[] tmp = defConfig.get("Advanced Mobs", "Mob Bombs", new String[]{EntityList.getStringFromID(52)}).getStringList();
+		MobBombs = new ArrayList<String>();
+		MobBombs.addAll(Arrays.asList(tmp));
 		MobBombRarity = defConfig.get("Advanced Mobs", "Mob Bomb Rarity", 9).getInt(9);
 		MobBombAll = defConfig.get("Advanced Mobs", "Mob Bomb All", true, "Skip the Mob Bomb list and allow everything!").getBoolean(true);
 		WitherSkeletons = defConfig.get("Advanced Mobs", "Wither Skeletons", true).getBoolean(true);
@@ -314,17 +309,9 @@ public class ESM_Settings
 		config.load();
 		
 		//Main
-		int[] tmpAIE = new int[AIExempt.size()];
-		for(int i = 0; i < AIExempt.size(); i++)
-		{
-			tmpAIE[i] = AIExempt.get(i);
-		}
-		tmpAIE = config.get("Main", "AI Exempt Mob IDs", tmpAIE).getIntList();
-		AIExempt = new ArrayList<Integer>();
-		for(int i : tmpAIE)
-		{
-			AIExempt.add(i);
-		}
+		String[] tmpAIE = config.get("Main", "AI Exempt Mob IDs", AIExempt.toArray(new String[]{})).getStringList();
+		AIExempt = new ArrayList<String>();
+		AIExempt.addAll(Arrays.asList(tmpAIE));
 
 		timedDifficulty = config.getInt("Warm Up Days", "Main", timedDifficulty, 0, Integer.MAX_VALUE, "How many days until ESM spawns mobs at full rate.");
 		hardDay = config.getInt("Hardcore Day Cycle", "Main", hardDay, 0, Integer.MAX_VALUE, "The interval in which 'hard' days will occur where mob spawning is increased and lighting is ignored (0 = off, default = 8/full moon)");
@@ -406,18 +393,9 @@ public class ESM_Settings
 		SpiderWebChance = MathHelper.clamp_int(config.get("Spider", "Webbing Chance (0-100)", SpiderWebChance).getInt(SpiderWebChance), 0, 100);
 		
 		//Advanced
-		int[] tmpDef = new int[MobBombs.size()];
-		
-		for(int i = 0; i < MobBombs.size(); i++)
-		{
-			tmpDef[i] = MobBombs.get(i);
-		}
-		int[] tmp = config.get("Advanced Mobs", "Mob Bombs", tmpDef).getIntList();
-		MobBombs = new ArrayList<Integer>();
-		for(int id : tmp)
-		{
-			MobBombs.add(id);
-		}
+		String[] tmp = config.get("Advanced Mobs", "Mob Bombs", MobBombs.toArray(new String[]{})).getStringList();
+		MobBombs = new ArrayList<String>();
+		MobBombs.addAll(Arrays.asList(tmp));
 		MobBombRarity = config.get("Advanced Mobs", "Mob Bomb Rarity", MobBombRarity).getInt(MobBombRarity);
 		MobBombAll = config.get("Advanced Mobs", "Mob Bomb All", MobBombAll, "Skip the Mob Bomb list and allow everything!").getBoolean(MobBombAll);
 		WitherSkeletons = config.get("Advanced Mobs", "Wither Skeletons", WitherSkeletons).getBoolean(WitherSkeletons);

@@ -10,7 +10,6 @@ import net.minecraft.entity.ai.RandomPositionGenerator;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.pathfinding.PathEntity;
-import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.util.Vec3;
 import funwayguy.esm.core.ESM_Settings;
 
@@ -30,12 +29,10 @@ public class ESM_EntityAIAttackEvasion extends EntityAIBase
     private EntityCreature theEntity;
     private double farSpeed;
     private double nearSpeed;
-    private Entity closestLivingEntity;
+    private EntityPlayer closestLivingEntity;
     private float distanceFromEntity;
     /** The PathEntity of our entity */
     private PathEntity entityPathEntity;
-    /** The PathNavigate of our entity */
-    private PathNavigate entityPathNavigate;
 
     public ESM_EntityAIAttackEvasion(EntityCreature creature, float distance, double farSpeed, double nearSpeed)
     {
@@ -43,7 +40,6 @@ public class ESM_EntityAIAttackEvasion extends EntityAIBase
         this.distanceFromEntity = distance;
         this.farSpeed = farSpeed;
         this.nearSpeed = nearSpeed;
-        this.entityPathNavigate = creature.getNavigator();
         this.setMutexBits(1);
     }
 
@@ -57,7 +53,6 @@ public class ESM_EntityAIAttackEvasion extends EntityAIBase
     		return false;
     	}
     	
-
 		@SuppressWarnings("unchecked")
 		List<EntityMob> attackers = this.theEntity.worldObj.selectEntitiesWithinAABB(EntityMob.class, this.theEntity.boundingBox.expand(16D, 16D, 16D), this.field_98218_a);
 		if(attackers.size() > 1)
@@ -81,15 +76,15 @@ public class ESM_EntityAIAttackEvasion extends EntityAIBase
         {
         	EntityPlayer player = iterator.next();
         	
-        	if(player != null && player.isEntityAlive() && !player.capabilities.disableDamage)
+        	if(player != null && player.isEntityAlive()/* && !player.capabilities.disableDamage*/)
         	{
-                double dist = 5D;
-                Vec3 vectorA = Vec3.createVectorHelper(player.posX, player.posY + player.eyeHeight, player.posZ);
-                Vec3 vectorB = player.getLookVec();
-                Vec3 vectorC = vectorA.addVector(vectorB.xCoord * dist, vectorB.yCoord * dist, vectorB.zCoord * dist);
-                Entity rayEntity = AIUtils.RayCastEntities(player.worldObj, vectorA, vectorC, player);
+                Vec3 vec3 = player.getLook(1.0F).normalize();
+                Vec3 vec31 =  Vec3.createVectorHelper(theEntity.posX - player.posX, theEntity.boundingBox.minY + (double)(theEntity.height / 2.0F) - (player.posY + (double)player.getEyeHeight()), theEntity.posZ - player.posZ);
+                double d0 = vec31.lengthVector();
+                vec31 = vec31.normalize();
+                double d1 = vec3.dotProduct(vec31);
                 
-                if(rayEntity != null)
+                if(d1 > 0.5D - 0.025D / d0)
                 {
                 	closestLivingEntity = player;
             		break;
@@ -114,7 +109,7 @@ public class ESM_EntityAIAttackEvasion extends EntityAIBase
         }
         else
         {
-            this.entityPathEntity = this.entityPathNavigate.getPathToXYZ(vec3.xCoord, vec3.yCoord, vec3.zCoord);
+            this.entityPathEntity = this.theEntity.getNavigator().getPathToXYZ(vec3.xCoord, vec3.yCoord, vec3.zCoord);
             return this.entityPathEntity == null ? false : this.entityPathEntity.isDestinationSame(vec3);
         }
     }
@@ -124,7 +119,30 @@ public class ESM_EntityAIAttackEvasion extends EntityAIBase
      */
     public boolean continueExecuting()
     {
-        return !this.entityPathNavigate.noPath() && this.closestLivingEntity != null && this.closestLivingEntity.isEntityAlive();
+    	if(this.closestLivingEntity == null || !this.closestLivingEntity.isEntityAlive() || this.theEntity.getAttackTarget() != null)
+    	{
+    		return false;
+    	} else if(this.theEntity.getNavigator().noPath() || entityPathEntity.isFinished())
+    	{
+        	this.theEntity.setAttackTarget(this.closestLivingEntity);
+    		return false;
+    	} else
+    	{
+            Vec3 vec3 = this.closestLivingEntity.getLook(1.0F).normalize();
+            Vec3 vec31 =  Vec3.createVectorHelper(theEntity.posX - this.closestLivingEntity.posX, theEntity.boundingBox.minY + (double)(theEntity.height / 2.0F) - (this.closestLivingEntity.posY + (double)this.closestLivingEntity.getEyeHeight()), theEntity.posZ - this.closestLivingEntity.posZ);
+            double d0 = vec31.lengthVector();
+            vec31 = vec31.normalize();
+            double d1 = vec3.dotProduct(vec31);
+            
+            if(d1 > 0.5D - 0.025D / d0)
+            {
+            	return true;
+            } else
+            {
+            	this.theEntity.setAttackTarget(this.closestLivingEntity);
+            	return false;
+            }
+    	}
     }
 
     /**
@@ -133,7 +151,8 @@ public class ESM_EntityAIAttackEvasion extends EntityAIBase
     public void startExecuting()
     {
     	this.theEntity.setAttackTarget(null);
-        this.entityPathNavigate.setPath(this.entityPathEntity, this.farSpeed);
+    	this.theEntity.setTarget(null);
+        this.theEntity.getNavigator().setPath(this.entityPathEntity, this.farSpeed);
     }
 
     /**

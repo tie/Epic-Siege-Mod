@@ -19,6 +19,7 @@ import net.minecraft.entity.ai.EntityAIAttackOnCollide;
 import net.minecraft.entity.ai.EntityAIAvoidEntity;
 import net.minecraft.entity.ai.EntityAIBreakDoor;
 import net.minecraft.entity.ai.EntityAICreeperSwell;
+import net.minecraft.entity.ai.EntityAIFollowOwner;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
@@ -439,7 +440,10 @@ public class ESM_Utils
 				continue;
 			}
 			
-			if(task.action.getClass() == EntityAICreeperSwell.class && entityLiving instanceof EntityCreeper)
+			if(task.action instanceof EntityAIFollowOwner)
+			{
+				ObfuscationReflectionHelper.setPrivateValue(EntityAIFollowOwner.class, (EntityAIFollowOwner)task.action, entityLiving.getNavigator(), "field_75337_g", "petPathfinder"); // Minor fix to make sure the navigation is using the new one
+			} else if(task.action.getClass() == EntityAICreeperSwell.class && entityLiving instanceof EntityCreeper)
 			{
 				if(!replaceCS)
 				{

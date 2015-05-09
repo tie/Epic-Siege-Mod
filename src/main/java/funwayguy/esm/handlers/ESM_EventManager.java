@@ -114,12 +114,6 @@ public class ESM_EventManager
 			return;
 		}
 		
-		/*if(event.entity instanceof EntityLiving && isNearSpawner(event.world, MathHelper.floor_double(event.entity.posX), MathHelper.floor_double(event.entity.posY), MathHelper.floor_double(event.entity.posZ)))
-		{
-			event.entity.getEntityData().setBoolean("ESM_MODIFIED", true);
-			return;
-		}*/
-		
 		if(event.entity.getClass() == EntityGhast.class)
 		{
 			event.setCanceled(true);
@@ -219,7 +213,7 @@ public class ESM_EventManager
 			ESM_EndermanHandler.onEntityJoinWorld((EntityEnderman)event.entity);
 		}
 		
-		if((ESM_Settings.MobBombAll || (ESM_Settings.MobBombs != null && ESM_Settings.MobBombs.contains(EntityList.getEntityID(event.entity)))) && event.entity.riddenByEntity == null && event.entity instanceof IMob && !event.isCanceled() && !event.entity.isDead && event.world.loadedEntityList.size() < 512)
+		if((ESM_Settings.MobBombAll || (ESM_Settings.MobBombs != null && ESM_Settings.MobBombs.contains(EntityList.getEntityString(event.entity)))) && event.entity.riddenByEntity == null && event.entity instanceof IMob && !event.isCanceled() && !event.entity.isDead && event.world.loadedEntityList.size() < 512)
 		{
 			event.entity.getEntityData().setBoolean("ESM_MODIFIED", true);
 			if(ESM_Settings.MobBombRarity <= 0)
@@ -516,7 +510,7 @@ public class ESM_EventManager
 			return;
 		}
 		
-		if(ESM_Settings.AIExempt.contains(EntityList.getEntityID(event.entity)))
+		if(ESM_Settings.AIExempt.contains(EntityList.getEntityString(event.entity)))
 		{
 			return;
 		}
