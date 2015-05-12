@@ -1,6 +1,7 @@
 package funwayguy.esm.ai;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
@@ -16,6 +17,8 @@ import funwayguy.esm.core.ESM;
 
 public class ESMPathFinder extends PathFinder
 {
+	static ArrayList<Block> avoidBlocks;
+	
     /** should the PathFinder go through wodden door blocks */
     private boolean isWoddenDoorAllowed;
     /** should the PathFinder disregard BlockMovement type materials in its path */
@@ -81,7 +84,10 @@ public class ESMPathFinder extends PathFinder
                         }
                         else if(!(block instanceof BlockLiquid))
                         {
-                            if (!allowDoors && block == Blocks.wooden_door)
+                        	if(avoidBlocks.contains(block))
+                        	{
+                        		return -2;
+                        	} else if (!allowDoors && block == Blocks.wooden_door)
                             {
                                 return 0;
                             }
@@ -157,5 +163,16 @@ public class ESMPathFinder extends PathFinder
         }
 
         return flag3 ? 2 : 1;
+    }
+    
+    static
+    {
+    	avoidBlocks = new ArrayList<Block>();
+    	avoidBlocks.add(Blocks.stone_pressure_plate);
+    	avoidBlocks.add(Blocks.wooden_pressure_plate);
+    	avoidBlocks.add(Blocks.tripwire);
+    	avoidBlocks.add(Blocks.tripwire_hook);
+    	avoidBlocks.add(Blocks.heavy_weighted_pressure_plate);
+    	avoidBlocks.add(Blocks.light_weighted_pressure_plate);
     }
 }

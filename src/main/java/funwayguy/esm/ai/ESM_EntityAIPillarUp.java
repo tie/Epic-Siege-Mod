@@ -46,7 +46,7 @@ public class ESM_EntityAIPillarUp extends EntityAIBase
 			int xOff = (int)Math.signum(MathHelper.floor_double(target.posX) - origI);
 			int zOff = (int)Math.signum(MathHelper.floor_double(target.posZ) - origK);
 			
-			if(target.posY - builder.posY < 8 && builder.worldObj.getBlock(i, j - 2, k).isNormalCube())
+			if(target.posY - builder.posY < 16 && builder.worldObj.getBlock(i, j - 2, k).isNormalCube())
 			{
 				if(builder.worldObj.getBlock(i + xOff, j - 1, k).getMaterial().isReplaceable())
 				{

@@ -490,14 +490,14 @@ public class ESM_Utils
 		{
 			if(entityLiving.targetTasks.taskEntries.size() > 0)
 			{
-				entityLiving.targetTasks.addTask(0, new ESM_EntityAIAvoidDetonatingCreepers((EntityCreature)entityLiving, 9F, 1.5D, 1.5D));
+				entityLiving.targetTasks.addTask(0, new ESM_EntityAIAvoidDetonations((EntityCreature)entityLiving, 9F, 1.5D, 1.5D));
 				if((entityLiving instanceof IMob || ESM_Settings.ambiguous_AI) && !(entityLiving instanceof EntityCreeper))
 				{
 					entityLiving.targetTasks.addTask(0, new ESM_EntityAIAttackEvasion((EntityCreature)entityLiving, 5F, 1.5D, 1.5D));
 				}
 			} else
 			{
-				entityLiving.targetTasks.addTask(0, new ESM_EntityAIAvoidDetonatingCreepers((EntityCreature)entityLiving, 12F, 1D, 1D));
+				entityLiving.targetTasks.addTask(0, new ESM_EntityAIAvoidDetonations((EntityCreature)entityLiving, 12F, 1D, 1D));
 			}
 		}
 		

@@ -78,6 +78,12 @@ public class ESM_EntityAIAttackEvasion extends EntityAIBase
         	
         	if(player != null && player.isEntityAlive()/* && !player.capabilities.disableDamage*/)
         	{
+        		if(player.getDistanceToEntity(this.theEntity) <= 2D && this.theEntity.getAttackTarget() == player)
+        		{
+        			// Too close to target to warrant a retreat 
+        			return false;
+        		}
+        		
                 Vec3 vec3 = player.getLook(1.0F).normalize();
                 Vec3 vec31 =  Vec3.createVectorHelper(theEntity.posX - player.posX, theEntity.boundingBox.minY + (double)(theEntity.height / 2.0F) - (player.posY + (double)player.getEyeHeight()), theEntity.posZ - player.posZ);
                 double d0 = vec31.lengthVector();
@@ -122,7 +128,7 @@ public class ESM_EntityAIAttackEvasion extends EntityAIBase
     	if(this.closestLivingEntity == null || !this.closestLivingEntity.isEntityAlive() || this.theEntity.getAttackTarget() != null)
     	{
     		return false;
-    	} else if(this.theEntity.getNavigator().noPath() || entityPathEntity.isFinished())
+    	} else if(this.theEntity.getNavigator().noPath() || entityPathEntity.isFinished() || this.theEntity.getDistanceToEntity(this.closestLivingEntity) <= 2D)
     	{
         	this.theEntity.setAttackTarget(this.closestLivingEntity);
     		return false;

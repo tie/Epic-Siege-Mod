@@ -7,12 +7,14 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.RandomPositionGenerator;
+import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.projectile.EntityLargeFireball;
 import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.util.Vec3;
 
-public class ESM_EntityAIAvoidDetonatingCreepers extends EntityAIBase
+public class ESM_EntityAIAvoidDetonations extends EntityAIBase
 {
     public final IEntitySelector field_98218_a = new IEntitySelector()
     {
@@ -21,7 +23,7 @@ public class ESM_EntityAIAvoidDetonatingCreepers extends EntityAIBase
          */
         public boolean isEntityApplicable(Entity p_82704_1_)
         {
-            return p_82704_1_.isEntityAlive() && ESM_EntityAIAvoidDetonatingCreepers.this.theEntity.getEntitySenses().canSee(p_82704_1_);
+            return p_82704_1_.isEntityAlive() && ESM_EntityAIAvoidDetonations.this.theEntity.getEntitySenses().canSee(p_82704_1_);
         }
     };
     /** The entity we are attached to */
@@ -35,7 +37,7 @@ public class ESM_EntityAIAvoidDetonatingCreepers extends EntityAIBase
     /** The PathNavigate of our entity */
     private PathNavigate entityPathNavigate;
 
-    public ESM_EntityAIAvoidDetonatingCreepers(EntityCreature p_i1616_1_, float p_i1616_3_, double p_i1616_4_, double p_i1616_6_)
+    public ESM_EntityAIAvoidDetonations(EntityCreature p_i1616_1_, float p_i1616_3_, double p_i1616_4_, double p_i1616_6_)
     {
         this.theEntity = p_i1616_1_;
         this.distanceFromEntity = p_i1616_3_;
@@ -59,24 +61,33 @@ public class ESM_EntityAIAvoidDetonatingCreepers extends EntityAIBase
     		}
     	}
         @SuppressWarnings("unchecked")
-		List<EntityCreeper> list = this.theEntity.worldObj.selectEntitiesWithinAABB(EntityCreeper.class, this.theEntity.boundingBox.expand((double)this.distanceFromEntity, 3.0D, (double)this.distanceFromEntity), this.field_98218_a);
+		List<Entity> list = this.theEntity.worldObj.selectEntitiesWithinAABB(EntityCreeper.class, this.theEntity.boundingBox.expand((double)this.distanceFromEntity, 3.0D, (double)this.distanceFromEntity), this.field_98218_a);
 
         if (list.isEmpty())
         {
             return false;
         }
         
-        Iterator<EntityCreeper> iterator = list.iterator();
+        Iterator<Entity> iterator = list.iterator();
 
         this.closestLivingEntity = null;
         
         while(iterator.hasNext())
         {
-        	EntityCreeper creeper = iterator.next();
+        	Entity entity = iterator.next();
         	
-        	if(creeper.getCreeperState() == 1 && creeper.ridingEntity != this.theEntity && creeper != this.theEntity)
+        	if(entity instanceof EntityCreeper)
         	{
-        		this.closestLivingEntity = creeper;
+	        	EntityCreeper creeper = (EntityCreeper)entity;
+	        	
+	        	if(creeper.getCreeperState() == 1 && creeper.ridingEntity != this.theEntity && creeper != this.theEntity)
+	        	{
+	        		this.closestLivingEntity = creeper;
+	        		break;
+	        	}
+        	} else if(entity instanceof EntityTNTPrimed || entity instanceof EntityLargeFireball)
+        	{
+        		this.closestLivingEntity = entity;
         		break;
         	}
         }
