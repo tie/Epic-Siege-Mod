@@ -2,6 +2,7 @@ package funwayguy.esm.ai;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Iterator;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
@@ -174,5 +175,18 @@ public class ESMPathFinder extends PathFinder
     	avoidBlocks.add(Blocks.tripwire_hook);
     	avoidBlocks.add(Blocks.heavy_weighted_pressure_plate);
     	avoidBlocks.add(Blocks.light_weighted_pressure_plate);
+    	
+    	@SuppressWarnings("unchecked")
+		Iterator<Block> iterator = Block.blockRegistry.iterator();
+    	
+    	while(iterator.hasNext())
+    	{
+    		Block block = iterator.next();
+    		
+    		if(block != null && (block.getMaterial() == Material.fire || block.getMaterial() == Material.lava))
+    		{
+    			avoidBlocks.add(block);
+    		}
+    	}
     }
 }

@@ -28,7 +28,7 @@ public class ESM_EntityAIPillarUp extends EntityAIBase
 	{
 		target = builder.getAttackTarget();
 		
-		if(target == null || !target.isEntityAlive() || target.posY < builder.posY)
+		if(target == null || !target.isEntityAlive() || builder.posY + 1D >= target.posY)
 		{
 			return false;
 		}

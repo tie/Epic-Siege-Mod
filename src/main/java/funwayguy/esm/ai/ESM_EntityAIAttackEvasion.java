@@ -76,7 +76,7 @@ public class ESM_EntityAIAttackEvasion extends EntityAIBase
         {
         	EntityPlayer player = iterator.next();
         	
-        	if(player != null && player.isEntityAlive()/* && !player.capabilities.disableDamage*/)
+        	if(player != null && player.isEntityAlive() && !player.capabilities.disableDamage)
         	{
         		if(player.getDistanceToEntity(this.theEntity) <= 2D && this.theEntity.getAttackTarget() == player)
         		{

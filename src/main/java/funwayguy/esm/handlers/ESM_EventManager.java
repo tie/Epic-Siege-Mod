@@ -99,7 +99,7 @@ public class ESM_EventManager
 			return;
 		}
 		
-		if(event.entity instanceof EntityLiving && (event.entity instanceof IMob || ESM_Settings.ambiguous_AI))
+		if(event.entity instanceof EntityLiving && (event.entity instanceof IMob || ESM_Settings.ambiguous_AI) && !ESM_Settings.AIExempt.contains(EntityList.getEntityID(event.entity)))
 		{
 			ESM_Utils.replaceAI((EntityLiving)event.entity);
 			if(event.entity instanceof EntityMob || (event.entity instanceof EntitySpider && !event.world.isDaytime()))
@@ -118,12 +118,15 @@ public class ESM_EventManager
 		{
 			event.setCanceled(true);
 			EntityESMGhast newGhast = new EntityESMGhast(event.world);
-			newGhast.setLocationAndAngles(event.entity.posX, event.entity.posY + 32, event.entity.posZ, event.entity.rotationYaw, 0.0F);
+			newGhast.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
 			NBTTagCompound oldTags = new NBTTagCompound();
 			event.entity.writeToNBT(oldTags);
 			newGhast.readFromNBT(oldTags);
 			event.world.spawnEntityInWorld(newGhast);
+			event.entity.getEntityData().setBoolean("ESM_MODIFIED", true);
 			event.entity.setDead();
+			event.setCanceled(true);
+			return;
 		} else if(event.entity instanceof EntityCreeper)
 		{
 			ESM_CreeperHandler.onEntityJoinWorld((EntityCreeper)event.entity);
@@ -161,7 +164,10 @@ public class ESM_EventManager
 				{
 					replaceArrowAttack(shooter, target, arrow.getDamage());
 					event.setCanceled(true);
+					event.entity.getEntityData().setBoolean("ESM_MODIFIED", true);
 					event.entity.setDead();
+					event.setCanceled(true);
+					return;
 				}
 			}
 		} else if(event.entity instanceof EntityPotion)
