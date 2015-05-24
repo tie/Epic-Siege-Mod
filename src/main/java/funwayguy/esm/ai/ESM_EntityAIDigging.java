@@ -172,7 +172,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
                 		int meta = entityLiving.worldObj.getBlockMetadata(mop.blockX, mop.blockY, mop.blockZ);
                 		ItemStack item = entityLiving.getEquipmentInSlot(0);
                 		
-                		if(ESM_Settings.ZombieDigBlacklist.contains(Block.blockRegistry.getNameForObject(block)) || ESM_Settings.ZombieDigBlacklist.contains(Block.blockRegistry.getNameForObject(block) + ":" + meta))
+                		if(ESM_Settings.ZombieDigBlacklist.contains(Block.blockRegistry.getNameForObject(block)) == !ESM_Settings.ZombieSwapList || ESM_Settings.ZombieDigBlacklist.contains(Block.blockRegistry.getNameForObject(block) + ":" + meta) == !ESM_Settings.ZombieSwapList)
                 		{
                 			continue;
                 		}

@@ -32,7 +32,7 @@ public class ESM_EntityAISwimming extends EntityAIBase
     	
     	PathEntity path = this.theEntity.getNavigator().getPath();
 		
-		if(path != null && path.getFinalPathPoint().yCoord > this.theEntity.posY) // If our navigation says to go up then we do it
+		if(path != null && path.getFinalPathPoint() != null && path.getFinalPathPoint().yCoord > this.theEntity.posY) // If our navigation says to go up then we do it
 		{
 	        return true;
 		} else if(this.theEntity.getAttackTarget() != null && this.theEntity.getAir() >= 150 && this.theEntity.getAttackTarget().posY < this.theEntity.posY) // Our target is under water, swim down

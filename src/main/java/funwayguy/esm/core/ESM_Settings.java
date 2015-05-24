@@ -41,6 +41,8 @@ public class ESM_Settings
 	public static int timedDifficulty;
 	public static int hardDay;
 	
+	public static boolean ENFORCE_DEFAULT;
+	
 	//Witch
 	public static String[] customPotions;
 	
@@ -76,6 +78,7 @@ public class ESM_Settings
 	public static int ZombiePillaring;
 	public static ArrayList<String> ZombieGriefBlocks;
 	public static ArrayList<String> ZombieDigBlacklist;
+	public static boolean ZombieSwapList;
 	
 	//Enderman
 	public static String EndermanMode;
@@ -157,6 +160,7 @@ public class ESM_Settings
 		keepLoaded = defConfig.get("Main", "Keep Loaded", false, "Keeps mobs with an active target from despawning. Can causes issues with chunk loading/unloading").getBoolean(false);
 		moreSpawning = defConfig.get("Main", "More Spawning", true, "Reduces spawning safe zone from 24 blocks to 8 and makes mobs require only basic conditions to spawn").getBoolean(true);
 		forcePath = defConfig.get("Main", "Force Non-AI Pathing", false, "Forces non pathing mobs to attack from further away. Can cause additional lag").getBoolean(false);
+		ENFORCE_DEFAULT = defConfig.get("Main", "Enforce Defaults", true, "Ignores world specific settings and just uses the global defaults instead").getBoolean(true);
 		
 		String[] tmpAIE = defConfig.get("Main", "AI Exempt Mob IDs", new String[]{}).getStringList();
 		AIExempt = new ArrayList<String>();
@@ -218,6 +222,7 @@ public class ESM_Settings
 		};
 		ZombieGriefBlocks = new ArrayList<String>(Arrays.asList(defConfig.get("Zombie", "General Griefable Blocks", defGrief, "What blocks will be targeted for destruction when not attacking players (Does not affect general digging, light sources are included by default, add ':#' for metadata e.g. 'minecraft:wool:1')").getStringList()));
 		ZombieDigBlacklist = new ArrayList<String>(Arrays.asList(defConfig.get("Zombie", "Digging Blacklist", new String[]{}, "Blacklisted blocks for digging (Add ':#' for metadata e.g. 'minecraft:wool:1')").getStringList()));
+		ZombieSwapList = defConfig.get("Zombie", "Blacklist to Whitelist", false, "Use the digging blacklist as a whitelist instead").getBoolean(false);
 		
 		//Blazes
 		BlazeSpawn = defConfig.get("Blaze", "Spawn", true).getBoolean(true);
@@ -289,6 +294,11 @@ public class ESM_Settings
 		
 		ResetToDefault();
 		
+		if(ENFORCE_DEFAULT)
+		{
+			return;
+		}
+		
 		File conFile = new File(worldDir, "ESM_Options.cfg");
 		
 		if(!conFile.exists())
@@ -350,6 +360,7 @@ public class ESM_Settings
 		ZombiePillaring = config.get("Zombie", "Pillaring Blocks", ZombiePillaring, "How many blocks to give zombies to pillar up with").getInt(ZombiePillaring);
 		ZombieGriefBlocks = new ArrayList<String>(Arrays.asList(config.get("Zombie", "General Griefable Blocks", ZombieGriefBlocks.toArray(new String[]{}), "What blocks will be targeted for destruction when not attacking players (Does not affect general digging, light sources are included by default, add ':#' for metadata e.g. 'minecraft:wool:1')").getStringList()));
 		ZombieDigBlacklist = new ArrayList<String>(Arrays.asList(config.get("Zombie", "Digging Blacklist", ZombieDigBlacklist.toArray(new String[]{}), "Blacklisted blocks for digging (Add ':#' for metadata e.g. 'minecraft:wool:1')").getStringList()));
+		ZombieSwapList = config.get("Zombie", "Blacklist to Whitelist", false, "Use the digging blacklist as a whitelist instead").getBoolean(false);
 		
 		//Blazes
 		BlazeSpawn = config.get("Blaze", "Spawn", BlazeSpawn).getBoolean(BlazeSpawn);
