@@ -76,7 +76,7 @@ public class ESM_EntityAIAttackEvasion extends EntityAIBase
         {
         	EntityPlayer player = iterator.next();
         	
-        	if(player != null && player.isEntityAlive() && !player.capabilities.disableDamage)
+        	if(player != null && player.isEntityAlive() && !player.capabilities.disableDamage && player.canEntityBeSeen(this.theEntity))
         	{
         		if(player.getDistanceToEntity(this.theEntity) <= 2D && this.theEntity.getAttackTarget() == player)
         		{
@@ -130,7 +130,6 @@ public class ESM_EntityAIAttackEvasion extends EntityAIBase
     		return false;
     	} else if(this.theEntity.getNavigator().noPath() || entityPathEntity.isFinished() || this.theEntity.getDistanceToEntity(this.closestLivingEntity) <= 2D)
     	{
-        	this.theEntity.setAttackTarget(this.closestLivingEntity);
     		return false;
     	} else
     	{
@@ -145,7 +144,6 @@ public class ESM_EntityAIAttackEvasion extends EntityAIBase
             	return true;
             } else
             {
-            	this.theEntity.setAttackTarget(this.closestLivingEntity);
             	return false;
             }
     	}

@@ -40,7 +40,7 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
 
     public ESM_EntityAINearestAttackableTarget(EntityCreature par1EntityCreature, List<Class<? extends EntityLivingBase>> par2Class, int par3, boolean par4, boolean par5, IEntitySelector par6IEntitySelector)
     {
-        super(par1EntityCreature, par2Class.contains(EntityVillager.class) && par1EntityCreature instanceof EntityZombie, par5);
+        super(par1EntityCreature, !(par2Class.contains(EntityVillager.class) && par1EntityCreature instanceof EntityZombie), par5);
         this.targetClass = par2Class;
         this.targetChance = par3;
         this.theNearestAttackableTargetSorter = new EntityAINearestAttackableTarget.Sorter(par1EntityCreature);

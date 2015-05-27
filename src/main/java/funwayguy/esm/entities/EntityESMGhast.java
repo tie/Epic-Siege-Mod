@@ -1,12 +1,11 @@
 package funwayguy.esm.entities;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.monster.EntityGhast;
-import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityLargeFireball;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,6 +14,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
+import funwayguy.esm.ai.GenericEntitySelector;
 import funwayguy.esm.core.ESM_Settings;
 import funwayguy.esm.core.ESM_Utils;
 import funwayguy.esm.handlers.ESM_PathCapHandler;
@@ -232,49 +232,10 @@ public class EntityESMGhast extends EntityGhast
 			entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 30);
 		}
 		
-		EntityLivingBase closestTarget = null;
-		ArrayList<EntityLiving> targets = new ArrayList<EntityLiving>();
+		double dist = Math.max(ESM_Settings.Awareness, ESM_Settings.GhastFireDist);
+		ArrayList<EntityLivingBase> targets = (ArrayList<EntityLivingBase>)entity.worldObj.selectEntitiesWithinAABB(EntityLivingBase.class, entity.boundingBox.expand(dist, dist, dist), new GenericEntitySelector(this));
+		Collections.sort(targets, new EntityAINearestAttackableTarget.Sorter(entity));
 		
-		targets.addAll(entity.worldObj.getEntitiesWithinAABB(EntityPlayer.class, entity.boundingBox.expand(ESM_Settings.Awareness, ESM_Settings.Awareness, ESM_Settings.Awareness)));
-		
-		if(ESM_Settings.VillagerTarget)
-		{
-			targets.addAll(entity.worldObj.getEntitiesWithinAABB(EntityVillager.class, entity.boundingBox.expand(ESM_Settings.Awareness, ESM_Settings.Awareness, ESM_Settings.Awareness)));
-		}
-		
-		if(ESM_Settings.Chaos)
-		{
-			targets.addAll(entity.worldObj.getEntitiesWithinAABB(EntityCreature.class, entity.boundingBox.expand(ESM_Settings.Awareness, ESM_Settings.Awareness, ESM_Settings.Awareness)));
-		}
-		
-		double dist = ESM_Settings.Awareness + 1;
-		
-		for(int i = 0; i < targets.size(); i++)
-		{
-			EntityLivingBase subject = targets.get(i);
-			
-			if(subject.isDead)
-			{
-				continue;
-			}
-			
-			if(subject instanceof EntityPlayer)
-			{
-				EntityPlayer tmpPlayer = (EntityPlayer)subject;
-				
-				if(tmpPlayer.capabilities.disableDamage)
-				{
-					continue;
-				}
-			}
-			
-			if(entity.getDistanceToEntity(subject) < dist && (ESM_Settings.Xray || entity.canEntityBeSeen(subject)))
-			{
-				closestTarget = subject;
-				dist = entity.getDistanceToEntity(subject);
-			}
-		}
-		
-		targetedEntity = closestTarget;
+		targetedEntity = targets.size() > 0? targets.get(0) : null;
 	}
 }

@@ -403,9 +403,21 @@ public class ESM_Utils
 				if(esmTargetAI == null)
 				{
 					esmTargetAI = new ESM_EntityAINearestAttackableTarget((EntityCreature)entityLiving, new ArrayList<Class<? extends EntityLivingBase>>(), 0, true);
-					if(ESM_Settings.ambiguous_AI)
+					
+					if(ESM_Settings.Chaos)
 					{
-						esmTargetAI.targetClass.add(EntityPlayer.class); // Attacking players is a must in ESM
+						esmTargetAI.targetClass.add(EntityLivingBase.class);
+					} else
+					{
+						if(ESM_Settings.ambiguous_AI)
+						{
+							esmTargetAI.targetClass.add(EntityPlayer.class); // Attacking players is a must in ESM
+						}
+						
+						if(ESM_Settings.VillagerTarget)
+						{
+							esmTargetAI.targetClass.add(EntityVillager.class);
+						}
 					}
 				}
 				
