@@ -16,7 +16,7 @@ public class ESM_SkeletonHandler
 	{
 		if(skeleton.getSkeletonType() == 0)
 		{
-			if(ESM_Settings.WitherSkeletons && ESM_Settings.WitherSkeletonRarity <= 0)
+			if(ESM_Settings.WitherSkeletons && (ESM_Settings.WitherSkeletonRarity <= 0 || skeleton.getRNG().nextInt(ESM_Settings.WitherSkeletonRarity) == 0))
 			{
 				skeleton.setDead();
 				EntitySkeleton newSkeleton = new EntitySkeleton(skeleton.worldObj);
@@ -27,20 +27,6 @@ public class ESM_SkeletonHandler
 				newSkeleton.setCombatTask();
 				newSkeleton.getEntityData().setBoolean("ESM_MODIFIED", true);
 				skeleton.worldObj.spawnEntityInWorld(newSkeleton);
-			} else if(ESM_Settings.WitherSkeletons && ESM_Settings.WitherSkeletonRarity > 0)
-			{
-				if(skeleton.getRNG().nextInt(ESM_Settings.WitherSkeletonRarity) == 0)
-				{
-					skeleton.setDead();
-					EntitySkeleton newSkeleton = new EntitySkeleton(skeleton.worldObj);
-					newSkeleton.setLocationAndAngles(skeleton.posX, skeleton.posY, skeleton.posZ, 0.0F, 0.0F);
-					newSkeleton.setSkeletonType(1);
-					newSkeleton.setCurrentItemOrArmor(0, new ItemStack(Items.stone_sword));
-					newSkeleton.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(4.0D);
-					newSkeleton.setCombatTask();
-					newSkeleton.getEntityData().setBoolean("ESM_MODIFIED", true);
-					skeleton.worldObj.spawnEntityInWorld(newSkeleton);
-				}
 			} else
 			{
 				skeleton.getEntityData().setString("ESM_TASK_ID", skeleton.getUniqueID().toString() + ",NULL");

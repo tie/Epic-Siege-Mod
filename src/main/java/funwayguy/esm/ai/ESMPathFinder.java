@@ -28,7 +28,7 @@ public class ESMPathFinder extends PathFinder
 	
 	public ESMPathFinder(IBlockAccess blockAccess, boolean allowDoors, boolean movementBlock, boolean pathWater, boolean canDrown)
 	{
-		super(blockAccess, allowDoors, movementBlock, pathWater, false);
+		super(blockAccess, allowDoors, movementBlock, pathWater, canDrown);
         this.isWoddenDoorAllowed = allowDoors;
         this.isMovementBlockAllowed = movementBlock;
         this.isPathingInWater = pathWater;

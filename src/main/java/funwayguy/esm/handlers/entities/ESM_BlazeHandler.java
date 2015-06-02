@@ -1,9 +1,8 @@
 package funwayguy.esm.handlers.entities;
 
-import java.lang.reflect.Field;
-
-import funwayguy.esm.core.ESM_Settings;
 import net.minecraft.entity.monster.EntityBlaze;
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
+import funwayguy.esm.core.ESM_Settings;
 
 public class ESM_BlazeHandler
 {
@@ -16,66 +15,16 @@ public class ESM_BlazeHandler
 	{
 		if(blaze.attackTime == 6 && blaze.getEntityToAttack() != null)
 		{
-			int fireballs = getBlazeFireballs(blaze);
+			int fireballs = ObfuscationReflectionHelper.getPrivateValue(EntityBlaze.class, blaze, "field_70846_g");;
 			
 			if(fireballs > 1 && fireballs < 5 && blaze.getEntityData().getInteger("ESM_FIREBALLS") < ESM_Settings.BlazeFireballs)
 			{
-				setBlazeFireballs(blaze, 2);
+				ObfuscationReflectionHelper.setPrivateValue(EntityBlaze.class, blaze, 2, "field_70846_g");
 			} else if(fireballs > 1)
 			{
-				setBlazeFireballs(blaze, 5);
+				ObfuscationReflectionHelper.setPrivateValue(EntityBlaze.class, blaze, 5, "field_70846_g");
 				blaze.getEntityData().setInteger("ESM_FIREBALLS", 0);
 			}
-		}
-	}
-	
-	public static int getBlazeFireballs(EntityBlaze blaze)
-	{
-		int fireballs = -1;
-		
-		Field field = null;
-		try
-		{
-			field = EntityBlaze.class.getDeclaredField("field_70846_g");
-		} catch(Exception e)
-		{
-			e.printStackTrace();
-			return fireballs;
-		}
-		
-		field.setAccessible(true);
-		
-		try
-		{
-			fireballs = (int)field.getInt(blaze);
-		} catch(Exception e)
-		{
-			e.printStackTrace();
-			return fireballs;
-		}
-		
-		return fireballs;
-	}
-	
-	public static void setBlazeFireballs(EntityBlaze blaze, int count)
-	{
-		Field field = null;
-		try
-		{
-			field = EntityBlaze.class.getDeclaredField("field_70846_g");
-		} catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-		
-		field.setAccessible(true);
-		
-		try
-		{
-			field.setInt(blaze, count);
-		} catch(Exception e)
-		{
-			e.printStackTrace();
 		}
 	}
 }

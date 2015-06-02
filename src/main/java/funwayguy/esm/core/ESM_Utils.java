@@ -2,7 +2,6 @@ package funwayguy.esm.core;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -36,6 +35,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.network.play.server.S07PacketRespawn;
 import net.minecraft.network.play.server.S1DPacketEntityEffect;
 import net.minecraft.network.play.server.S2BPacketChangeGameState;
+import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.management.ServerConfigurationManager;
@@ -302,58 +302,16 @@ public class ESM_Utils
 	
 	public static void resetPlayerMPStats(EntityPlayerMP player)
 	{
-		Field fXP = null;
-		Field fHP = null;
-		Field fFD = null;
-		try
-		{
-			fXP = EntityPlayerMP.class.getDeclaredField("lastExperience");
-			fHP = EntityPlayerMP.class.getDeclaredField("lastHealth");
-			fFD = EntityPlayerMP.class.getDeclaredField("lastFoodLevel");
-		} catch(Exception e)
-		{
-			try
-			{
-				fXP = EntityPlayerMP.class.getDeclaredField("field_71144_ck");
-				fHP = EntityPlayerMP.class.getDeclaredField("field_71149_ch");
-				fFD = EntityPlayerMP.class.getDeclaredField("field_71146_ci");
-			} catch(Exception e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return;
-			}
-		}
-		
-		fXP.setAccessible(true);
-		fHP.setAccessible(true);
-		fFD.setAccessible(true);
-		
-		try
-		{
-			fXP.setInt(player, -1);
-			fHP.setFloat(player, -1.0F);
-			fFD.setInt(player, -1);
-		} catch(Exception e)
-		{
-			e.printStackTrace();
-			return;
-		}
-		
-		return;
+		ObfuscationReflectionHelper.setPrivateValue(EntityPlayerMP.class, player, -1, "field_71144_ck", "lastExperience");
+		ObfuscationReflectionHelper.setPrivateValue(EntityPlayerMP.class, player, -1.0F, "field_71149_ch", "lastHealth");
+		ObfuscationReflectionHelper.setPrivateValue(EntityPlayerMP.class, player, -1, "field_71146_ci", "lastFoodLevel");
 	}
 
 	public static int getAIPathCount(World world, EntityLivingBase targetEntity)
 	{
 		List<EntityLivingBase> attackerList = ESM_PathCapHandler.attackMap.get(targetEntity);
 		
-		if(attackerList == null)
-		{
-			return 0;
-		} else
-		{
-			return attackerList.size();
-		}
+		return attackerList == null? 0 :  attackerList.size();
 	}
 	
 	public static boolean isCloserThanOtherAttackers(World world, EntityLivingBase attacker, EntityLivingBase target)
@@ -383,6 +341,11 @@ public class ESM_Utils
 	@SuppressWarnings("unchecked")
 	public static void replaceAI(EntityLiving entityLiving)
 	{
+		PathNavigate oldNav = entityLiving.getNavigator();
+		ESMPathNavigator newNav = new ESMPathNavigator(entityLiving, entityLiving.worldObj);
+		ObfuscationReflectionHelper.setPrivateValue(EntityLiving.class, entityLiving, newNav, "field_70699_by", "navigator");
+		newNav.inherit(oldNav);
+		
 		boolean replaceNAT = false;
 		boolean replaceCS = false;
 		boolean replaceAE = false;
@@ -544,8 +507,6 @@ public class ESM_Utils
 				entityLiving.tasks.addTask(5, new ESM_EntityAIBuildTrap(entityLiving));
 			}
 		}
-		
-		ObfuscationReflectionHelper.setPrivateValue(EntityLiving.class, entityLiving, new ESMPathNavigator(entityLiving, entityLiving.worldObj), "field_70699_by", "navigator");
 	}
 
 	public static EntityLivingBase GetNearestValidTarget(EntityLiving entityLiving)
@@ -587,59 +548,18 @@ public class ESM_Utils
 	public static void replaceEndPortal()
 	{
 		Block block = new ESM_BlockEnderPortal(Material.portal).setHardness(-1.0F).setResistance(6000000.0F);
-		Field fBlock = null;
-		Field modifiers = null;
-
-		try
-		{
-			fBlock = Blocks.class.getDeclaredField("end_portal");
-			modifiers = Field.class.getDeclaredField("modifiers");
-		} catch(Exception e)
-		{
-			try
-			{
-				fBlock = Blocks.class.getDeclaredField("field_150384_bq");
-				modifiers = Field.class.getDeclaredField("modifiers");
-			} catch(Exception e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return;
-			}
-		}
-		
-		modifiers.setAccessible(true);
 		
 		try
 		{
-			modifiers.setInt(fBlock, fBlock.getModifiers() & ~Modifier.FINAL);
-		} catch(Exception e)
-		{
-			ESM.log.log(Level.ERROR, "Failed to replace End Portal", e);
-			return;
-		}
-		
-		fBlock.setAccessible(true);
-		
-		try
-		{
-			fBlock.set(null, block);
+			ObfuscationReflectionHelper.setPrivateValue(Blocks.class, null, block, "field_150384_bq", "end_portal");
+			Method addRawObj = FMLControlledNamespacedRegistry.class.getDeclaredMethod("addObjectRaw", int.class, String.class, Object.class);
+			addRawObj.setAccessible(true);
 			
-			try
-			{
-				Method addRawObj = FMLControlledNamespacedRegistry.class.getDeclaredMethod("addObjectRaw", int.class, String.class, Object.class);
-				addRawObj.setAccessible(true);
-				
-				addRawObj.invoke(GameData.getItemRegistry(), 119, "minecraft:end_portal", new ItemBlock(block));
-				addRawObj.invoke(GameData.getBlockRegistry(), 119, "minecraft:end_portal", block);
-			} catch(Exception e)
-			{
-				ESM.log.log(Level.ERROR, "Failed to replace End Portal", e);
-			}
+			addRawObj.invoke(GameData.getItemRegistry(), 119, "minecraft:end_portal", new ItemBlock(block));
+			addRawObj.invoke(GameData.getBlockRegistry(), 119, "minecraft:end_portal", block);
 		} catch(Exception e)
 		{
 			ESM.log.log(Level.ERROR, "Failed to replace End Portal", e);
-			return;
 		}
 		
 		if(Blocks.end_portal instanceof ESM_BlockEnderPortal && Block.blockRegistry.getObject("end_portal") instanceof ESM_BlockEnderPortal)
@@ -671,7 +591,7 @@ public class ESM_Utils
 			{
 				if(ESM_Settings.BlazeSpawn)
 				{
-					EntityRegistry.addSpawn(EntityBlaze.class, 100/(ESM_Settings.BlazeRarity <= 0? 1: ESM_Settings.BlazeRarity), 1, 1, EnumCreatureType.monster, biome);
+					EntityRegistry.addSpawn(EntityBlaze.class, MathHelper.ceiling_float_int(100F/(float)(ESM_Settings.BlazeRarity <= 0? 1: ESM_Settings.BlazeRarity)), 1, 1, EnumCreatureType.monster, biome);
 				} else
 				{
 					EntityRegistry.removeSpawn(EntityBlaze.class, EnumCreatureType.monster, biome);
@@ -682,7 +602,7 @@ public class ESM_Utils
 			{
 				if(ESM_Settings.GhastSpawn)
 				{
-					EntityRegistry.addSpawn(EntityGhast.class, 100/(ESM_Settings.GhastRarity <= 0? 1 : ESM_Settings.GhastRarity), 1, 1, EnumCreatureType.monster, biome);
+					EntityRegistry.addSpawn(EntityGhast.class, MathHelper.ceiling_float_int(100F/(float)(ESM_Settings.GhastRarity <= 0? 1 : ESM_Settings.GhastRarity)), 1, 1, EnumCreatureType.monster, biome);
 				} else
 				{
 					EntityRegistry.removeSpawn(EntityGhast.class, EnumCreatureType.monster, biome);

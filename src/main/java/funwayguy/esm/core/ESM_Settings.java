@@ -81,7 +81,7 @@ public class ESM_Settings
 	public static boolean ZombieSwapList;
 	
 	//Enderman
-	public static String EndermanMode;
+	public static boolean EndermanSlender;
 	public static boolean EndermanPlayerTele;
 	
 	//Spider
@@ -249,7 +249,7 @@ public class ESM_Settings
 		}
 		
 		//Endermen
-		EndermanMode = defConfig.get("Enderman", "Mode", "Slender", "Valid Endermen Modes (Slender, Normal)").getString();
+		EndermanSlender = defConfig.get("Enderman", "Slender-Mode", false, "Makes Endermen stalk players with side effects").getBoolean();
 		EndermanPlayerTele = defConfig.get("Enderman", "Player Teleport", true).getBoolean(true);
 		
 		//Spider
@@ -397,7 +397,7 @@ public class ESM_Settings
 		}
 		
 		//Endermen
-		EndermanMode = config.get("Enderman", "Mode", EndermanMode, "Valid Endermen Modes (Slender, Normal)").getString();
+		EndermanSlender = config.get("Enderman", "Slender-Mode", EndermanSlender, "Makes Endermen stalk players with side effects").getBoolean();
 		EndermanPlayerTele = config.get("Enderman", "Player Teleport", EndermanPlayerTele).getBoolean(EndermanPlayerTele);
 		
 		//Spider

@@ -1,5 +1,6 @@
 package funwayguy.esm.ai;
 
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntityZombie;
@@ -27,6 +28,24 @@ public class ESMPathNavigator extends PathNavigate
 		super(entityLiving, world);
 		this.theEntity = entityLiving;
 		this.worldObj = world;
+	}
+	
+	/**
+	 * Inherits most of the main options from the original navigator
+	 * @param navigator
+	 */
+	public void inherit(PathNavigate navigator)
+	{
+		if(navigator == null)
+		{
+			return;
+		}
+		
+		this.setAvoidSun((Boolean)ObfuscationReflectionHelper.getPrivateValue(PathNavigate.class, navigator, "field_75509_f", "noSunPathfind"));
+		this.setAvoidsWater(navigator.getAvoidsWater());
+		this.setBreakDoors(navigator.getCanBreakDoors());
+		this.setSpeed((Double)ObfuscationReflectionHelper.getPrivateValue(PathNavigate.class, navigator, "field_75511_d", "speed"));
+		this.setEnterDoors((Boolean)ObfuscationReflectionHelper.getPrivateValue(PathNavigate.class, navigator, "field_75518_j", "canPassOpenWoodenDoors"));
 	}
 
     /**

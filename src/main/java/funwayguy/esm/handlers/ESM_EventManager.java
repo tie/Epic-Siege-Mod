@@ -1,6 +1,5 @@
 package funwayguy.esm.handlers;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -76,11 +75,7 @@ import funwayguy.esm.core.ESM;
 import funwayguy.esm.core.ESM_Settings;
 import funwayguy.esm.core.ESM_Utils;
 import funwayguy.esm.entities.EntityESMGhast;
-import funwayguy.esm.handlers.entities.ESM_BlazeHandler;
-import funwayguy.esm.handlers.entities.ESM_CreeperHandler;
-import funwayguy.esm.handlers.entities.ESM_EndermanHandler;
-import funwayguy.esm.handlers.entities.ESM_SkeletonHandler;
-import funwayguy.esm.handlers.entities.ESM_ZombieHandler;
+import funwayguy.esm.handlers.entities.*;
 
 public class ESM_EventManager
 {	
@@ -92,7 +87,7 @@ public class ESM_EventManager
 			return;
 		}
 		
-		if(ESM_Settings.Apocalypse && event.entity instanceof EntityLivingBase && !(event.entity instanceof EntityZombie || event.entity instanceof EntityPlayer || (event.entity instanceof EntityEnderman && ESM_Settings.EndermanMode.equalsIgnoreCase("Slender"))))
+		if(ESM_Settings.Apocalypse && event.entity instanceof EntityLivingBase && !(event.entity instanceof EntityZombie || event.entity instanceof EntityPlayer || (event.entity instanceof EntityEnderman && ESM_Settings.EndermanSlender)))
 		{
 			event.entity.setDead();
 			event.setCanceled(true);
@@ -222,23 +217,14 @@ public class ESM_EventManager
 		if((ESM_Settings.MobBombAll || (ESM_Settings.MobBombs != null && ESM_Settings.MobBombs.contains(EntityList.getEntityString(event.entity)))) && event.entity.riddenByEntity == null && event.entity instanceof IMob && !event.isCanceled() && !event.entity.isDead && event.world.loadedEntityList.size() < 512)
 		{
 			event.entity.getEntityData().setBoolean("ESM_MODIFIED", true);
-			if(ESM_Settings.MobBombRarity <= 0)
+			
+			if(ESM_Settings.MobBombRarity <= 0 || event.world.rand.nextInt(ESM_Settings.MobBombRarity) == 0)
 			{
 				EntityCreeper passenger = new EntityCreeper(event.entity.worldObj);
 				passenger.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
 				passenger.onSpawnWithEgg((IEntityLivingData)null);
 				event.entity.worldObj.spawnEntityInWorld(passenger);
 				passenger.mountEntity(event.entity);
-			} else if(ESM_Settings.MobBombRarity > 0)
-			{
-				if(event.world.rand.nextInt(ESM_Settings.MobBombRarity) == 0)
-				{
-					EntityCreeper passenger = new EntityCreeper(event.entity.worldObj);
-					passenger.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
-					passenger.onSpawnWithEgg((IEntityLivingData)null);
-					event.entity.worldObj.spawnEntityInWorld(passenger);
-					passenger.mountEntity(event.entity);
-				}
 			}
 		}
 		
@@ -510,7 +496,7 @@ public class ESM_EventManager
 			return;
 		}
 		
-		if(ESM_Settings.Apocalypse && !(event.entityLiving instanceof EntityPlayer || event.entityLiving instanceof EntityZombie || (event.entityLiving instanceof EntityEnderman && ESM_Settings.EndermanMode.equalsIgnoreCase("Slender"))))
+		if(ESM_Settings.Apocalypse && !(event.entityLiving instanceof EntityPlayer || event.entityLiving instanceof EntityZombie || (event.entityLiving instanceof EntityEnderman && ESM_Settings.EndermanSlender)))
 		{
 			event.entityLiving.setDead();
 			return;
@@ -706,103 +692,17 @@ public class ESM_EventManager
 	
 	public static int getPortalTime(Entity entity)
 	{
-		int time = -1;
-		
-		Field field = null;
-		try
-		{
-			field = Entity.class.getDeclaredField("portalCounter");
-		} catch(Exception e)
-		{
-			try
-			{
-				field = Entity.class.getDeclaredField("field_82153_h");
-			} catch(Exception e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return time;
-			}
-		}
-		
-		field.setAccessible(true);
-		
-		try
-		{
-			time = (int)field.getInt(entity);
-		} catch(Exception e)
-		{
-			e.printStackTrace();
-			return time;
-		}
-		
-		return time;
+		return ObfuscationReflectionHelper.getPrivateValue(Entity.class, entity, "field_82153_h", "portalCounter");
 	}
 	
 	public static boolean getInPortal(Entity entity)
 	{
-		boolean flag = false;
-		
-		Field field = null;
-		try
-		{
-			field = Entity.class.getDeclaredField("inPortal");
-		} catch(Exception e)
-		{
-			try
-			{
-				field = Entity.class.getDeclaredField("field_71087_bX");
-			} catch(Exception e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return flag;
-			}
-		}
-		
-		field.setAccessible(true);
-		
-		try
-		{
-			flag = (boolean)field.getBoolean(entity);
-		} catch(Exception e)
-		{
-			e.printStackTrace();
-			return flag;
-		}
-		
-		return flag;
+		return ObfuscationReflectionHelper.getPrivateValue(Entity.class, entity, "field_71087_bX", "inPortal");
 	}
 	
 	public static void setInPortal(Entity entity, boolean value)
 	{
-		Field field = null;
-		try
-		{
-			field = Entity.class.getDeclaredField("inPortal");
-		} catch(Exception e)
-		{
-			try
-			{
-				field = Entity.class.getDeclaredField("field_71087_bX");
-			} catch(Exception e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return;
-			}
-		}
-		
-		field.setAccessible(true);
-		
-		try
-		{
-			field.setBoolean(entity, value);
-		} catch(Exception e)
-		{
-			e.printStackTrace();
-			return;
-		}
+		ObfuscationReflectionHelper.setPrivateValue(Entity.class, entity, value, "field_71087_bX", "inPortal");
 	}
 	
 	public static boolean isNearSpawner(World world, int x, int y, int z)

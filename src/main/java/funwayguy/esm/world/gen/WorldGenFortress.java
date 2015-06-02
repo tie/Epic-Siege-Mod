@@ -20,12 +20,7 @@ public class WorldGenFortress implements IWorldGenerator
 	{
 		BiomeGenBase biome = world.getBiomeGenForCoords(chunkX * 16 + 8, chunkZ * 16 + 8);
 		
-		int chance = 1;
-		
-		if(ESM_Settings.fortRarity > 1)
-		{
-			chance = ESM_Settings.fortRarity;
-		}
+		int chance = Math.max(1, ESM_Settings.fortRarity);
 		
 		ChunkCoordinates spawnPoint = world.provider.getSpawnPoint();
 		int blockX = chunkX * 16 + 8;

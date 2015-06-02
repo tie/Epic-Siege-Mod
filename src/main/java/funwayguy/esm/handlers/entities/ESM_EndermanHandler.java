@@ -1,6 +1,5 @@
 package funwayguy.esm.handlers.entities;
 
-import java.lang.reflect.Field;
 import java.util.UUID;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;
@@ -15,6 +14,7 @@ import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
+import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import funwayguy.esm.core.ESM_Settings;
 import funwayguy.esm.core.ESM_Utils;
 
@@ -33,10 +33,9 @@ public class ESM_EndermanHandler
 		{
 			EntityLivingBase target = (EntityLivingBase)enderman.getEntityToAttack();
 			
-			if(ESM_Settings.EndermanMode.equalsIgnoreCase("Slender") && enderman.getEntityData().getBoolean("ESM_LOOKED_AWAY"))
+			if(ESM_Settings.EndermanSlender && enderman.getEntityData().getBoolean("ESM_LOOKED_AWAY"))
 			{
 				target.addPotionEffect(new PotionEffect(Potion.blindness.id, 100, 0));
-				target.addPotionEffect(new PotionEffect(Potion.confusion.id, 100, 0));
 				target.addPotionEffect(new PotionEffect(Potion.hunger.id, 100, 0));
 				
 	            IAttributeInstance attributeinstance = enderman.getEntityAttribute(SharedMonsterAttributes.movementSpeed);
@@ -57,7 +56,7 @@ public class ESM_EndermanHandler
 				{
 					enderman.worldObj.playSoundAtEntity(enderman, "ambient.cave.cave", 1.0F, 0.5F);
 				}
-			} if(ESM_Settings.EndermanMode.equalsIgnoreCase("Slender"))
+			} if(ESM_Settings.EndermanSlender)
 			{
 				if(!shouldAttackTarget(enderman, target))
 				{
@@ -92,7 +91,7 @@ public class ESM_EndermanHandler
         {
             if(shouldAttackTarget(enderman, target))
             {
-                setAggressive(enderman, true);
+                ObfuscationReflectionHelper.setPrivateValue(EntityEnderman.class, enderman, true, "field_104003_g", "isAggressive");
                 
                 int stare = getStareTimer(enderman);
                 if (stare == 0)
@@ -132,7 +131,7 @@ public class ESM_EndermanHandler
             double d0 = vec31.lengthVector();
             vec31 = vec31.normalize();
             double d1 = vec3.dotProduct(vec31);
-            if (d1 > 0.75D - 0.025D / d0 && ESM_Settings.EndermanMode.equalsIgnoreCase("Slender"))
+            if (d1 > 0.85D - 0.025D / d0 && ESM_Settings.EndermanSlender && enderman.getDistanceToEntity(target) < 32D)
             {
                 return enderman.canEntityBeSeen(target);
             }
@@ -144,39 +143,6 @@ public class ESM_EndermanHandler
                 return false;
             }
         }
-	}
-	
-	public static void setAggressive(EntityEnderman enderman, boolean state)
-	{
-		Field field = null;
-		try
-		{
-			field = EntityEnderman.class.getDeclaredField("isAggressive");
-		} catch(Exception e)
-		{
-			try
-			{
-				field = EntityEnderman.class.getDeclaredField("field_104003_g");
-			} catch(Exception e1)
-			{
-				e.printStackTrace();
-				e1.printStackTrace();
-				return;
-			}
-		}
-		
-		field.setAccessible(true);
-		
-		try
-		{
-			field.setBoolean(enderman, state);
-		} catch(Exception e)
-		{
-			e.printStackTrace();
-			return;
-		}
-		
-		return;
 	}
 	
 	public static int getStareTimer(EntityEnderman enderman)

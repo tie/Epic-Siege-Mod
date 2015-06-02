@@ -182,10 +182,10 @@ public abstract class ESM_EntityAITarget extends EntityAIBase
     /**
      * Checks to see if this entity can find a short path to the given target.
      */
-    private boolean canEasilyReach(EntityLivingBase p_75295_1_)
+    private boolean canEasilyReach(EntityLivingBase entityLiving)
     {
-        this.targetSearchDelay = 10 + this.taskOwner.getRNG().nextInt(5);
-        PathEntity pathentity = this.taskOwner.getNavigator().getPathToEntityLiving(p_75295_1_);
+        this.targetSearchDelay = 10 + this.taskOwner.getRNG().nextInt(Math.max(5, (int)this.taskOwner.getDistanceToEntity(entityLiving) - 10));
+        PathEntity pathentity = this.taskOwner.getNavigator().getPathToEntityLiving(entityLiving);
 
         if (pathentity == null)
         {
@@ -201,8 +201,8 @@ public abstract class ESM_EntityAITarget extends EntityAIBase
             }
             else
             {
-                int i = pathpoint.xCoord - MathHelper.floor_double(p_75295_1_.posX);
-                int j = pathpoint.zCoord - MathHelper.floor_double(p_75295_1_.posZ);
+                int i = pathpoint.xCoord - MathHelper.floor_double(entityLiving.posX);
+                int j = pathpoint.zCoord - MathHelper.floor_double(entityLiving.posZ);
                 return (double)(i * i + j * j) <= 2.25D;
             }
         }
