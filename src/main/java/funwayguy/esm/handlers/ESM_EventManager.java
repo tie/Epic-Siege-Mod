@@ -726,7 +726,13 @@ public class ESM_EventManager
 				try
 				{
 					NBTTagCompound wmTag = CompressedStreamTools.read(new File(ESM_Settings.worldDir, "ESM.dat"));
-					curBossMod = wmTag.getFloat("WitherModifier");
+					if(wmTag != null)
+					{
+						curBossMod = wmTag.getFloat("WitherModifier");
+					} else
+					{
+						curBossMod = 0F;
+					}
 				} catch(IOException e)
 				{
 				}
