@@ -18,7 +18,6 @@ import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityCreeper;
@@ -88,7 +87,7 @@ import funwayguy.esm.handlers.entities.*;
 
 public class ESM_EventManager
 {	
-	float curWitherMod = 0F;
+	static float curBossMod = 0F;
 	
 	@SubscribeEvent
 	public void onEntityJoinWorld(EntityJoinWorldEvent event)
@@ -125,7 +124,7 @@ public class ESM_EventManager
 			EntityLivingBase entityLiving = (EntityLivingBase)event.entity;
 			DimSettings dimSet = ESM_Settings.dimSettings.get(event.world.provider.dimensionId);
 			
-			if(dimSet == null && curWitherMod > 0F)
+			if(dimSet == null && curBossMod > 0F)
 			{
 				dimSet = new DimSettings(1F, 1F, 1F, 1F);
 			}
@@ -134,20 +133,20 @@ public class ESM_EventManager
 			{
 				if(entityLiving.getEntityAttribute(SharedMonsterAttributes.maxHealth) != null)
 				{
-					entityLiving.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier("ESM_TWEAK_1", dimSet.hpMult + curWitherMod, 1));
+					entityLiving.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier("ESM_TWEAK_1", dimSet.hpMult + curBossMod, 1));
 					entityLiving.setHealth(entityLiving.getMaxHealth());
 				}
 				if(entityLiving.getEntityAttribute(SharedMonsterAttributes.movementSpeed) != null)
 				{
-					entityLiving.getEntityAttribute(SharedMonsterAttributes.movementSpeed).applyModifier(new AttributeModifier("ESM_TWEAK_2", dimSet.spdMult + curWitherMod, 1));
+					entityLiving.getEntityAttribute(SharedMonsterAttributes.movementSpeed).applyModifier(new AttributeModifier("ESM_TWEAK_2", dimSet.spdMult + curBossMod, 1));
 				}
 				if(entityLiving.getEntityAttribute(SharedMonsterAttributes.attackDamage) != null)
 				{
-					entityLiving.getEntityAttribute(SharedMonsterAttributes.attackDamage).applyModifier(new AttributeModifier("ESM_TWEAK_3", dimSet.dmgMult + curWitherMod, 1));
+					entityLiving.getEntityAttribute(SharedMonsterAttributes.attackDamage).applyModifier(new AttributeModifier("ESM_TWEAK_3", dimSet.dmgMult + curBossMod, 1));
 				}
 				if(entityLiving.getEntityAttribute(SharedMonsterAttributes.knockbackResistance) != null)
 				{
-					entityLiving.getEntityAttribute(SharedMonsterAttributes.knockbackResistance).applyModifier(new AttributeModifier("ESM_TWEAK_4", dimSet.dmgMult + curWitherMod, 1));
+					entityLiving.getEntityAttribute(SharedMonsterAttributes.knockbackResistance).applyModifier(new AttributeModifier("ESM_TWEAK_4", dimSet.dmgMult + curBossMod, 1));
 				}
 			}
 		}
@@ -396,9 +395,9 @@ public class ESM_EventManager
 			}
 		}
 		
-		if(event.entityLiving instanceof EntityWither)
+		if(event.entityLiving instanceof IBossDisplayData)
 		{
-			curWitherMod += ESM_Settings.witherModifier;
+			curBossMod += ESM_Settings.bossModifier;
 		}
 	}
 	
@@ -727,7 +726,7 @@ public class ESM_EventManager
 				try
 				{
 					NBTTagCompound wmTag = CompressedStreamTools.read(new File(ESM_Settings.worldDir, "ESM.dat"));
-					curWitherMod = wmTag.getFloat("WitherModifier");
+					curBossMod = wmTag.getFloat("WitherModifier");
 				} catch(IOException e)
 				{
 				}
@@ -747,7 +746,7 @@ public class ESM_EventManager
 				ESM_PathCapHandler.attackMap.clear();
 				ESM_Settings.currentWorlds = null;
 				ESM_Settings.worldDir = null;
-				curWitherMod = 0F;
+				curBossMod = 0F;
 			}
 		}
 	}
@@ -758,7 +757,7 @@ public class ESM_EventManager
 		try
 		{
 			NBTTagCompound wmTag = new NBTTagCompound();
-			wmTag.setFloat("WitherModifier", curWitherMod);
+			wmTag.setFloat("BossModifier", curBossMod);
 			CompressedStreamTools.write(wmTag, new File(ESM_Settings.worldDir, "ESM.dat"));
 		} catch(Exception e)
 		{

@@ -103,7 +103,7 @@ public class ESM_Settings
 	public static int PotionMobs;
 	public static int[] PotionMobEffects;
 	public static boolean attackEvasion;
-	public static float witherModifier;
+	public static float bossModifier;
 	
 	//Generation
 	public static boolean NewEnd;
@@ -275,7 +275,7 @@ public class ESM_Settings
 		PotionMobs = defConfig.get("Advanced Mobs", "Potion Buff Chance (0-100)", 1).getInt(1);
 		PotionMobEffects = defConfig.get("Advanced Mobs", "Potion Buff List", new int[]{14, 12, 5, 1}, "List of all the valid potion IDs a mob can spawn with. Amplifier is always x1").getIntList();
 		attackEvasion = defConfig.get("Advanced Mobs", "Attack Evasion", true).getBoolean(true);
-		witherModifier = defConfig.getFloat("Wither Kill Modifier", "Advanced Mobs", 0.1F, 0F, Float.MAX_VALUE, "Every time a wither is killed all mob heal and damage multipliers will be increased by this");
+		bossModifier = defConfig.getFloat("Boss Kill Modifier", "Advanced Mobs", 0.1F, 0F, Float.MAX_VALUE, "Every time a boss is killed all mob heal and damage multipliers will be increased by this");
 		
 		//World
 		SpawnForts = defConfig.get("World", "Spawn Forts", true).getBoolean(true);
@@ -458,7 +458,7 @@ public class ESM_Settings
 		PotionMobs = config.get("Advanced Mobs", "Potion Buff Chance (0-100)", PotionMobs).getInt(PotionMobs);
 		PotionMobEffects = config.get("Advanced Mobs", "Potion Buff List", PotionMobEffects, "List of all the valid potion IDs a mob can spawn with. Amplifier is always x1").getIntList();
 		attackEvasion = config.get("Advanced Mobs", "Attack Evasion", attackEvasion).getBoolean(attackEvasion);
-		witherModifier = config.getFloat("Wither Kill Modifier", "Advanced Mobs", 0.1F, 0F, Float.MAX_VALUE, "Every time a wither is killed all mob heal and damage multipliers will be increased by this");
+		bossModifier = config.getFloat("Boss Kill Modifier", "Advanced Mobs", 0.1F, 0F, Float.MAX_VALUE, "Every time a boss is killed all mob heal and damage multipliers will be increased by this");
 		
 		//World
 		SpawnForts = config.get("World", "Spawn Forts", SpawnForts).getBoolean(SpawnForts);
