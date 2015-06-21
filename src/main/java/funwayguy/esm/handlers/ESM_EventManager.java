@@ -1,5 +1,7 @@
 package funwayguy.esm.handlers;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,7 +15,10 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureType;
 import net.minecraft.entity.IEntityLivingData;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.boss.EntityWither;
 import net.minecraft.entity.boss.IBossDisplayData;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityCreeper;
@@ -34,6 +39,7 @@ import net.minecraft.entity.projectile.EntitySmallFireball;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.potion.Potion;
@@ -44,6 +50,7 @@ import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.SpawnerAnimals;
 import net.minecraft.world.World;
@@ -60,6 +67,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
 import net.minecraftforge.event.world.WorldEvent.Load;
+import net.minecraftforge.event.world.WorldEvent.Save;
 import net.minecraftforge.event.world.WorldEvent.Unload;
 import com.google.common.base.Stopwatch;
 import cpw.mods.fml.client.event.ConfigChangedEvent;
@@ -71,6 +79,7 @@ import cpw.mods.fml.common.gameevent.PlayerEvent.PlayerRespawnEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
 import funwayguy.esm.ai.GenericEntitySelector;
 import funwayguy.esm.client.gui.ESMGuiConfig;
+import funwayguy.esm.core.DimSettings;
 import funwayguy.esm.core.ESM;
 import funwayguy.esm.core.ESM_Settings;
 import funwayguy.esm.core.ESM_Utils;
@@ -79,6 +88,8 @@ import funwayguy.esm.handlers.entities.*;
 
 public class ESM_EventManager
 {	
+	float curWitherMod = 0F;
+	
 	@SubscribeEvent
 	public void onEntityJoinWorld(EntityJoinWorldEvent event)
 	{
@@ -107,6 +118,38 @@ public class ESM_EventManager
 		{
 			event.entity.getEntityData().setBoolean("ESM_MODIFIED", true);
 			return;
+		}
+		
+		if(event.entity instanceof EntityLivingBase && (event.entity instanceof IMob || ESM_Settings.ambiguous_AI) && !ESM_Settings.AIExempt.contains(EntityList.getEntityID(event.entity)))
+		{
+			EntityLivingBase entityLiving = (EntityLivingBase)event.entity;
+			DimSettings dimSet = ESM_Settings.dimSettings.get(event.world.provider.dimensionId);
+			
+			if(dimSet == null && curWitherMod > 0F)
+			{
+				dimSet = new DimSettings(1F, 1F, 1F, 1F);
+			}
+			
+			if(dimSet != null)
+			{
+				if(entityLiving.getEntityAttribute(SharedMonsterAttributes.maxHealth) != null)
+				{
+					entityLiving.getEntityAttribute(SharedMonsterAttributes.maxHealth).applyModifier(new AttributeModifier("ESM_TWEAK_1", dimSet.hpMult + curWitherMod, 1));
+					entityLiving.setHealth(entityLiving.getMaxHealth());
+				}
+				if(entityLiving.getEntityAttribute(SharedMonsterAttributes.movementSpeed) != null)
+				{
+					entityLiving.getEntityAttribute(SharedMonsterAttributes.movementSpeed).applyModifier(new AttributeModifier("ESM_TWEAK_2", dimSet.spdMult + curWitherMod, 1));
+				}
+				if(entityLiving.getEntityAttribute(SharedMonsterAttributes.attackDamage) != null)
+				{
+					entityLiving.getEntityAttribute(SharedMonsterAttributes.attackDamage).applyModifier(new AttributeModifier("ESM_TWEAK_3", dimSet.dmgMult + curWitherMod, 1));
+				}
+				if(entityLiving.getEntityAttribute(SharedMonsterAttributes.knockbackResistance) != null)
+				{
+					entityLiving.getEntityAttribute(SharedMonsterAttributes.knockbackResistance).applyModifier(new AttributeModifier("ESM_TWEAK_4", dimSet.dmgMult + curWitherMod, 1));
+				}
+			}
 		}
 		
 		if(event.entity.getClass() == EntityGhast.class)
@@ -298,6 +341,12 @@ public class ESM_EventManager
 			return;
 		}
 		
+		if(!ESM_Settings.friendlyFire && event.source != null && event.source.getEntity() != null && event.entityLiving instanceof IMob && (ESM_Settings.Chaos? event.entityLiving.getClass() == event.source.getEntity().getClass() : event.source.getEntity() instanceof IMob))
+		{
+			event.setCanceled(true);
+			return;
+		}
+		
 		if(!(event.entityLiving instanceof EntityPlayer) && event.entityLiving.ridingEntity != null && event.source == DamageSource.inWall)
 		{
 			event.entityLiving.dismountEntity(event.entityLiving.ridingEntity);
@@ -341,10 +390,15 @@ public class ESM_EventManager
 				EntityZombie zombie = new EntityZombie(event.entity.worldObj);
 				zombie.setPosition(event.entity.posX, event.entity.posY, event.entity.posZ);
 				zombie.setCanPickUpLoot(true);
-				zombie.setCustomNameTag(event.entity.getCommandSenderName());
+				zombie.setCustomNameTag(event.entity.getCommandSenderName() + " (" + StatCollector.translateToLocal("entity.Zombie.name") + ")");
 				zombie.getEntityData().setBoolean("ESM_MODIFIED", true);
 				event.entity.worldObj.spawnEntityInWorld(zombie);
 			}
+		}
+		
+		if(event.entityLiving instanceof EntityWither)
+		{
+			curWitherMod += ESM_Settings.witherModifier;
 		}
 	}
 	
@@ -670,6 +724,13 @@ public class ESM_EventManager
 					ESM_Settings.worldDir = server.getFile(server.getFolderName());
 				}
 				ESM_Settings.LoadWorldConfig();
+				try
+				{
+					NBTTagCompound wmTag = CompressedStreamTools.read(new File(ESM_Settings.worldDir, "ESM.dat"));
+					curWitherMod = wmTag.getFloat("WitherModifier");
+				} catch(IOException e)
+				{
+				}
 			}
 		}
 	}
@@ -686,8 +747,26 @@ public class ESM_EventManager
 				ESM_PathCapHandler.attackMap.clear();
 				ESM_Settings.currentWorlds = null;
 				ESM_Settings.worldDir = null;
+				curWitherMod = 0F;
 			}
 		}
+	}
+	
+	@SubscribeEvent
+	public void onWorldSave(Save event)
+	{
+		try
+		{
+			NBTTagCompound wmTag = new NBTTagCompound();
+			wmTag.setFloat("WitherModifier", curWitherMod);
+			CompressedStreamTools.write(wmTag, new File(ESM_Settings.worldDir, "ESM.dat"));
+		} catch(Exception e)
+		{
+		}
+		/*if(ESM_EntityAIBrainController.brain != null)
+		{
+			ESM_EntityAIBrainController.brain.Save();
+		}*/
 	}
 	
 	public static int getPortalTime(Entity entity)

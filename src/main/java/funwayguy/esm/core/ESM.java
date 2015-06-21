@@ -14,6 +14,7 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import funwayguy.esm.core.proxies.CommonProxy;
 import funwayguy.esm.entities.EntityESMGhast;
+import funwayguy.esm.entities.EntityNeatZombie;
 import funwayguy.esm.handlers.ESM_EventManager;
 import funwayguy.esm.handlers.ESM_UpdateNotification;
 import funwayguy.esm.world.dimensions.WorldProviderNewHell;
@@ -67,7 +68,14 @@ public class ESM
 		FMLCommonHandler.instance().bus().register(new ESM_UpdateNotification());
 		
 		GameRegistry.registerWorldGenerator(new WorldGenFortress(), 0);
-		EntityRegistry.registerModEntity(EntityESMGhast.class, "ESM_Ghast", EntityRegistry.findGlobalUniqueEntityId(), instance, 128, 1, true);
+		
+		int ghastID = EntityRegistry.findGlobalUniqueEntityId();
+		EntityRegistry.registerGlobalEntityID(EntityESMGhast.class, "ESM_Ghast", ghastID);
+		EntityRegistry.registerModEntity(EntityESMGhast.class, "ESM_Ghast", ghastID, instance, 128, 1, true);
+		
+		int zombieID = EntityRegistry.findGlobalUniqueEntityId();
+		EntityRegistry.registerGlobalEntityID(EntityNeatZombie.class, "NEAT_Zombie", zombieID);
+		EntityRegistry.registerModEntity(EntityNeatZombie.class, "NEAT_Zombie", zombieID, instance, 128, 1, true);
 	}
 
 	@EventHandler

@@ -5,6 +5,7 @@ import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntitySpider;
+import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -26,6 +27,9 @@ public class GenericEntitySelector implements IEntitySelector
 		}
 		
 		if(subject == null || subject.isDead || ((EntityLivingBase)subject).getHealth() <= 0F)
+		{
+			return false;
+		} else if(!ESM_Settings.friendlyFire && host instanceof IMob && (ESM_Settings.Chaos? host.getClass() == subject.getClass() : subject instanceof IMob))
 		{
 			return false;
 		}

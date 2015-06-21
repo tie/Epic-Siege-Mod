@@ -10,6 +10,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.pathfinding.PathFinder;
 import net.minecraft.pathfinding.PathPoint;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.IBlockAccess;
@@ -134,7 +135,7 @@ public class ESMPathFinder extends PathFinder
                                 return -3;
                             }
                         }
-                        else if (!block.getBlocksMovement(entity.worldObj, l, i1, j1) && (!moveBlock || block != Blocks.wooden_door))
+                        else if ((!block.getBlocksMovement(entity.worldObj, l, i1, j1) || CanFit(entity, block, l, i1, j1)) && (!moveBlock || block != Blocks.wooden_door))
                         {
                             if (k1 == 11 || block == Blocks.fence_gate || k1 == 32)
                             {
@@ -166,6 +167,36 @@ public class ESMPathFinder extends PathFinder
         return flag3 ? 2 : 1;
     }
     
+    public static boolean CanFit(Entity entity, Block block, int x, int y, int z)
+    {
+    	if(entity == null || block == null ||entity.getCollisionBox(entity) == null || block.getCollisionBoundingBoxFromPool(entity.worldObj, x, y, z) == null)
+    	{
+    		return true;
+    	}
+    	
+    	AxisAlignedBB eBounds = entity.getCollisionBox(entity);
+    	AxisAlignedBB bBounds = entity.getCollisionBox(entity);
+    	
+    	double BW = Math.max(bBounds.maxX - bBounds.minX, bBounds.maxZ - bBounds.minZ);
+    	double BH1 = bBounds.maxY - (double)y;
+    	double BH2 = bBounds.maxY - bBounds.minY;
+    	
+    	double EW = Math.max(eBounds.maxX - eBounds.minX, eBounds.maxZ - eBounds.minZ);
+    	double EH = eBounds.maxY - eBounds.minY;
+    	
+    	if(BW <= 0 || BH2 <= 0)
+    	{
+    		return true;
+    	}
+    	
+    	if(BW > 0 && EW >= 1)
+    	{
+    		return false;
+    	}
+    	
+    	return BW + EW <= 1D || BH1 <= 0.5F || BH2 + EH <= 1F;
+    }
+    
     static
     {
     	avoidBlocks = new ArrayList<Block>();
@@ -183,7 +214,7 @@ public class ESMPathFinder extends PathFinder
     	{
     		Block block = iterator.next();
     		
-    		if(block != null && (block.getMaterial() == Material.fire || block.getMaterial() == Material.lava))
+    		if(block != null && (block.getMaterial() == Material.fire || block.getMaterial() == Material.lava || block.getMaterial() == Material.cactus))
     		{
     			avoidBlocks.add(block);
     		}

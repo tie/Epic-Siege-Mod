@@ -2,6 +2,7 @@ package funwayguy.esm.core;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -19,6 +20,7 @@ import net.minecraft.entity.ai.EntityAIAvoidEntity;
 import net.minecraft.entity.ai.EntityAIBreakDoor;
 import net.minecraft.entity.ai.EntityAICreeperSwell;
 import net.minecraft.entity.ai.EntityAIFollowOwner;
+import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
@@ -54,7 +56,19 @@ import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.FMLControlledNamespacedRegistry;
 import cpw.mods.fml.common.registry.GameData;
-import funwayguy.esm.ai.*;
+import funwayguy.esm.ai.ESMPathNavigator;
+import funwayguy.esm.ai.ESM_EntityAIAttackEvasion;
+import funwayguy.esm.ai.ESM_EntityAIAttackOnCollide;
+import funwayguy.esm.ai.ESM_EntityAIAvoidDetonations;
+import funwayguy.esm.ai.ESM_EntityAIBreakDoor_Proxy;
+import funwayguy.esm.ai.ESM_EntityAIBuildTrap;
+import funwayguy.esm.ai.ESM_EntityAICreeperSwell;
+import funwayguy.esm.ai.ESM_EntityAIDigging;
+import funwayguy.esm.ai.ESM_EntityAIGrief;
+import funwayguy.esm.ai.ESM_EntityAIHurtByTarget;
+import funwayguy.esm.ai.ESM_EntityAINearestAttackableTarget;
+import funwayguy.esm.ai.ESM_EntityAIPillarUp;
+import funwayguy.esm.ai.ESM_EntityAISwimming;
 import funwayguy.esm.blocks.ESM_BlockEnderPortal;
 import funwayguy.esm.handlers.ESM_PathCapHandler;
 
@@ -401,6 +415,10 @@ public class ESM_Utils
 				{
 					entityLiving.targetTasks.taskEntries.remove(i); // Remove redundant AI
 				}
+			} else if(task.action.getClass() == EntityAIHurtByTarget.class && entityLiving instanceof EntityCreature)
+			{
+				EntityAITaskEntry replacement = entityLiving.targetTasks.new EntityAITaskEntry(task.priority, new ESM_EntityAIHurtByTarget((EntityCreature)entityLiving, true));
+				entityLiving.targetTasks.taskEntries.set(i, replacement);
 			}
 		}
 		
@@ -551,7 +569,23 @@ public class ESM_Utils
 		
 		try
 		{
-			ObfuscationReflectionHelper.setPrivateValue(Blocks.class, null, block, "field_150384_bq", "end_portal");
+			Field f;
+			Field modField = Field.class.getDeclaredField("modifiers");
+			modField.setAccessible(true);
+			try
+			{
+				f = Blocks.class.getDeclaredField("field_150384_bq");
+			} catch(Exception e)
+			{
+				f = Blocks.class.getDeclaredField("end_portal");
+			}
+			
+			int modMask = f.getModifiers();
+			modMask &= ~Modifier.FINAL;
+			modField.set(f, modMask);
+			f.setAccessible(true);
+			f.set(null, block);
+			
 			Method addRawObj = FMLControlledNamespacedRegistry.class.getDeclaredMethod("addObjectRaw", int.class, String.class, Object.class);
 			addRawObj.setAccessible(true);
 			

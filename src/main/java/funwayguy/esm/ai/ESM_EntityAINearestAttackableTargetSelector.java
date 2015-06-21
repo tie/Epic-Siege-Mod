@@ -4,6 +4,7 @@ import java.util.List;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.IMob;
 import funwayguy.esm.core.ESM_Settings;
 
 class ESM_EntityAINearestAttackableTargetSelector implements IEntitySelector
@@ -29,7 +30,10 @@ class ESM_EntityAINearestAttackableTargetSelector implements IEntitySelector
     	if(target == null)
     	{
     		return false;
-    	}
+    	} else if(!ESM_Settings.friendlyFire && owner instanceof IMob && (ESM_Settings.Chaos? owner.getClass() == target.getClass() : target instanceof IMob))
+		{
+			return false;
+		}
     	
     	if(!ESM_Settings.Chaos) // Should we even check if the target is applicable or just allow every little thing to be targeted
     	{

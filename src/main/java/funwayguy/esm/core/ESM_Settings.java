@@ -9,10 +9,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 import net.minecraft.entity.EntityList;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.Level;
 
@@ -40,6 +44,9 @@ public class ESM_Settings
 	public static boolean forcePath;
 	public static int timedDifficulty;
 	public static int hardDay;
+	public static boolean friendlyFire;
+	
+	public static HashMap<Integer, DimSettings> dimSettings = new HashMap<Integer, DimSettings>();
 	
 	public static boolean ENFORCE_DEFAULT;
 	
@@ -96,6 +103,7 @@ public class ESM_Settings
 	public static int PotionMobs;
 	public static int[] PotionMobEffects;
 	public static boolean attackEvasion;
+	public static float witherModifier;
 	
 	//Generation
 	public static boolean NewEnd;
@@ -161,6 +169,7 @@ public class ESM_Settings
 		moreSpawning = defConfig.get("Main", "More Spawning", true, "Reduces spawning safe zone from 24 blocks to 8 and makes mobs require only basic conditions to spawn").getBoolean(true);
 		forcePath = defConfig.get("Main", "Force Non-AI Pathing", false, "Forces non pathing mobs to attack from further away. Can cause additional lag").getBoolean(false);
 		ENFORCE_DEFAULT = defConfig.get("Main", "Enforce Defaults", true, "Ignores world specific settings and just uses the global defaults instead").getBoolean(true);
+		friendlyFire = defConfig.getBoolean("Friendly Fire", "Main", true, "Can mobs harm eachother (type specific in chaos mode)");
 		
 		String[] tmpAIE = defConfig.get("Main", "AI Exempt Mob IDs", new String[]{}).getStringList();
 		AIExempt = new ArrayList<String>();
@@ -266,6 +275,7 @@ public class ESM_Settings
 		PotionMobs = defConfig.get("Advanced Mobs", "Potion Buff Chance (0-100)", 1).getInt(1);
 		PotionMobEffects = defConfig.get("Advanced Mobs", "Potion Buff List", new int[]{14, 12, 5, 1}, "List of all the valid potion IDs a mob can spawn with. Amplifier is always x1").getIntList();
 		attackEvasion = defConfig.get("Advanced Mobs", "Attack Evasion", true).getBoolean(true);
+		witherModifier = defConfig.getFloat("Wither Kill Modifier", "Advanced Mobs", 0.1F, 0F, Float.MAX_VALUE, "Every time a wither is killed all mob heal and damage multipliers will be increased by this");
 		
 		//World
 		SpawnForts = defConfig.get("World", "Spawn Forts", true).getBoolean(true);
@@ -279,6 +289,39 @@ public class ESM_Settings
 		for(int dimID : tmpFD)
 		{
 			fortDimensions.add(dimID);
+		}
+		
+		dimSettings.clear();
+		Set<ConfigCategory> cats = defConfig.getCategory("Dimension Tweaks").getChildren();
+		
+		if(cats.size() <= 0)
+		{
+			String name = "Overworld";
+			
+			defConfig.get("Dimension Tweaks." + name, "01.Dimension ID", 0).getInt(0);
+			defConfig.get("Dimension Tweaks." + name, "02.Health Mult", 1.0D).getDouble(1.0D);
+			defConfig.get("Dimension Tweaks." + name, "03.Damage Mult", 1.0D).getDouble(1.0D);
+			defConfig.get("Dimension Tweaks." + name, "04.Speed Mult", 1.0D).getDouble(1.0D);
+			defConfig.get("Dimension Tweaks." + name, "05.Knockback Resistance Mult", 1.0D).getDouble(1.0D);
+			cats = defConfig.getCategory("Dimension Tweaks").getChildren();
+		}
+		
+		Iterator<ConfigCategory> iterator = cats.iterator();
+		
+		while(iterator.hasNext())
+		{
+			ConfigCategory cat = iterator.next();
+			if(cat.getChildren().size() <= 0)
+			{
+				int dimID = defConfig.get(cat.getQualifiedName(), "01.Dimension ID", 0).getInt(0);
+				double hpMult = defConfig.get(cat.getQualifiedName(), "02.Health Mult", 1.0D).getDouble(1.0D);
+				double dmgMult = defConfig.get(cat.getQualifiedName(), "03.Damage Mult", 1.0D).getDouble(1.0D);
+				double spdMult = defConfig.get(cat.getQualifiedName(), "04.Speed Mult", 1.0D).getDouble(1.0D);
+				double knockResist = defConfig.get(cat.getQualifiedName(), "05.Knockback Resistance Mult", 1.0D).getDouble(1.0D);
+				
+				DimSettings dimSet = new DimSettings(hpMult, dmgMult, spdMult, knockResist);
+				dimSettings.put(dimID, dimSet);
+			}
 		}
 		
 		defConfig.save();
@@ -338,6 +381,7 @@ public class ESM_Settings
 		keepLoaded = config.get("Main", "Keep Loaded", keepLoaded, "Keeps mobs with an active target from despawning. Can causes issues with chunk loading/unloading").getBoolean(false);
 		moreSpawning = config.get("Main", "More Spawning", moreSpawning, "Reduces spawning safe zone from 24 blocks to 8 and makes mobs require only basic conditions to spawn").getBoolean(true);
 		forcePath = config.get("Main", "Force Non-AI Pathing", forcePath, "Forces non pathing mobs to attack from further away. Can cause additional lag").getBoolean(false);
+		friendlyFire = config.getBoolean("Friendly Fire", "Main", friendlyFire, "Can mobs harm eachother (type specific in chaos mode)");
 		
 		//Witch
 		customPotions = config.getStringList("Custom Potions", "Witch", customPotions, "List of potion types witches can throw (\"id:duration:lvl\")");
@@ -414,6 +458,7 @@ public class ESM_Settings
 		PotionMobs = config.get("Advanced Mobs", "Potion Buff Chance (0-100)", PotionMobs).getInt(PotionMobs);
 		PotionMobEffects = config.get("Advanced Mobs", "Potion Buff List", PotionMobEffects, "List of all the valid potion IDs a mob can spawn with. Amplifier is always x1").getIntList();
 		attackEvasion = config.get("Advanced Mobs", "Attack Evasion", attackEvasion).getBoolean(attackEvasion);
+		witherModifier = config.getFloat("Wither Kill Modifier", "Advanced Mobs", 0.1F, 0F, Float.MAX_VALUE, "Every time a wither is killed all mob heal and damage multipliers will be increased by this");
 		
 		//World
 		SpawnForts = config.get("World", "Spawn Forts", SpawnForts).getBoolean(SpawnForts);
@@ -430,6 +475,39 @@ public class ESM_Settings
 		for(int dimID : tmpFD)
 		{
 			fortDimensions.add(dimID);
+		}
+
+		dimSettings.clear();
+		Set<ConfigCategory> cats = config.getCategory("Dimension Tweaks").getChildren();
+		
+		if(cats.size() <= 0)
+		{
+			String name = "Overworld";
+			
+			config.get("Dimension Tweaks." + name, "01.Dimension ID", 0).getInt(0);
+			config.get("Dimension Tweaks." + name, "02.Health Mult", 1.0D).getDouble(1.0D);
+			config.get("Dimension Tweaks." + name, "03.Damage Mult", 1.0D).getDouble(1.0D);
+			config.get("Dimension Tweaks." + name, "04.Speed Mult", 1.0D).getDouble(1.0D);
+			config.get("Dimension Tweaks." + name, "05.Knockback Resistance Mult", 1.0D).getDouble(1.0D);
+			cats = config.getCategory("Dimension Tweaks").getChildren();
+		}
+		
+		Iterator<ConfigCategory> iterator = cats.iterator();
+		
+		while(iterator.hasNext())
+		{
+			ConfigCategory cat = iterator.next();
+			if(cat.getChildren().size() <= 0)
+			{
+				int dimID = config.get(cat.getQualifiedName(), "01.Dimension ID", 0).getInt(0);
+				double hpMult = config.get(cat.getQualifiedName(), "02.Health Mult", 1.0D).getDouble(1.0D);
+				double dmgMult = config.get(cat.getQualifiedName(), "03.Damage Mult", 1.0D).getDouble(1.0D);
+				double spdMult = config.get(cat.getQualifiedName(), "04.Speed Mult", 1.0D).getDouble(1.0D);
+				double knockResist = config.get(cat.getQualifiedName(), "05.Knockback Resistance Mult", 1.0D).getDouble(1.0D);
+				
+				DimSettings dimSet = new DimSettings(hpMult, dmgMult, spdMult, knockResist);
+				dimSettings.put(dimID, dimSet);
+			}
 		}
 		
 		config.save();

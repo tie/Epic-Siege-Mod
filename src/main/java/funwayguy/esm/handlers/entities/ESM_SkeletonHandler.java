@@ -9,6 +9,7 @@ import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import funwayguy.esm.core.ESM_Settings;
+import funwayguy.esm.core.ESM_Utils;
 
 public class ESM_SkeletonHandler
 {
@@ -27,6 +28,7 @@ public class ESM_SkeletonHandler
 				newSkeleton.setCombatTask();
 				newSkeleton.getEntityData().setBoolean("ESM_MODIFIED", true);
 				skeleton.worldObj.spawnEntityInWorld(newSkeleton);
+				ESM_Utils.replaceAI(newSkeleton);
 			} else
 			{
 				skeleton.getEntityData().setString("ESM_TASK_ID", skeleton.getUniqueID().toString() + ",NULL");
