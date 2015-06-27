@@ -77,8 +77,11 @@ public class ESMPathFinder extends PathFinder
                 for (int j1 = z; j1 < z + point.zCoord; ++j1)
                 {
                     Block block = entity.worldObj.getBlock(l, i1, j1);
-
-                    if (block.getMaterial() != Material.air)
+                    
+                    if(avoidBlocks.contains(block))
+                	{
+                		return -2;
+                    } else if (block.getMaterial() != Material.air)
                     {
                         if (block == Blocks.trapdoor)
                         {
@@ -86,10 +89,7 @@ public class ESMPathFinder extends PathFinder
                         }
                         else if(!(block instanceof BlockLiquid))
                         {
-                        	if(avoidBlocks.contains(block))
-                        	{
-                        		return -2;
-                        	} else if (!allowDoors && block == Blocks.wooden_door)
+                        	if (!allowDoors && block == Blocks.wooden_door)
                             {
                                 return 0;
                             }
@@ -134,8 +134,10 @@ public class ESMPathFinder extends PathFinder
                             {
                                 return -3;
                             }
-                        }
-                        else if ((!block.getBlocksMovement(entity.worldObj, l, i1, j1) || CanFit(entity, block, l, i1, j1)) && (!moveBlock || block != Blocks.wooden_door))
+                        } else if(CanFit(entity, block, l, i1, j1))
+                        {
+                        	continue;
+                        } else if (!block.getBlocksMovement(entity.worldObj, l, i1, j1) && (!moveBlock || block != Blocks.wooden_door))
                         {
                             if (k1 == 11 || block == Blocks.fence_gate || k1 == 32)
                             {
@@ -152,9 +154,7 @@ public class ESMPathFinder extends PathFinder
                             if (material != Material.lava)
                             {
                                 return 0;
-                            }
-
-                            if (!entity.handleLavaMovement())
+                            } else if (!entity.handleLavaMovement())
                             {
                                 return -2;
                             }
@@ -169,13 +169,16 @@ public class ESMPathFinder extends PathFinder
     
     public static boolean CanFit(Entity entity, Block block, int x, int y, int z)
     {
-    	if(entity == null || block == null ||entity.getCollisionBox(entity) == null || block.getCollisionBoundingBoxFromPool(entity.worldObj, x, y, z) == null)
+    	if(block == null || block.getCollisionBoundingBoxFromPool(entity.worldObj, x, y, z) == null)
     	{
     		return true;
+    	} else if(entity == null || entity.boundingBox == null)
+    	{
+    		return false;
     	}
     	
-    	AxisAlignedBB eBounds = entity.getCollisionBox(entity);
-    	AxisAlignedBB bBounds = entity.getCollisionBox(entity);
+    	AxisAlignedBB eBounds = entity.boundingBox;
+    	AxisAlignedBB bBounds = block.getCollisionBoundingBoxFromPool(entity.worldObj, x, y, z);
     	
     	double BW = Math.max(bBounds.maxX - bBounds.minX, bBounds.maxZ - bBounds.minZ);
     	double BH1 = bBounds.maxY - (double)y;
@@ -214,7 +217,7 @@ public class ESMPathFinder extends PathFinder
     	{
     		Block block = iterator.next();
     		
-    		if(block != null && (block.getMaterial() == Material.fire || block.getMaterial() == Material.lava || block.getMaterial() == Material.cactus))
+    		if(block != null && (block.getMaterial() == Material.fire || block.getMaterial() == Material.lava || block.getMaterial() == Material.cactus || block.getMaterial() == Material.web || block.getMaterial() == Material.portal))
     		{
     			avoidBlocks.add(block);
     		}

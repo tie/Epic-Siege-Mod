@@ -2,6 +2,7 @@ package funwayguy.esm.handlers;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -401,10 +402,40 @@ public class ESM_EventManager
 		}
 	}
 	
+	static Method methodAI;
+	
+	public static boolean usesAI(EntityLivingBase entityLiving)
+	{
+		if(methodAI == null)
+		{
+			try
+			{
+				methodAI = EntityLivingBase.class.getMethod("func_70650_aV");
+			} catch(Exception e1)
+			{
+				try
+				{
+					methodAI = EntityLivingBase.class.getMethod("isAIEnabled");
+				} catch(Exception e2)
+				{
+					return false;
+				}
+			}
+		}
+		
+		try
+		{
+			return (Boolean)methodAI.invoke(entityLiving);
+		} catch(Exception e)
+		{
+			return false;
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
 	public static void searchForTarget(EntityCreature entity)
 	{
-		if(entity.targetTasks.taskEntries.size() >= 1 || (entity instanceof EntityEnderman) || (entity instanceof EntityTameable && ((EntityTameable)entity).isTamed()))
+		if(usesAI(entity) || (entity instanceof EntityEnderman) || (entity instanceof EntityTameable && ((EntityTameable)entity).isTamed()))
 		{
 			entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 0);
 			return;
