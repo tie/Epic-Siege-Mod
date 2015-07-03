@@ -1,9 +1,7 @@
 package funwayguy.esm.handlers.entities;
 
-import java.util.List;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIArrowAttack;
-import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.init.Items;
@@ -39,22 +37,19 @@ public class ESM_SkeletonHandler
 	@SuppressWarnings("unchecked")
 	public static void onLivingUpdate(EntitySkeleton skeleton)
 	{
-		if(!skeleton.getEntityData().getString("ESM_TASK_ID").equals(skeleton.getUniqueID().toString() + "," + ESM_Settings.SkeletonDistance) && skeleton.getSkeletonType() == 0)
+		if(skeleton.getSkeletonType() == 0 && !skeleton.getEntityData().getString("ESM_TASK_ID").equals(skeleton.getUniqueID().toString() + "," + ESM_Settings.SkeletonDistance))
 		{
-			List<EntityAITaskEntry> taskList = skeleton.tasks.taskEntries;
-			
-			for(int i = 0; i < taskList.size(); i++)
+			for(int i = 0; i < skeleton.tasks.taskEntries.size(); i++)
 			{
-				EntityAIBase entry = taskList.get(i).action;
-				if(entry instanceof EntityAIArrowAttack)
+				EntityAITaskEntry entry = (EntityAITaskEntry)skeleton.tasks.taskEntries.get(i);
+				if(entry.action.getClass() == EntityAIArrowAttack.class)
 				{
-					//taskList.remove(i);
-					skeleton.tasks.removeTask(entry);
-					skeleton.tasks.addTask(4, new EntityAIArrowAttack(skeleton, 1.0D, 20, 60, (float)ESM_Settings.SkeletonDistance));
-					skeleton.getEntityData().setString("ESM_TASK_ID", skeleton.getUniqueID().toString() + "," + ESM_Settings.SkeletonDistance);
-					break;
+					EntityAITaskEntry replace = skeleton.tasks.new EntityAITaskEntry(entry.priority, new EntityAIArrowAttack(skeleton, 1.0D, 20, 60, (float)ESM_Settings.SkeletonDistance));
+					skeleton.tasks.taskEntries.set(i, replace);
 				}
 			}
+			
+			skeleton.getEntityData().setString("ESM_TASK_ID", skeleton.getUniqueID().toString() + "," + ESM_Settings.SkeletonDistance);
 		}
 	}
 }
