@@ -6,6 +6,8 @@ import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
+import net.minecraft.entity.monster.EntityCreeper;
+import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.pathfinding.PathEntity;
@@ -156,7 +158,7 @@ public abstract class ESM_EntityAITarget extends EntityAIBase
             }
             else
             {
-                if (this.nearbyOnly && ESM_Settings.QuickPathing)
+                if ((this.nearbyOnly || ESM_Settings.QuickPathing) && !(this.taskOwner instanceof EntityCreeper && ESM_Settings.CreeperBreaching) && !(this.taskOwner instanceof EntityZombie && ESM_Settings.ZombieDiggers))
                 {
                     if (--this.targetSearchDelay <= 0)
                     {

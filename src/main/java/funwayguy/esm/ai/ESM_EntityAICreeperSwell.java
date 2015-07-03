@@ -43,9 +43,15 @@ public class ESM_EntityAICreeperSwell extends EntityAIBase
     public boolean shouldExecute()
     {
         EntityLivingBase entitylivingbase = this.swellingCreeper.getAttackTarget();
-        MovingObjectPosition mop = GetMovingObjectPosition(this.swellingCreeper, false);
     	
-    	boolean enableBreach = this.swellingCreeper.ticksExisted >= 60 && entitylivingbase != null && swellingCreeper.ridingEntity == null && ESM_Settings.CreeperBreaching && !swellingCreeper.hasPath() && mop != null && mop.typeOfHit == MovingObjectType.BLOCK;
+    	boolean enableBreach = this.swellingCreeper.ticksExisted >= 60 && entitylivingbase != null && swellingCreeper.ridingEntity == null && ESM_Settings.CreeperBreaching && !swellingCreeper.hasPath();
+    	
+    	if(enableBreach)
+    	{
+            MovingObjectPosition mop = GetMovingObjectPosition(this.swellingCreeper, false);
+            enableBreach = mop != null && mop.typeOfHit == MovingObjectType.BLOCK;
+    	}
+    	
         return this.swellingCreeper.getCreeperState() > 0 || enableBreach || (entitylivingbase != null && this.swellingCreeper.getDistanceSqToEntity(entitylivingbase) <= detDist);
     }
 
@@ -76,9 +82,14 @@ public class ESM_EntityAICreeperSwell extends EntityAIBase
             this.swellingCreeper.setCreeperState(1);
             return;
     	}
-
-        MovingObjectPosition mop = GetMovingObjectPosition(this.swellingCreeper, false);
-    	boolean enableBreach = this.swellingCreeper.ticksExisted >= 60 && this.creeperAttackTarget != null && swellingCreeper.ridingEntity == null && !this.swellingCreeper.getEntitySenses().canSee(this.creeperAttackTarget) && ESM_Settings.CreeperBreaching && swellingCreeper.getNavigator().noPath() && mop != null && mop.typeOfHit == MovingObjectType.BLOCK && !this.CheckForDiggers();
+    	
+    	boolean enableBreach = this.swellingCreeper.ticksExisted >= 60 && this.creeperAttackTarget != null && swellingCreeper.ridingEntity == null && !this.swellingCreeper.getEntitySenses().canSee(this.creeperAttackTarget) && ESM_Settings.CreeperBreaching && swellingCreeper.getNavigator().noPath() && !this.CheckForDiggers();
+    	
+    	if(enableBreach)
+    	{
+            MovingObjectPosition mop = GetMovingObjectPosition(this.swellingCreeper, false);
+            enableBreach = mop != null && mop.typeOfHit == MovingObjectType.BLOCK;
+    	}
     	
         if (this.creeperAttackTarget == null)
         {
