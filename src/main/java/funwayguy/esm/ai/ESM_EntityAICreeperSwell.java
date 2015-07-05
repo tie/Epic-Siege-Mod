@@ -9,12 +9,12 @@ import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.Vec3;
 import funwayguy.esm.core.ESM_Settings;
-import funwayguy.esm.handlers.entities.ESM_CreeperHandler;
 
 public class ESM_EntityAICreeperSwell extends EntityAIBase
 {
@@ -32,10 +32,24 @@ public class ESM_EntityAICreeperSwell extends EntityAIBase
     public ESM_EntityAICreeperSwell(EntityCreeper par1EntityCreeper)
     {
         this.swellingCreeper = par1EntityCreeper;
-    	detDist = (double)ESM_CreeperHandler.getCreeperRadius(swellingCreeper) + 0.5D;
+    	detDist = (double)getCreeperRadius(swellingCreeper) + 0.5D;
     	detDist = detDist * detDist;
         this.setMutexBits(1);
     }
+	
+	public static int getCreeperRadius(EntityCreeper creeper)
+	{
+		int radius = 3;
+		
+		NBTTagCompound data = creeper.getEntityData();
+		
+		if(data.hasKey("ExplosionRadius"))
+		{
+			radius = data.getByte("ExplosionRadius");
+		}
+		
+		return radius;
+	}
 
     /**
      * Returns whether the EntityAIBase should begin execution.

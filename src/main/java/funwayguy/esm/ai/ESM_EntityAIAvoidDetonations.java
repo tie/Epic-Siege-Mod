@@ -1,31 +1,24 @@
 package funwayguy.esm.ai;
 
-import java.util.Iterator;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.RandomPositionGenerator;
-import net.minecraft.entity.item.EntityTNTPrimed;
 import net.minecraft.entity.monster.EntityCreeper;
-import net.minecraft.entity.projectile.EntityLargeFireball;
 import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.pathfinding.PathNavigate;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 
 public class ESM_EntityAIAvoidDetonations extends EntityAIBase
 {
-    public final IEntitySelector field_98218_a = new IEntitySelector()
-    {
-        /**
-         * Return whether the specified entity is applicable to this filter.
-         */
-        public boolean isEntityApplicable(Entity p_82704_1_)
-        {
-            return p_82704_1_.isEntityAlive() && ESM_EntityAIAvoidDetonations.this.theEntity.getEntitySenses().canSee(p_82704_1_);
-        }
-    };
+    public final IEntitySelector selector = new ExplosiveEntitySelector();
+    public final Comparator<Entity> comparator;
     /** The entity we are attached to */
     private EntityCreature theEntity;
     private double farSpeed;
@@ -37,7 +30,8 @@ public class ESM_EntityAIAvoidDetonations extends EntityAIBase
     /** The PathNavigate of our entity */
     private PathNavigate entityPathNavigate;
 
-    public ESM_EntityAIAvoidDetonations(EntityCreature p_i1616_1_, float p_i1616_3_, double p_i1616_4_, double p_i1616_6_)
+    @SuppressWarnings("unchecked")
+	public ESM_EntityAIAvoidDetonations(EntityCreature p_i1616_1_, float p_i1616_3_, double p_i1616_4_, double p_i1616_6_)
     {
         this.theEntity = p_i1616_1_;
         this.distanceFromEntity = p_i1616_3_;
@@ -45,12 +39,14 @@ public class ESM_EntityAIAvoidDetonations extends EntityAIBase
         this.nearSpeed = p_i1616_6_;
         this.entityPathNavigate = p_i1616_1_.getNavigator();
         this.setMutexBits(1);
+        this.comparator = (Comparator<Entity>)new EntityAINearestAttackableTarget.Sorter(this.theEntity);
     }
 
     /**
      * Returns whether the EntityAIBase should begin execution.
      */
-    public boolean shouldExecute()
+    @SuppressWarnings("unchecked")
+	public boolean shouldExecute()
     {
     	if(this.theEntity instanceof EntityCreeper)
     	{
@@ -60,44 +56,22 @@ public class ESM_EntityAIAvoidDetonations extends EntityAIBase
     			return false;
     		}
     	}
-        @SuppressWarnings("unchecked")
-		List<Entity> list = this.theEntity.worldObj.selectEntitiesWithinAABB(EntityCreeper.class, this.theEntity.boundingBox.expand((double)this.distanceFromEntity, 3.0D, (double)this.distanceFromEntity), this.field_98218_a);
+    	
+    	if(this.closestLivingEntity == null || !this.closestLivingEntity.isEntityAlive())
+    	{
+	        List<Entity> list = this.theEntity.worldObj.selectEntitiesWithinAABB(Entity.class, this.theEntity.boundingBox.expand((double)this.distanceFromEntity, 3.0D, (double)this.distanceFromEntity), selector);
+	
+	        if (list.isEmpty())
+	        {
+	            return false;
+	        }
+	        
+	        Collections.sort(list, comparator);
+	
+	        this.closestLivingEntity = list.get(0);
+    	}
 
-        if (list.isEmpty())
-        {
-            return false;
-        }
-        
-        Iterator<Entity> iterator = list.iterator();
-
-        this.closestLivingEntity = null;
-        
-        while(iterator.hasNext())
-        {
-        	Entity entity = iterator.next();
-        	
-        	if(entity instanceof EntityCreeper)
-        	{
-	        	EntityCreeper creeper = (EntityCreeper)entity;
-	        	
-	        	if(creeper.getCreeperState() == 1 && creeper.ridingEntity != this.theEntity && creeper != this.theEntity)
-	        	{
-	        		this.closestLivingEntity = creeper;
-	        		break;
-	        	}
-        	} else if(entity instanceof EntityTNTPrimed || entity instanceof EntityLargeFireball)
-        	{
-        		this.closestLivingEntity = entity;
-        		break;
-        	}
-        }
-        
-        if(this.closestLivingEntity == null)
-        {
-        	return false;
-        }
-
-        Vec3 vec3 = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this.theEntity, 16, 7, Vec3.createVectorHelper(this.closestLivingEntity.posX, this.closestLivingEntity.posY, this.closestLivingEntity.posZ));
+        Vec3 vec3 = RandomPositionGenerator.findRandomTargetBlockAwayFrom(this.theEntity, MathHelper.ceiling_double_int(this.distanceFromEntity + 4D), 4, Vec3.createVectorHelper(this.closestLivingEntity.posX, this.closestLivingEntity.posY, this.closestLivingEntity.posZ));
 
         if (vec3 == null)
         {
@@ -110,7 +84,7 @@ public class ESM_EntityAIAvoidDetonations extends EntityAIBase
         else
         {
             this.entityPathEntity = this.entityPathNavigate.getPathToXYZ(vec3.xCoord, vec3.yCoord, vec3.zCoord);
-            return this.entityPathEntity == null ? false : this.entityPathEntity.isDestinationSame(vec3);
+            return this.entityPathEntity != null;
         }
     }
 
@@ -152,7 +126,7 @@ public class ESM_EntityAIAvoidDetonations extends EntityAIBase
      */
     public void updateTask()
     {
-        if (this.theEntity.getDistanceSqToEntity(this.closestLivingEntity) < 49.0D)
+        if (this.theEntity.getDistanceToEntity(this.closestLivingEntity) < distanceFromEntity/2D)
         {
             this.theEntity.getNavigator().setSpeed(this.nearSpeed);
         }

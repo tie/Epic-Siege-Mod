@@ -1,16 +1,19 @@
 package funwayguy.esm.ai;
 
-import org.apache.logging.log4j.Level;
-import funwayguy.esm.core.ESM;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.ai.EntityAIAttackOnCollide;
+import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+import org.apache.logging.log4j.Level;
+import funwayguy.esm.AnimalDamageSource;
+import funwayguy.esm.core.ESM;
+import funwayguy.esm.core.ESM_Settings;
 
-public class ESM_EntityAIAttackOnCollide extends EntityAIBase
+public class ESM_EntityAIAttackOnCollide extends EntityAIAttackOnCollide
 {
     World worldObj;
     EntityCreature attacker;
@@ -30,18 +33,19 @@ public class ESM_EntityAIAttackOnCollide extends EntityAIBase
 
     private int failedPathFindingPenalty;
 
-    public ESM_EntityAIAttackOnCollide(EntityCreature p_i1635_1_, Class<?> p_i1635_2_, double p_i1635_3_, boolean p_i1635_5_)
+    public ESM_EntityAIAttackOnCollide(EntityCreature attacker, Class<?> target, double speed, boolean longMemory)
     {
-        this(p_i1635_1_, p_i1635_3_, p_i1635_5_);
-        this.classTarget = p_i1635_2_;
+        this(attacker, speed, longMemory);
+        this.classTarget = target;
     }
 
-    public ESM_EntityAIAttackOnCollide(EntityCreature p_i1636_1_, double p_i1636_2_, boolean p_i1636_4_)
+    public ESM_EntityAIAttackOnCollide(EntityCreature attacker, double speed, boolean longMemory)
     {
-        this.attacker = p_i1636_1_;
-        this.worldObj = p_i1636_1_.worldObj;
-        this.speedTowardsTarget = p_i1636_2_;
-        this.longMemory = p_i1636_4_;
+    	super(attacker, speed, longMemory);
+        this.attacker = attacker;
+        this.worldObj = attacker.worldObj;
+        this.speedTowardsTarget = speed;
+        this.longMemory = longMemory;
         this.setMutexBits(3);
     }
 
@@ -165,8 +169,14 @@ public class ESM_EntityAIAttackOnCollide extends EntityAIBase
             {
                 this.attacker.swingItem();
             }
-
-            this.attacker.attackEntityAsMob(entitylivingbase);
+            
+            if(this.attacker instanceof IAnimals && ESM_Settings.animalsAttack)
+            {
+            	entitylivingbase.attackEntityFrom(new AnimalDamageSource("mob", this.attacker), 2F);
+            } else
+            {
+            	this.attacker.attackEntityAsMob(entitylivingbase);
+            }
         }
     }
 }

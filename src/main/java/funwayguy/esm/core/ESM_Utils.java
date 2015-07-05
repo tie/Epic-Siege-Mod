@@ -14,7 +14,9 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureType;
+import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.EntityAIArrowAttack;
 import net.minecraft.entity.ai.EntityAIAttackOnCollide;
 import net.minecraft.entity.ai.EntityAIAvoidEntity;
 import net.minecraft.entity.ai.EntityAIBreakDoor;
@@ -22,14 +24,17 @@ import net.minecraft.entity.ai.EntityAICreeperSwell;
 import net.minecraft.entity.ai.EntityAIFollowOwner;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.ai.EntityAIPanic;
 import net.minecraft.entity.ai.EntityAISwimming;
 import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityGhast;
+import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityVillager;
+import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
@@ -352,8 +357,13 @@ public class ESM_Utils
 		return false;
 	}
 	
-	@SuppressWarnings("unchecked")
 	public static void replaceAI(EntityLiving entityLiving)
+	{
+		replaceAI(entityLiving, false);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static void replaceAI(EntityLiving entityLiving, boolean firstPass)
 	{
 		PathNavigate oldNav = entityLiving.getNavigator();
 		ESMPathNavigator newNav = new ESMPathNavigator(entityLiving, entityLiving.worldObj);
@@ -422,7 +432,15 @@ public class ESM_Utils
 			}
 		}
 		
-		ESM_EntityAIBreakDoor_Proxy esmBD = null; // Cached for zombies who switch out their AI dynamically
+		// Cached for Zombies who switch out their AI dynamically
+		ESM_EntityAIBreakDoor_Proxy cachedBD = null;
+		EntityAIBreakDoor oldBD = entityLiving instanceof EntityZombie? (EntityAIBreakDoor)ObfuscationReflectionHelper.getPrivateValue(EntityZombie.class, (EntityZombie)entityLiving, "field_146075_bs") : null;
+		
+		// Cached for Skeletons who switched out their AI dynamically
+		ESM_EntityAIAttackOnCollide cachedAOC = null;
+		EntityAIAttackOnCollide oldAOC = entityLiving instanceof EntitySkeleton? (EntityAIAttackOnCollide)ObfuscationReflectionHelper.getPrivateValue(EntitySkeleton.class, (EntitySkeleton)entityLiving, "field_85038_e", "aiAttackOnCollide") : null;
+		EntityAIArrowAttack cachedAA = null;
+		EntityAIArrowAttack oldAA = entityLiving instanceof EntitySkeleton? (EntityAIArrowAttack)ObfuscationReflectionHelper.getPrivateValue(EntitySkeleton.class, (EntitySkeleton)entityLiving, "field_85037_d", "aiArrowAttack") : null;
 		
 		for(int i = entityLiving.tasks.taskEntries.size() - 1; i >= 0; i--)
 		{
@@ -464,8 +482,12 @@ public class ESM_Utils
 				entityLiving.tasks.taskEntries.set(i, replacement);
 			} else if(task.action.getClass() == EntityAIBreakDoor.class)
 			{
-				esmBD = new ESM_EntityAIBreakDoor_Proxy(entityLiving);
-				EntityAITaskEntry replacement = entityLiving.tasks.new EntityAITaskEntry(task.priority, esmBD);
+				ESM_EntityAIBreakDoor_Proxy tmp = new ESM_EntityAIBreakDoor_Proxy(entityLiving);
+				if(task.action == oldBD)
+				{
+					cachedBD = tmp;
+				}
+				EntityAITaskEntry replacement = entityLiving.tasks.new EntityAITaskEntry(task.priority, tmp);
 				entityLiving.tasks.taskEntries.set(i, replacement);
 			} else if(task.action.getClass() == EntityAIAttackOnCollide.class && entityLiving instanceof EntityCreature)
 			{
@@ -474,55 +496,67 @@ public class ESM_Utils
 				double speed = ObfuscationReflectionHelper.getPrivateValue(EntityAIAttackOnCollide.class, (EntityAIAttackOnCollide)task.action, "field_75440_e", "speedTowardsTarget");
 				
 				ESM_EntityAIAttackOnCollide esmAOC = new ESM_EntityAIAttackOnCollide((EntityCreature)entityLiving, targetType, speed, longMemory);
+				if(task.action == oldAOC)
+				{
+					cachedAOC = esmAOC;
+				}
 				EntityAITaskEntry replacement = entityLiving.tasks.new EntityAITaskEntry(task.priority, esmAOC);
 				entityLiving.tasks.taskEntries.set(i, replacement);
+			} else if(task.action.getClass() == EntityAIArrowAttack.class && entityLiving instanceof IRangedAttackMob)
+			{
+				EntityAIArrowAttack tmp = new EntityAIArrowAttack((IRangedAttackMob)entityLiving, 1.0D, 20, 60, (float)ESM_Settings.SkeletonDistance);
+				if(task.action == oldAA)
+				{
+					cachedAA = tmp;
+				}
+				EntityAITaskEntry replace = entityLiving.tasks.new EntityAITaskEntry(task.priority, tmp);
+				entityLiving.tasks.taskEntries.set(i, replace);
+			} else if(ESM_Settings.animalsAttack && task.action.getClass() == EntityAIPanic.class && entityLiving instanceof IAnimals && entityLiving instanceof EntityCreature)
+			{
+				entityLiving.tasks.taskEntries.remove(i);
 			}
 		}
 		
-		if(entityLiving instanceof EntityCreature)
+		if(!firstPass)
 		{
-			if(entityLiving.targetTasks.taskEntries.size() > 0)
+			if(entityLiving instanceof EntityCreature)
 			{
-				entityLiving.targetTasks.addTask(0, new ESM_EntityAIAvoidDetonations((EntityCreature)entityLiving, 9F, 1.5D, 1.5D));
-				if((entityLiving instanceof IMob || ESM_Settings.ambiguous_AI) && !(entityLiving instanceof EntityCreeper))
+				entityLiving.targetTasks.addTask(0, new ESM_EntityAIAvoidDetonations((EntityCreature)entityLiving, 9F, 1.5D, 1.25D));
+				if(entityLiving instanceof IMob && !(entityLiving instanceof EntityCreeper))
 				{
-					entityLiving.targetTasks.addTask(0, new ESM_EntityAIAttackEvasion((EntityCreature)entityLiving, 5F, 1.5D, 1.5D));
-				}
-			} else
-			{
-				entityLiving.targetTasks.addTask(0, new ESM_EntityAIAvoidDetonations((EntityCreature)entityLiving, 12F, 1D, 1D));
-			}
-		}
-		
-		if(entityLiving instanceof EntityZombie)
-		{
-			try
-			{
-				Object tmp = esmBD != null? esmBD : new ESM_EntityAIBreakDoor_Proxy(entityLiving);
-				Field aiField = EntityZombie.class.getDeclaredField("field_146075_bs");
-				aiField.setAccessible(true);
-				aiField.set(entityLiving, tmp);
-				
-				if(aiField.get(entityLiving) != tmp)
-				{
-					throw new Exception();
+					entityLiving.targetTasks.addTask(0, new ESM_EntityAIAttackEvasion((EntityCreature)entityLiving, 5F, 1.5D, 1.25D));
 				}
 				
-				((EntityZombie)entityLiving).func_146070_a(true);
-			} catch(Exception e)
-			{
-				ESM.log.log(Level.ERROR, "Unable to modify Zombie door breaking AI", e);
+				if(entityLiving instanceof IAnimals && ESM_Settings.animalsAttack)
+				{
+					entityLiving.tasks.addTask(4, new ESM_EntityAIAttackOnCollide((EntityCreature)entityLiving, 1.0D, true));
+					entityLiving.targetTasks.addTask(3, new ESM_EntityAIHurtByTarget((EntityCreature)entityLiving, true));
+				}
 			}
 			
-			((EntityZombie)entityLiving).setCanPickUpLoot(true);
-			
-			if(ESM_Settings.ZombieDiggers)
+			if(entityLiving instanceof EntitySkeleton)
 			{
-				entityLiving.tasks.addTask(1, new ESM_EntityAIDigging((EntityZombie)entityLiving));
-				entityLiving.tasks.addTask(6, new ESM_EntityAIGrief((EntityZombie)entityLiving));
+				ESM_EntityAIAttackOnCollide tmpAOC = cachedAOC != null? cachedAOC : new ESM_EntityAIAttackOnCollide((EntitySkeleton)entityLiving, EntityPlayer.class, 1.2D, false);
+				ObfuscationReflectionHelper.setPrivateValue(EntitySkeleton.class, (EntitySkeleton)entityLiving, tmpAOC, "field_85038_e", "aiAttackOnCollide");
+				EntityAIArrowAttack tmpAA = cachedAA != null? cachedAA : new EntityAIArrowAttack((EntitySkeleton)entityLiving, 1.0D, 20, 60, ESM_Settings.SkeletonDistance);
+				ObfuscationReflectionHelper.setPrivateValue(EntitySkeleton.class, (EntitySkeleton)entityLiving, tmpAA, "field_85037_d", "aiArrowAttack");
+			}
+			
+			if(entityLiving instanceof EntityZombie)
+			{
+				ESM_EntityAIBreakDoor_Proxy tmp = cachedBD != null? cachedBD : new ESM_EntityAIBreakDoor_Proxy(entityLiving);
+				ObfuscationReflectionHelper.setPrivateValue(EntityZombie.class, (EntityZombie)entityLiving, tmp, "field_146075_bs");
 				
-				entityLiving.tasks.addTask(3, new ESM_EntityAIPillarUp(entityLiving));
-				entityLiving.tasks.addTask(5, new ESM_EntityAIBuildTrap(entityLiving));
+				((EntityZombie)entityLiving).setCanPickUpLoot(true);
+				
+				if(ESM_Settings.ZombieDiggers)
+				{
+					entityLiving.tasks.addTask(1, new ESM_EntityAIDigging((EntityZombie)entityLiving));
+					entityLiving.tasks.addTask(6, new ESM_EntityAIGrief((EntityZombie)entityLiving));
+					
+					entityLiving.tasks.addTask(3, new ESM_EntityAIPillarUp(entityLiving));
+					entityLiving.tasks.addTask(5, new ESM_EntityAIBuildTrap(entityLiving));
+				}
 			}
 		}
 	}

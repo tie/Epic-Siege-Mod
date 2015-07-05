@@ -66,6 +66,7 @@ import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerSleepInBedEvent;
+import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent.Load;
 import net.minecraftforge.event.world.WorldEvent.Save;
 import net.minecraftforge.event.world.WorldEvent.Unload;
@@ -84,7 +85,11 @@ import funwayguy.esm.core.ESM;
 import funwayguy.esm.core.ESM_Settings;
 import funwayguy.esm.core.ESM_Utils;
 import funwayguy.esm.entities.EntityESMGhast;
-import funwayguy.esm.handlers.entities.*;
+import funwayguy.esm.handlers.entities.ESM_BlazeHandler;
+import funwayguy.esm.handlers.entities.ESM_CreeperHandler;
+import funwayguy.esm.handlers.entities.ESM_EndermanHandler;
+import funwayguy.esm.handlers.entities.ESM_SkeletonHandler;
+import funwayguy.esm.handlers.entities.ESM_ZombieHandler;
 
 public class ESM_EventManager
 {	
@@ -107,7 +112,7 @@ public class ESM_EventManager
 		
 		if(event.entity instanceof EntityLiving && (event.entity instanceof IMob || ESM_Settings.ambiguous_AI) && !ESM_Settings.AIExempt.contains(EntityList.getEntityID(event.entity)))
 		{
-			ESM_Utils.replaceAI((EntityLiving)event.entity);
+			ESM_Utils.replaceAI((EntityLiving)event.entity, true);
 			if(event.entity instanceof EntityMob || (event.entity instanceof EntitySpider && !event.world.isDaytime()))
 			{
 				searchForTarget((EntityCreature)event.entity);
@@ -281,6 +286,15 @@ public class ESM_EventManager
 		}
 		
 		event.entity.getEntityData().setBoolean("ESM_MODIFIED", true);
+	}
+	
+	@SubscribeEvent
+	public void onExplode(ExplosionEvent.Start event)
+	{
+		if(ESM_Settings.CreeperNapalm && event.explosion.getExplosivePlacedBy() instanceof EntityCreeper)
+		{
+			event.explosion.isFlaming = true;
+		}
 	}
 	
 	public static void replaceArrowAttack(EntityLiving shooter, EntityLivingBase targetEntity, double par2)
@@ -591,6 +605,11 @@ public class ESM_EventManager
 			return;
 		}
 		
+		if(event.entityLiving instanceof EntityLiving && event.entityLiving.ticksExisted == 1)
+		{
+			ESM_Utils.replaceAI((EntityLiving)event.entity);
+		}
+		
 		if(event.entityLiving instanceof EntityLiving && ((EntityLiving)event.entityLiving).getAttackTarget() != null)
 		{
 			ESM_PathCapHandler.AddNewAttack(event.entityLiving, ((EntityLiving)event.entityLiving).getAttackTarget());
@@ -602,7 +621,7 @@ public class ESM_EventManager
 			ESM_PathCapHandler.AddNewAttack(event.entityLiving, (EntityLivingBase)((EntityCreature)event.entityLiving).getEntityToAttack());
 		}
 		
-		if(ESM_Settings.Awareness != 16 && (event.entityLiving instanceof EntityMob || (event.entityLiving instanceof EntitySpider && !event.entityLiving.worldObj.isDaytime())))
+		if(ESM_Settings.Awareness != 16 && event.entityLiving instanceof IMob && event.entityLiving instanceof EntityCreature && !(event.entityLiving instanceof EntitySpider && event.entityLiving.worldObj.isDaytime()))
 		{
 			searchForTarget((EntityCreature)event.entityLiving);
 		}

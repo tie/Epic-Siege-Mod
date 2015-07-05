@@ -104,6 +104,7 @@ public class ESM_Settings
 	public static int[] PotionMobEffects;
 	public static boolean attackEvasion;
 	public static float bossModifier;
+	public static boolean animalsAttack;
 	
 	//Generation
 	public static boolean NewEnd;
@@ -276,6 +277,7 @@ public class ESM_Settings
 		PotionMobEffects = defConfig.get("Advanced Mobs", "Potion Buff List", new int[]{14, 12, 5, 1}, "List of all the valid potion IDs a mob can spawn with. Amplifier is always x1").getIntList();
 		attackEvasion = defConfig.get("Advanced Mobs", "Attack Evasion", true).getBoolean(true);
 		bossModifier = defConfig.getFloat("Boss Kill Modifier", "Advanced Mobs", 0.1F, 0F, Float.MAX_VALUE, "Every time a boss is killed all mob heal and damage multipliers will be increased by this");
+		animalsAttack = defConfig.getBoolean("Animals Retaliate", "Advanced Mobs", true, "Animals will fight back if provoked");
 		
 		//World
 		SpawnForts = defConfig.get("World", "Spawn Forts", true).getBoolean(true);
@@ -459,6 +461,7 @@ public class ESM_Settings
 		PotionMobEffects = config.get("Advanced Mobs", "Potion Buff List", PotionMobEffects, "List of all the valid potion IDs a mob can spawn with. Amplifier is always x1").getIntList();
 		attackEvasion = config.get("Advanced Mobs", "Attack Evasion", attackEvasion).getBoolean(attackEvasion);
 		bossModifier = config.getFloat("Boss Kill Modifier", "Advanced Mobs", 0.1F, 0F, Float.MAX_VALUE, "Every time a boss is killed all mob heal and damage multipliers will be increased by this");
+		animalsAttack = config.getBoolean("Animals Retaliate", "Advanced Mobs", true, "Animals will fight back if provoked");
 		
 		//World
 		SpawnForts = config.get("World", "Spawn Forts", SpawnForts).getBoolean(SpawnForts);

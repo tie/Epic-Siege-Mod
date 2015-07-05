@@ -156,9 +156,9 @@ public class ESM_EntityAIDigging extends EntityAIBase
         
         for(double x = -digWidth/2D; x <= digWidth/2D; x += 0.5D)
         {
-        	for(double y = 0D; y <= digHeight; y += 0.5D)
+    		for(double z = -digWidth/2D; z <= digWidth/2D; z += 0.5D)
             {
-        		for(double z = -digWidth/2D; z <= digWidth/2D; z += 0.5D)
+            	for(double y = 0D; y <= digHeight; y += 0.5D)
                 {
         			double rayX = entityLiving.posX + x;
         			double rayY = entityLiving.posY + y;
