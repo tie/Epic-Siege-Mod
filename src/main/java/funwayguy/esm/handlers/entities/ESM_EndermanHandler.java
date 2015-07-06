@@ -35,8 +35,13 @@ public class ESM_EndermanHandler
 			
 			if(ESM_Settings.EndermanSlender && enderman.getEntityData().getBoolean("ESM_LOOKED_AWAY"))
 			{
-				target.addPotionEffect(new PotionEffect(Potion.blindness.id, 100, 0));
-				target.addPotionEffect(new PotionEffect(Potion.hunger.id, 100, 0));
+				try
+				{
+					target.addPotionEffect(new PotionEffect(Potion.blindness.id, 100, 0));
+					target.addPotionEffect(new PotionEffect(Potion.hunger.id, 100, 0));
+				} catch(Exception e)
+				{
+				}
 				
 	            IAttributeInstance attributeinstance = enderman.getEntityAttribute(SharedMonsterAttributes.movementSpeed);
 	            attributeinstance.removeModifier(speedBoostMod);

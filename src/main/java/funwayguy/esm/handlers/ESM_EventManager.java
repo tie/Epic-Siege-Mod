@@ -368,6 +368,16 @@ public class ESM_EventManager
 			event.entityLiving.ridingEntity = null;
 		}
 		
+		if(event.entityLiving instanceof EntityPlayer && event.source.getEntity() instanceof IMob)
+		{
+			int day = (int)(event.entityLiving.worldObj.getWorldTime()/24000);
+			
+			if(ESM_Settings.hardDay != 0 && day != 0 && day%ESM_Settings.hardDay == 0)
+			{
+				event.ammount *= 2F;
+			}
+		}
+		
 		if(event.source != null && event.source.getEntity() instanceof EntitySpider && ESM_Settings.SpiderWebChance > event.entityLiving.getRNG().nextInt(100))
 		{
 			int i = MathHelper.floor_double(event.entityLiving.posX);
@@ -641,7 +651,7 @@ public class ESM_EventManager
 		} else if(event.entityLiving instanceof EntityEnderman)
 		{
 			ESM_EndermanHandler.onLivingUpdate((EntityEnderman)event.entityLiving);
-		} else if(ESM_Settings.moreSpawning && event.entityLiving.worldObj.difficultySetting != EnumDifficulty.PEACEFUL && event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("doMobSpawning") && event.entityLiving instanceof EntityPlayer && event.entityLiving.getRNG().nextInt(25) == 0 && event.entityLiving.worldObj instanceof WorldServer && event.entityLiving.worldObj.loadedEntityList.size() < 512)
+		} else if(ESM_Settings.moreSpawning && event.entityLiving.getRNG().nextInt(10) == 0 && event.entityLiving.worldObj.difficultySetting != EnumDifficulty.PEACEFUL && event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("doMobSpawning") && event.entityLiving instanceof EntityPlayer && event.entityLiving.worldObj instanceof WorldServer && event.entityLiving.worldObj.loadedEntityList.size() < 512)
 		{
 			int x = MathHelper.floor_double(event.entityLiving.posX) + event.entityLiving.getRNG().nextInt(48) - 24;
 			int y = MathHelper.floor_double(event.entityLiving.posY) + event.entityLiving.getRNG().nextInt(48) - 24;
