@@ -636,6 +636,15 @@ public class ESM_EventManager
 			searchForTarget((EntityCreature)event.entityLiving);
 		}
 		
+
+		boolean hard = ESM_Settings.moreSpawning;
+		int day = (int)(event.entityLiving.worldObj.getWorldTime()/24000);
+		
+		if(!hard && ESM_Settings.hardDay != 0 && day != 0 && day%ESM_Settings.hardDay == 0)
+		{
+			hard = true;
+		}
+		
 		if(event.entityLiving instanceof EntityZombie)
 		{
 			ESM_ZombieHandler.onLivingUpdate((EntityZombie)event.entityLiving);
@@ -651,7 +660,7 @@ public class ESM_EventManager
 		} else if(event.entityLiving instanceof EntityEnderman)
 		{
 			ESM_EndermanHandler.onLivingUpdate((EntityEnderman)event.entityLiving);
-		} else if(ESM_Settings.moreSpawning && event.entityLiving.getRNG().nextInt(10) == 0 && event.entityLiving.worldObj.difficultySetting != EnumDifficulty.PEACEFUL && event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("doMobSpawning") && event.entityLiving instanceof EntityPlayer && event.entityLiving.worldObj instanceof WorldServer && event.entityLiving.worldObj.loadedEntityList.size() < 512)
+		} else if(hard && event.entityLiving.getRNG().nextInt(10) == 0 && event.entityLiving.worldObj.difficultySetting != EnumDifficulty.PEACEFUL && event.entityLiving.worldObj.getGameRules().getGameRuleBooleanValue("doMobSpawning") && event.entityLiving instanceof EntityPlayer && event.entityLiving.worldObj instanceof WorldServer && event.entityLiving.worldObj.loadedEntityList.size() < 512)
 		{
 			int x = MathHelper.floor_double(event.entityLiving.posX) + event.entityLiving.getRNG().nextInt(48) - 24;
 			int y = MathHelper.floor_double(event.entityLiving.posY) + event.entityLiving.getRNG().nextInt(48) - 24;
@@ -928,7 +937,6 @@ public class ESM_EventManager
 			return;
 		} else if(event.entityLiving instanceof EntityMob && event.getResult() != Result.DENY)
 		{
-			
 			boolean flag = false;
 			int day = (int)(event.world.getWorldTime()/24000);
 			

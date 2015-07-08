@@ -529,7 +529,7 @@ public class ESM_Utils
 				
 				if(entityLiving instanceof IAnimals && ESM_Settings.animalsAttack)
 				{
-					entityLiving.tasks.addTask(4, new ESM_EntityAIAttackOnCollide((EntityCreature)entityLiving, 1.0D, true));
+					entityLiving.tasks.addTask(4, new ESM_EntityAIAttackOnCollide((EntityCreature)entityLiving, 1.25D, true));
 					entityLiving.targetTasks.addTask(3, new ESM_EntityAIHurtByTarget((EntityCreature)entityLiving, true));
 				}
 			}
