@@ -20,8 +20,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
 	int[] markedLoc;
 	EntityLiving entityDigger;
 	int digTick = 0;
-	
-	int refresh = 15; // Tracks the refresh rate for the assigned block to dig
+	int scanTick = 0;
 	
 	public ESM_EntityAIDigging(EntityLiving entity)
 	{
@@ -31,19 +30,12 @@ public class ESM_EntityAIDigging extends EntityAIBase
 	@Override
 	public boolean shouldExecute()
 	{
-		if(refresh > 0)
-		{
-			refresh -= 1;
-			return false;
-		}
-		
     	// Returns true if something like Iguana Tweaks is nerfing the vanilla picks. This will then cause zombies to ignore the harvestability of blocks when holding picks
     	boolean nerfedPick = !Items.iron_pickaxe.canHarvestBlock(Blocks.stone, new ItemStack(Items.iron_pickaxe));
 		target = entityDigger.getAttackTarget();
 		
 		if(target != null && entityDigger.getNavigator().noPath() && entityDigger.getDistanceToEntity(target) > 1D && (target.onGround || !entityDigger.canEntityBeSeen(target)))
 		{
-			refresh = 15;
 			MovingObjectPosition mop = GetNextObstical(entityDigger, 2D);
 			
 			if(mop == null || mop.typeOfHit != MovingObjectType.BLOCK)
@@ -78,23 +70,15 @@ public class ESM_EntityAIDigging extends EntityAIBase
 	{
     	// Returns true if something like Iguana Tweaks is nerfing the vanilla picks. This will then cause zombies to ignore the harvestability of blocks when holding picks
     	boolean nerfedPick = !Items.iron_pickaxe.canHarvestBlock(Blocks.stone, new ItemStack(Items.iron_pickaxe));
-    	
-    	if(refresh <= 0)
-    	{
-    		refresh = 15;
-    		
-			MovingObjectPosition mop = GetNextObstical(entityDigger, 2D);
-			
-			if(mop != null && mop.typeOfHit == MovingObjectType.BLOCK)
-			{
-				markedLoc = new int[]{mop.blockX, mop.blockY, mop.blockZ};
-			}
-    	} else
-    	{
-    		refresh -= 1;
-    	}
 		
-		if(markedLoc == null || entityDigger.worldObj.getBlock(markedLoc[0], markedLoc[1], markedLoc[2]) == Blocks.air)
+		MovingObjectPosition mop = GetNextObstical(entityDigger, 2D);
+		
+		if(mop != null && mop.typeOfHit == MovingObjectType.BLOCK)
+		{
+			markedLoc = new int[]{mop.blockX, mop.blockY, mop.blockZ};
+		}
+		
+		if(markedLoc == null || markedLoc.length != 3 || entityDigger.worldObj.getBlock(markedLoc[0], markedLoc[1], markedLoc[2]) == Blocks.air)
 		{
 			digTick = 0;
 			return;
@@ -109,24 +93,18 @@ public class ESM_EntityAIDigging extends EntityAIBase
 		{
 			digTick = 0;
 			
-			if(markedLoc != null && markedLoc.length >= 3)
-			{
-				ItemStack item = entityDigger.getEquipmentInSlot(0);
-				boolean canHarvest = !ESM_Settings.ZombieDiggerTools || (item != null && (item.getItem().canHarvestBlock(block, item) || (item.getItem() instanceof ItemPickaxe && nerfedPick && block.getMaterial() == Material.rock))) || block.getMaterial().isToolNotRequired();
-				entityDigger.worldObj.func_147480_a(markedLoc[0], markedLoc[1], markedLoc[2], canHarvest);
-				markedLoc = null;
-				entityDigger.getNavigator().setPath(entityDigger.getNavigator().getPathToEntityLiving(target), 1D);
-				refresh = 0;
-			} else
-			{
-				markedLoc = null;
-			}
+			ItemStack item = entityDigger.getEquipmentInSlot(0);
+			boolean canHarvest = !ESM_Settings.ZombieDiggerTools || (item != null && (item.getItem().canHarvestBlock(block, item) || (item.getItem() instanceof ItemPickaxe && nerfedPick && block.getMaterial() == Material.rock))) || block.getMaterial().isToolNotRequired();
+			entityDigger.worldObj.func_147480_a(markedLoc[0], markedLoc[1], markedLoc[2], canHarvest);
+			markedLoc = null;
+			entityDigger.getNavigator().setPath(entityDigger.getNavigator().getPathToEntityLiving(target), 1D);
 		} else
 		{
 			if(digTick%5 == 0)
 			{
 				entityDigger.worldObj.playSoundAtEntity(entityDigger, block.stepSound.getStepResourcePath(), block.stepSound.getVolume() + 1F, block.stepSound.getPitch());
 				entityDigger.swingItem();
+				entityDigger.worldObj.destroyBlockInWorldPartially(entityDigger.getEntityId(), markedLoc[0], markedLoc[1], markedLoc[2], (int)(str * 10F));
 			}
 		}
 	}
@@ -136,14 +114,13 @@ public class ESM_EntityAIDigging extends EntityAIBase
 	{
 		markedLoc = null;
 		digTick = 0;
-		refresh = 0;
 	}
 	
 	/**
 	 * Rolls through all the points in the bounding box of the entity and raycasts them toward it's current heading to return any blocks that may be obstructing it's path.
 	 * The bigger the entity the longer this calculation will take due to the increased number of points (Generic bipeds should only need 2)
 	 */
-    public static MovingObjectPosition GetNextObstical(EntityLivingBase entityLiving, double dist)
+    public MovingObjectPosition GetNextObstical(EntityLivingBase entityLiving, double dist)
     {
     	// Returns true if something like Iguana Tweaks is nerfing the vanilla picks. This will then cause zombies to ignore the harvestability of blocks when holding picks
     	boolean nerfedPick = !Items.iron_pickaxe.canHarvestBlock(Blocks.stone, new ItemStack(Items.iron_pickaxe));
@@ -151,46 +128,46 @@ public class ESM_EntityAIDigging extends EntityAIBase
         float f1 = entityLiving.prevRotationPitch + (entityLiving.rotationPitch - entityLiving.prevRotationPitch) * f;
         float f2 = entityLiving.prevRotationYaw + (entityLiving.rotationYaw - entityLiving.prevRotationYaw) * f;
         
-        double digWidth = MathHelper.ceiling_double_int(entityLiving.width);
-        double digHeight = MathHelper.ceiling_double_int(entityLiving.height);
+        int digWidth = MathHelper.ceiling_double_int(entityLiving.width);
+        int digHeight = MathHelper.ceiling_double_int(entityLiving.height);
         
-        for(double x = -digWidth/2D; x <= digWidth/2D; x += 0.5D)
-        {
-    		for(double z = -digWidth/2D; z <= digWidth/2D; z += 0.5D)
-            {
-            	for(double y = digHeight; y >= 0D; y -= 0.5D)
-                {
-        			double rayX = entityLiving.posX + x;
-        			double rayY = entityLiving.posY + y;
-        			double rayZ = entityLiving.posZ + z;
-        			
-                	MovingObjectPosition mop = AIUtils.RayCastBlocks(entityLiving.worldObj, rayX, rayY, rayZ, f2, f1, dist, false);
-                	
-                	if(mop != null && mop.typeOfHit == MovingObjectType.BLOCK)
-                	{
-                		Block block = entityLiving.worldObj.getBlock(mop.blockX, mop.blockY, mop.blockZ);
-                		int meta = entityLiving.worldObj.getBlockMetadata(mop.blockX, mop.blockY, mop.blockZ);
-                		ItemStack item = entityLiving.getEquipmentInSlot(0);
-                		
-                		if(ESM_Settings.ZombieDigBlacklist.contains(Block.blockRegistry.getNameForObject(block)) == !ESM_Settings.ZombieSwapList || ESM_Settings.ZombieDigBlacklist.contains(Block.blockRegistry.getNameForObject(block) + ":" + meta) == !ESM_Settings.ZombieSwapList)
-                		{
-                			continue;
-                		}
-                		
-                		if(!ESM_Settings.ZombieDiggerTools || (item != null && (item.getItem().canHarvestBlock(block, item) || (item.getItem() instanceof ItemPickaxe && nerfedPick && block.getMaterial() == Material.rock))) || block.getMaterial().isToolNotRequired())
-                		{
-                			return mop;
-                		} else
-                		{
-                			continue;
-                		}
-                	} else
-                	{
-                		continue;
-                	}
-                }
-            }
-        }
-        return null;
+        int passMax = digWidth * digWidth * digHeight;
+        
+        int x = scanTick%digWidth - (digWidth/2);
+        int y = scanTick/(digWidth * digWidth);
+        int z = (scanTick%(digWidth * digWidth))/digWidth - (digWidth/2);
+        
+		double rayX = x + entityLiving.posX;
+		double rayY = y + entityLiving.posY;
+		double rayZ = z + entityLiving.posZ;
+		
+    	MovingObjectPosition mop = AIUtils.RayCastBlocks(entityLiving.worldObj, rayX, rayY, rayZ, f2, f1, dist, false);
+    	
+    	if(mop != null && mop.typeOfHit == MovingObjectType.BLOCK)
+    	{
+    		Block block = entityLiving.worldObj.getBlock(mop.blockX, mop.blockY, mop.blockZ);
+    		int meta = entityLiving.worldObj.getBlockMetadata(mop.blockX, mop.blockY, mop.blockZ);
+    		ItemStack item = entityLiving.getEquipmentInSlot(0);
+    		
+    		if(ESM_Settings.ZombieDigBlacklist.contains(Block.blockRegistry.getNameForObject(block)) == !ESM_Settings.ZombieSwapList || ESM_Settings.ZombieDigBlacklist.contains(Block.blockRegistry.getNameForObject(block) + ":" + meta) == !ESM_Settings.ZombieSwapList)
+    		{
+    			scanTick = (scanTick + 1)%passMax;
+    			return null;
+    		}
+    		
+    		if(!ESM_Settings.ZombieDiggerTools || (item != null && (item.getItem().canHarvestBlock(block, item) || (item.getItem() instanceof ItemPickaxe && nerfedPick && block.getMaterial() == Material.rock))) || block.getMaterial().isToolNotRequired())
+    		{
+    			scanTick = 0;
+    			return mop;
+    		} else
+    		{
+    			scanTick = (scanTick + 1)%passMax;
+    			return null;
+    		}
+    	} else
+    	{
+			scanTick = (scanTick + 1)%passMax;
+			return null;
+    	}
     }
 }
