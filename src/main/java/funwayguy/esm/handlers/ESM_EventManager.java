@@ -670,23 +670,24 @@ public class ESM_EventManager
 			{
                 SpawnListEntry spawnlistentry = ((WorldServer)event.entityLiving.worldObj).spawnRandomCreature(EnumCreatureType.monster, x, y, z);
                 
-                EntityLiving entityliving;
-
-                try
+                if(spawnlistentry != null)
                 {
-                    entityliving = (EntityLiving)spawnlistentry.entityClass.getConstructor(new Class[] {World.class}).newInstance(new Object[] {event.entityLiving.worldObj});
-
-                    entityliving.setLocationAndAngles((double)x, (double)y, (double)z, event.entityLiving.getRNG().nextFloat() * 360.0F, 0.0F);
-
-                    Result canSpawn = ForgeEventFactory.canEntitySpawn(entityliving, event.entityLiving.worldObj, x, y, z);
-                    if (canSpawn == Result.ALLOW || (canSpawn == Result.DEFAULT && entityliving.getCanSpawnHere()))
-                    {
-                    	event.entityLiving.worldObj.spawnEntityInWorld(entityliving);
-                    }
-                }
-                catch (Exception exception)
-                {
-                    exception.printStackTrace();
+	                try
+	                {
+	                	EntityLiving entityliving = (EntityLiving)spawnlistentry.entityClass.getConstructor(new Class[] {World.class}).newInstance(new Object[] {event.entityLiving.worldObj});
+	
+	                    entityliving.setLocationAndAngles((double)x, (double)y, (double)z, event.entityLiving.getRNG().nextFloat() * 360.0F, 0.0F);
+	
+	                    Result canSpawn = ForgeEventFactory.canEntitySpawn(entityliving, event.entityLiving.worldObj, x, y, z);
+	                    if (canSpawn == Result.ALLOW || (canSpawn == Result.DEFAULT && entityliving.getCanSpawnHere()))
+	                    {
+	                    	event.entityLiving.worldObj.spawnEntityInWorld(entityliving);
+	                    }
+	                }
+	                catch (Exception exception)
+	                {
+	                    exception.printStackTrace();
+	                }
                 }
 			}
 		}

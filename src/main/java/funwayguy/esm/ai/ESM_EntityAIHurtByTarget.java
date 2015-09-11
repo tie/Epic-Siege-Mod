@@ -44,8 +44,13 @@ public class ESM_EntityAIHurtByTarget extends ESM_EntityAITarget
             while (iterator.hasNext())
             {
                 EntityCreature entitycreature = iterator.next();
+                
+                if(entitycreature == null || !entitycreature.isEntityAlive())
+                {
+                	continue;
+                }
 
-                if (this.taskOwner != entitycreature && entitycreature.getAttackTarget() == null && !entitycreature.isOnSameTeam(this.taskOwner.getAITarget()))
+                if (this.taskOwner != entitycreature && entitycreature.getAttackTarget() == null && (entitycreature.getTeam() == null || !entitycreature.isOnSameTeam(this.taskOwner.getAITarget())))
                 {
                     entitycreature.setAttackTarget(this.taskOwner.getAITarget());
                 }
