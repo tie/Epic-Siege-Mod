@@ -415,7 +415,7 @@ public class ESM_Utils
 					esmTargetAI.targetClass.add((Class<? extends EntityLivingBase>)targetType); // Accounts for custom targets. Adds to batched AI
 				}
 				
-				if(!replaceNAT)
+				if(!replaceNAT && !ESM_Settings.neutralMobs)
 				{
 					replaceNAT = true;
 					EntityAITaskEntry replacement = entityLiving.targetTasks.new EntityAITaskEntry(task.priority, esmTargetAI);

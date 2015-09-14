@@ -459,7 +459,7 @@ public class ESM_EventManager
 	@SuppressWarnings("unchecked")
 	public static void searchForTarget(EntityCreature entity)
 	{
-		if(usesAI(entity) || (entity instanceof EntityEnderman) || (entity instanceof EntityTameable && ((EntityTameable)entity).isTamed()))
+		if(ESM_Settings.neutralMobs || usesAI(entity) || (entity instanceof EntityEnderman) || (entity instanceof EntityTameable && ((EntityTameable)entity).isTamed()))
 		{
 			entity.getEntityData().setInteger("ESM_TARGET_COOLDOWN", 0);
 			return;

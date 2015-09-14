@@ -105,6 +105,7 @@ public class ESM_Settings
 	public static boolean attackEvasion;
 	public static float bossModifier;
 	public static boolean animalsAttack;
+	public static boolean neutralMobs;
 	
 	//Generation
 	public static boolean NewEnd;
@@ -278,6 +279,7 @@ public class ESM_Settings
 		attackEvasion = defConfig.get("Advanced Mobs", "Attack Evasion", true).getBoolean(true);
 		bossModifier = defConfig.getFloat("Boss Kill Modifier", "Advanced Mobs", 0.1F, 0F, Float.MAX_VALUE, "Every time a boss is killed all mob heal and damage multipliers will be increased by this");
 		animalsAttack = defConfig.getBoolean("Animals Retaliate", "Advanced Mobs", true, "Animals will fight back if provoked");
+		neutralMobs = defConfig.getBoolean("Neutral Mobs", "Advanced Mobs", false, "Mobs are passive until provoked");
 		
 		//World
 		SpawnForts = defConfig.get("World", "Spawn Forts", true).getBoolean(true);
@@ -462,6 +464,7 @@ public class ESM_Settings
 		attackEvasion = config.get("Advanced Mobs", "Attack Evasion", attackEvasion).getBoolean(attackEvasion);
 		bossModifier = config.getFloat("Boss Kill Modifier", "Advanced Mobs", 0.1F, 0F, Float.MAX_VALUE, "Every time a boss is killed all mob heal and damage multipliers will be increased by this");
 		animalsAttack = config.getBoolean("Animals Retaliate", "Advanced Mobs", true, "Animals will fight back if provoked");
+		neutralMobs = config.getBoolean("Neutral Mobs", "Advanced Mobs", false, "Mobs are passive until provoked");
 		
 		//World
 		SpawnForts = config.get("World", "Spawn Forts", SpawnForts).getBoolean(SpawnForts);
