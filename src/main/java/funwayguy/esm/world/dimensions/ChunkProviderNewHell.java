@@ -476,6 +476,12 @@ public class ChunkProviderNewHell implements IChunkProvider
 
         int k = p_73153_2_ * 16;
         int l = p_73153_3_ * 16;
+		 BiomeGenBase biome = worldObj.getBiomeGenForCoords(k + 16, l + 16);
+		 this.hellRNG.setSeed(this.worldObj.getSeed());
+		 long rand1 = this.hellRNG.nextLong() / 2L * 2L + 1L;
+		 long rand2 = this.hellRNG.nextLong() / 2L * 2L + 1L;
+		 this.hellRNG.setSeed((long)p_73153_2_ * rand1 + (long)p_73153_3_ * rand2 ^ this.worldObj.getSeed());
+		 
         this.genNetherBridge.generateStructuresInChunk(this.worldObj, this.hellRNG, p_73153_2_, p_73153_3_);
         int i1;
         int j1;
@@ -560,7 +566,9 @@ public class ChunkProviderNewHell implements IChunkProvider
             j2 = l + this.hellRNG.nextInt(16);
             (new WorldGenHellLava(Blocks.flowing_lava, true)).generate(this.worldObj, this.hellRNG, l1, i2, j2);
         }
-
+        
+        biome.decorate(worldObj, hellRNG, k, l);
+        
         MinecraftForge.EVENT_BUS.post(new DecorateBiomeEvent.Post(worldObj, hellRNG, k, l));
         MinecraftForge.EVENT_BUS.post(new PopulateChunkEvent.Post(p_73153_1_, worldObj, hellRNG, p_73153_2_, p_73153_3_, false));
 
