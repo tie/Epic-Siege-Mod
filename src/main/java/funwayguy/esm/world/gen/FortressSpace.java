@@ -15,7 +15,7 @@ public class FortressSpace extends FortressBase
 	public FortressSpace(World par1World, int chunkX, int chunkZ)
 	{
 		super(par1World, chunkX, chunkZ);
-		originY = 64;
+		originY = originY < 48? 64 : originY;
 		orientation = 0;
 	}
 	

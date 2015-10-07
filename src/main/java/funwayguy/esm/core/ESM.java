@@ -37,25 +37,6 @@ public class ESM
 	{
 		log = event.getModLog();
 		ESM_Settings.LoadMainConfig(event.getSuggestedConfigurationFile());
-		ESM_Utils.replaceEndPortal();
-		
-		if(ESM_Settings.NewEnd)
-		{
-			DimensionManager.unregisterDimension(1);
-			DimensionManager.unregisterProviderType(1);
-			DimensionManager.registerProviderType(1, WorldProviderSpace.class, false);
-			DimensionManager.registerDimension(1, 1);
-		}
-		
-		if(ESM_Settings.NewHell)
-		{
-			DimensionManager.unregisterDimension(-1);
-			DimensionManager.unregisterProviderType(-1);
-			DimensionManager.registerProviderType(-1, WorldProviderNewHell.class, false);
-			DimensionManager.registerDimension(-1, -1);
-		}
-		
-		//ESM_Utils.replaceEndPortal();
 	}
 	
 	@EventHandler
@@ -77,9 +58,26 @@ public class ESM
 		EntityRegistry.registerGlobalEntityID(EntityNeatZombie.class, "NEAT_Zombie", zombieID);
 		EntityRegistry.registerModEntity(EntityNeatZombie.class, "NEAT_Zombie", zombieID, instance, 128, 1, true);
 	}
-
+	
 	@EventHandler
 	public static void postInit(FMLPostInitializationEvent event)
 	{
+		if(ESM_Settings.NewEnd)
+		{
+			WorldProviderSpace.oldClass = DimensionManager.createProviderFor(1).getClass();
+			DimensionManager.unregisterDimension(1);
+			DimensionManager.unregisterProviderType(1);
+			DimensionManager.registerProviderType(1, WorldProviderSpace.class, false);
+			DimensionManager.registerDimension(1, 1);
+		}
+		
+		if(ESM_Settings.NewHell)
+		{
+			WorldProviderNewHell.oldClass = DimensionManager.createProviderFor(-1).getClass();
+			DimensionManager.unregisterDimension(-1);
+			DimensionManager.unregisterProviderType(-1);
+			DimensionManager.registerProviderType(-1, WorldProviderNewHell.class, false);
+			DimensionManager.registerDimension(-1, -1);
+		}
 	}
 }

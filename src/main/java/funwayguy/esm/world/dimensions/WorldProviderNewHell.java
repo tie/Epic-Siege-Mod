@@ -1,6 +1,7 @@
 package funwayguy.esm.world.dimensions;
 
 import net.minecraft.util.Vec3;
+import net.minecraft.world.WorldProvider;
 import net.minecraft.world.WorldProviderHell;
 import net.minecraft.world.chunk.IChunkProvider;
 import cpw.mods.fml.relauncher.Side;
@@ -8,12 +9,33 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class WorldProviderNewHell extends WorldProviderHell
 {
+	public static Class<? extends WorldProvider> oldClass;
+	WorldProvider oldProvider;
+	
+	public WorldProviderNewHell()
+	{
+		try
+		{
+			oldProvider = oldClass.newInstance();
+		} catch(Exception e)
+		{
+			
+		}
+	}
+	
     /**
      * creates a new world chunk manager for WorldProvider
      */
     public void registerWorldChunkManager()
     {
-        this.worldChunkMgr = terrainType.getChunkManager(worldObj);//new WorldChunkManagerHell(BiomeGenBase.hell, 1.0F, 0.0F);
+    	if(oldProvider != null)
+    	{
+    		oldProvider.registerWorld(this.worldObj);
+    		this.worldChunkMgr = oldProvider.worldChunkMgr;
+    	} else
+    	{
+    		this.worldChunkMgr = terrainType.getChunkManager(worldObj);//new WorldChunkManagerHell(BiomeGenBase.hell, 1.0F, 0.0F);
+    	}
         this.isHellWorld = true;
         this.hasNoSky = true;
         this.dimensionId = -1;

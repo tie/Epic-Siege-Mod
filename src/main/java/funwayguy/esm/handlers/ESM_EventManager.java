@@ -578,27 +578,6 @@ public class ESM_EventManager
 	@SubscribeEvent
 	public void onLivingUpdate(LivingUpdateEvent event)
 	{
-		if(getPortalTime(event.entityLiving) >= event.entityLiving.getMaxInPortalTime()-1 && getInPortal(event.entityLiving) && ESM_Settings.NewHell)
-		{
-			if(event.entityLiving.dimension != -1)
-			{
-				event.entityLiving.timeUntilPortal = event.entityLiving.getPortalCooldown();
-				setInPortal(event.entityLiving, false);
-				ESM_Utils.transferDimensions(-1, event.entityLiving, false);
-			} else
-			{
-				event.entityLiving.timeUntilPortal = event.entityLiving.getPortalCooldown();
-				setInPortal(event.entityLiving, false);
-				ESM_Utils.transferDimensions(0, event.entityLiving, false);
-			}
-		}
-		
-		if(event.entityLiving.posY < 0 && event.entityLiving.dimension == 1 && event.entityLiving instanceof EntityPlayer && ESM_Settings.NewEnd && ESM_Settings.fallFromEnd)
-		{
-			event.entityLiving.setPosition(event.entityLiving.posX, 255D, event.entityLiving.posZ);
-			ESM_Utils.transferDimensions(0, event.entityLiving, true);
-		}
-		
 		if(event.entity.worldObj.isRemote)
 		{
 			return;

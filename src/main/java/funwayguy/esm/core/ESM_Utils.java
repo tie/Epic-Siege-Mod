@@ -1,16 +1,8 @@
 package funwayguy.esm.core;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureType;
@@ -37,30 +29,14 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemBlock;
-import net.minecraft.network.play.server.S07PacketRespawn;
-import net.minecraft.network.play.server.S1DPacketEntityEffect;
-import net.minecraft.network.play.server.S2BPacketChangeGameState;
 import net.minecraft.pathfinding.PathNavigate;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.management.ServerConfigurationManager;
-import net.minecraft.stats.AchievementList;
-import net.minecraft.util.ChunkCoordinates;
 import net.minecraft.util.MathHelper;
-import net.minecraft.world.Teleporter;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldProvider;
-import net.minecraft.world.WorldServer;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.BiomeGenBase.SpawnListEntry;
 import org.apache.logging.log4j.Level;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import cpw.mods.fml.common.registry.EntityRegistry;
-import cpw.mods.fml.common.registry.FMLControlledNamespacedRegistry;
-import cpw.mods.fml.common.registry.GameData;
 import funwayguy.esm.ai.ESMPathNavigator;
 import funwayguy.esm.ai.ESM_EntityAIAttackEvasion;
 import funwayguy.esm.ai.ESM_EntityAIAttackOnCollide;
@@ -74,238 +50,10 @@ import funwayguy.esm.ai.ESM_EntityAIHurtByTarget;
 import funwayguy.esm.ai.ESM_EntityAINearestAttackableTarget;
 import funwayguy.esm.ai.ESM_EntityAIPillarUp;
 import funwayguy.esm.ai.ESM_EntityAISwimming;
-import funwayguy.esm.blocks.ESM_BlockEnderPortal;
 import funwayguy.esm.handlers.ESM_PathCapHandler;
 
 public class ESM_Utils
 {
-    /**
-     * Teleports the entity to another dimension. Params: Dimension number to teleport to
-     */
-    public static void transferPlayerMPToDimension(EntityPlayerMP player, int par1, boolean forceLoc)
-    {
-        if (player.dimension == 1 && par1 == 1)
-        {
-        	player.triggerAchievement(AchievementList.theEnd2);
-        	player.worldObj.removeEntity(player);
-        	player.playerConqueredTheEnd = true;
-        	player.playerNetServerHandler.sendPacket(new S2BPacketChangeGameState(4, 0));
-        }
-        else
-        {
-            if(player.dimension == 0 && par1 == 1)
-            {
-            	player.triggerAchievement(AchievementList.theEnd);
-                ChunkCoordinates chunkcoordinates = player.mcServer.worldServerForDimension(par1).getEntrancePortalLocation();
-
-                if (chunkcoordinates != null)
-                {
-                	player.playerNetServerHandler.setPlayerLocation((double)chunkcoordinates.posX, (double)chunkcoordinates.posY, (double)chunkcoordinates.posZ, 0.0F, 0.0F);
-                }
-
-                par1 = 1;
-            }
-            else if(par1 == -1)
-            {
-            	player.triggerAchievement(AchievementList.portal);
-            }
-
-            transferPlayerToDimension(player, par1, forceLoc);
-            resetPlayerMPStats(player);
-        }
-    }
-    
-	public static void transferDimensions(int par1, Entity par2, boolean forceLoc)
-	{
-    	if(par2 instanceof EntityPlayerMP)
-    	{
-    		transferPlayerMPToDimension((EntityPlayerMP)par2, par1, forceLoc);
-    		return;
-    	}
-    	
-        if (!par2.worldObj.isRemote && !par2.isDead)
-        {
-        	par2.worldObj.theProfiler.startSection("changeDimension");
-            MinecraftServer minecraftserver = MinecraftServer.getServer();
-            int j = par2.dimension;
-            WorldServer worldserver = minecraftserver.worldServerForDimension(j);
-            WorldServer worldserver1 = minecraftserver.worldServerForDimension(par1);
-            par2.dimension = par1;
-
-            if(j == 1 && par1 == 1)
-            {
-                worldserver1 = minecraftserver.worldServerForDimension(0);
-                par2.dimension = 0;
-            }
-
-            par2.worldObj.removeEntity(par2);
-            par2.isDead = false;
-            par2.worldObj.theProfiler.startSection("reposition");
-            //minecraftserver.getConfigurationManager().transferEntityToWorld(par2, j, worldserver, worldserver1);
-            transferEntityToWorld(par2, j, worldserver, worldserver1, forceLoc);
-            par2.worldObj.theProfiler.endStartSection("reloading");
-            Entity entity = EntityList.createEntityByName(EntityList.getEntityString(par2), worldserver1);
-
-            if (entity != null)
-            {
-                entity.copyDataFrom(par2, true);
-
-                if(j == 1 && par1 == 1)
-                {
-                    ChunkCoordinates chunkcoordinates = worldserver1.getSpawnPoint();
-                    chunkcoordinates.posY = par2.worldObj.getTopSolidOrLiquidBlock(chunkcoordinates.posX, chunkcoordinates.posZ);
-                    entity.setLocationAndAngles((double)chunkcoordinates.posX, (double)chunkcoordinates.posY, (double)chunkcoordinates.posZ, entity.rotationYaw, entity.rotationPitch);
-                }
-
-                worldserver1.spawnEntityInWorld(entity);
-            }
-
-            par2.isDead = true;
-            par2.worldObj.theProfiler.endSection();
-            worldserver.resetUpdateEntityTick();
-            worldserver1.resetUpdateEntityTick();
-            par2.worldObj.theProfiler.endSection();
-        }
-	}
-
-    /**
-     * Transfers an entity from a world to another world.
-     */
-    private static void transferEntityToWorld(Entity par1Entity, int par2, WorldServer par3WorldServer, WorldServer par4WorldServer, boolean forceLoc)
-    {
-        transferEntityToWorld(par1Entity, par2, par3WorldServer, par4WorldServer, par4WorldServer.getDefaultTeleporter(), forceLoc);
-    }
-	
-	private static void transferEntityToWorld(Entity par1Entity, int par2, WorldServer par3WorldServer, WorldServer par4WorldServer, Teleporter teleporter, boolean forceLoc)
-    {
-        WorldProvider pOld = par3WorldServer.provider;
-        WorldProvider pNew = par4WorldServer.provider;
-        double moveFactor = pOld.getMovementFactor() / pNew.getMovementFactor();
-        double d0 = par1Entity.posX * moveFactor;
-        double d1 = par1Entity.posZ * moveFactor;
-        double d3 = par1Entity.posX;
-        double d4 = par1Entity.posY;
-        double d5 = par1Entity.posZ;
-        float f = par1Entity.rotationYaw;
-        par3WorldServer.theProfiler.startSection("moving");
-
-        if (par1Entity.dimension == 1 && !ESM_Settings.NewEnd)
-        {
-            ChunkCoordinates chunkcoordinates;
-
-            if (par2 == 1)
-            {
-                chunkcoordinates = par4WorldServer.getSpawnPoint();
-            }
-            else
-            {
-                chunkcoordinates = par4WorldServer.getEntrancePortalLocation();
-            }
-            
-        	d0 = (double)chunkcoordinates.posX;
-        	par1Entity.posY = (double)chunkcoordinates.posY;
-            d1 = (double)chunkcoordinates.posZ;
-            par1Entity.setLocationAndAngles(d0, par1Entity.posY, d1, 90.0F, 0.0F);
-
-            if (par1Entity.isEntityAlive())
-            {
-                par3WorldServer.updateEntityWithOptionalForce(par1Entity, false);
-            }
-        } else if((par1Entity.dimension == 1 || (par1Entity.dimension == 0 && !forceLoc)) && par2 == 1)
-        {
-            ChunkCoordinates chunkcoordinates = par4WorldServer.getSpawnPoint();
-            
-        	d0 = (double)chunkcoordinates.posX;
-        	par1Entity.posY = getSuitableSpawnHeight(par4WorldServer, chunkcoordinates.posX, chunkcoordinates.posZ);
-            d1 = (double)chunkcoordinates.posZ;
-            
-            par1Entity.setLocationAndAngles(d0 + 0.5D, par1Entity.posY, d1 + 0.5D, 90.0F, 0.0F);
-
-            if (par1Entity.isEntityAlive())
-            {
-                par3WorldServer.updateEntityWithOptionalForce(par1Entity, false);
-            }
-        }
-
-        par3WorldServer.theProfiler.endSection();
-
-        if (!(par2 == 1 && par1Entity.dimension == 0 && !ESM_Settings.NewEnd))
-        {
-            par3WorldServer.theProfiler.startSection("placing");
-            d0 = (double)MathHelper.clamp_int((int)d0, -29999872, 29999872);
-            d1 = (double)MathHelper.clamp_int((int)d1, -29999872, 29999872);
-
-            if (par1Entity.isEntityAlive())
-            {
-                par4WorldServer.spawnEntityInWorld(par1Entity);
-                par1Entity.setLocationAndAngles(d0, MathHelper.floor_double(par1Entity.posY), d1, par1Entity.rotationYaw, par1Entity.rotationPitch);
-                par4WorldServer.updateEntityWithOptionalForce(par1Entity, false);
-                
-                if(!forceLoc)
-                {
-	                if(par1Entity.dimension == 1)
-	                {
-	                    int i2 = MathHelper.floor_double(par1Entity.posX);
-	                    int j2 = 64;
-	                    int k2 = MathHelper.floor_double(par1Entity.posZ);
-	                    
-	                	for(int i = -2; i <= 2; i++)
-	                	{
-	                		for(int j = -2; j <= 2; j++)
-	                		{
-	                			par4WorldServer.setBlock(i2 + i, j2 - 1, k2 + j, Blocks.obsidian);
-	                		}
-	                	}
-	                	
-	                	par1Entity.motionX = par1Entity.motionY = par1Entity.motionZ = 0.0F;
-	                	par1Entity.setPosition(i2, j2, k2);
-	                } else if(par2 != 1)/* if(par1Entity.dimension == -1 || par1Entity.dimension == ESM_Settings.HellDimID || par1Entity.dimension == 0)*/
-	                {
-	                	teleporter.placeInPortal(par1Entity, d3, d4, d5, f);
-	                }
-	                //teleporter.placeInPortal(par1Entity, d3, d4, d5, f);
-                }
-            }
-
-            par3WorldServer.theProfiler.endSection();
-        }
-
-        par1Entity.setWorld(par4WorldServer);
-    }
-
-    public static void transferPlayerToDimension(EntityPlayerMP par1EntityPlayerMP, int par2, boolean forceLoc)
-    {
-        transferPlayerToDimension(par1EntityPlayerMP, par2, par1EntityPlayerMP.mcServer.worldServerForDimension(par2).getDefaultTeleporter(), forceLoc);
-    }
-
-    public static void transferPlayerToDimension(EntityPlayerMP par1EntityPlayerMP, int par2, Teleporter teleporter, boolean forceLoc)
-    {
-    	ServerConfigurationManager configManager = par1EntityPlayerMP.mcServer.getConfigurationManager();
-        int j = par1EntityPlayerMP.dimension;
-        WorldServer worldserver = par1EntityPlayerMP.mcServer.worldServerForDimension(par1EntityPlayerMP.dimension);
-        par1EntityPlayerMP.dimension = par2;
-        WorldServer worldserver1 = par1EntityPlayerMP.mcServer.worldServerForDimension(par1EntityPlayerMP.dimension);
-        par1EntityPlayerMP.playerNetServerHandler.sendPacket(new S07PacketRespawn(par1EntityPlayerMP.dimension, par1EntityPlayerMP.worldObj.difficultySetting, par1EntityPlayerMP.worldObj.getWorldInfo().getTerrainType(), par1EntityPlayerMP.theItemInWorldManager.getGameType()));
-        worldserver.removePlayerEntityDangerously(par1EntityPlayerMP);
-        par1EntityPlayerMP.isDead = false;
-        //configManager.transferEntityToWorld(par1EntityPlayerMP, j, worldserver, worldserver1, teleporter);
-        transferEntityToWorld(par1EntityPlayerMP, j, worldserver, worldserver1, teleporter, forceLoc);
-        configManager.func_72375_a(par1EntityPlayerMP, worldserver);
-        par1EntityPlayerMP.playerNetServerHandler.setPlayerLocation(par1EntityPlayerMP.posX, par1EntityPlayerMP.posY, par1EntityPlayerMP.posZ, par1EntityPlayerMP.rotationYaw, par1EntityPlayerMP.rotationPitch);
-        par1EntityPlayerMP.theItemInWorldManager.setWorld(worldserver1);
-        configManager.updateTimeAndWeatherForPlayer(par1EntityPlayerMP, worldserver1);
-        configManager.syncPlayerInventory(par1EntityPlayerMP);
-        Iterator<?> iterator = par1EntityPlayerMP.getActivePotionEffects().iterator();
-
-        while (iterator.hasNext())
-        {
-            PotionEffect potioneffect = (PotionEffect)iterator.next();
-            par1EntityPlayerMP.playerNetServerHandler.sendPacket(new S1DPacketEntityEffect(par1EntityPlayerMP.getEntityId(), potioneffect));
-        }
-
-        FMLCommonHandler.instance().firePlayerChangedDimensionEvent(par1EntityPlayerMP, j, par2);
-    }
-    
     public static int getSuitableSpawnHeight(World world, int par1, int par2)
     {
         int k;
@@ -594,49 +342,6 @@ public class ESM_Utils
 		
 		ESM_Settings.fortDB.add((new StringBuilder()).append(dimension).append(",").append(fGridX).append(",").append(fGridZ).toString());
 		ESM_Settings.saveFortDB();
-	}
-	
-	// Experience says this is a bad idea... really bad!
-	public static void replaceEndPortal()
-	{
-		Block block = new ESM_BlockEnderPortal(Material.portal).setHardness(-1.0F).setResistance(6000000.0F);
-		
-		try
-		{
-			Field f;
-			Field modField = Field.class.getDeclaredField("modifiers");
-			modField.setAccessible(true);
-			try
-			{
-				f = Blocks.class.getDeclaredField("field_150384_bq");
-			} catch(Exception e)
-			{
-				f = Blocks.class.getDeclaredField("end_portal");
-			}
-			
-			int modMask = f.getModifiers();
-			modMask &= ~Modifier.FINAL;
-			modField.set(f, modMask);
-			f.setAccessible(true);
-			f.set(null, block);
-			
-			Method addRawObj = FMLControlledNamespacedRegistry.class.getDeclaredMethod("addObjectRaw", int.class, String.class, Object.class);
-			addRawObj.setAccessible(true);
-			
-			addRawObj.invoke(GameData.getItemRegistry(), 119, "minecraft:end_portal", new ItemBlock(block));
-			addRawObj.invoke(GameData.getBlockRegistry(), 119, "minecraft:end_portal", block);
-		} catch(Exception e)
-		{
-			ESM.log.log(Level.ERROR, "Failed to replace End Portal", e);
-		}
-		
-		if(Blocks.end_portal instanceof ESM_BlockEnderPortal && Block.blockRegistry.getObject("end_portal") instanceof ESM_BlockEnderPortal)
-		{
-			ESM.log.log(Level.INFO, "Successfully replaced vanilla End Portal");
-		} else
-		{
-			ESM.log.log(Level.ERROR, "Failed to override vanilla End Portal block");
-		}
 	}
 	
 	public static void UpdateBiomeSpawns()

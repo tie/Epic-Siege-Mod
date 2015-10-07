@@ -114,7 +114,6 @@ public class ESM_Settings
 	public static int fortRarity = 2;
 	public static int fortDistance = 16;
 	public static ArrayList<Integer> fortDimensions = new ArrayList<Integer>();
-	public static boolean fallFromEnd = true;
 	public static ArrayList<String> fortSpawners = new ArrayList<String>();
 	
 	//Non-configurables
@@ -287,7 +286,6 @@ public class ESM_Settings
 		fortDistance = defConfig.get("World", "Fort Distance", 1024).getInt(1024);
 		String[] defSpawn = new String[]{"Zombie", "Creeer", "Skeleton", "CaveSpider", "Silverfish", "Spider", "Slime", "Witch"};
 		fortSpawners = new ArrayList<String>(Arrays.asList(defConfig.get("World", "Fort Spawner Types", defSpawn).getStringList()));
-		fallFromEnd = defConfig.get("World", "Fall From End", true, "Whether the player should fall into the overworld from the new End").getBoolean(true);
 		int[] tmpFD = defConfig.get("World", "Fort Dimensions", new int[]{0}).getIntList();
 		
 		for(int dimID : tmpFD)
@@ -470,7 +468,6 @@ public class ESM_Settings
 		SpawnForts = config.get("World", "Spawn Forts", SpawnForts).getBoolean(SpawnForts);
 		fortRarity = config.get("World", "Fort Rarity", fortRarity).getInt(fortRarity);
 		fortDistance = config.get("World", "Fort Distance", fortDistance).getInt(fortDistance);
-		fallFromEnd = config.get("World", "Fall From End", fallFromEnd, "Whether the player should fall into the overworld from the new End").getBoolean(fallFromEnd);
 		int[] tmpFDDef = new int[fortDimensions.size()];
 		for(int i = 0; i < fortDimensions.size(); i++)
 		{
