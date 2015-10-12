@@ -128,4 +128,10 @@ public class WorldProviderNewHell extends WorldProviderHell
     {
     	return 1.0D;
     }
+    
+    @Override
+    public int getActualHeight()
+    {
+    	return 256;
+    }
 }
