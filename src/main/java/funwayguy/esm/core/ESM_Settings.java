@@ -98,6 +98,7 @@ public class ESM_Settings
 	public static ArrayList<String> MobBombs;
 	public static int MobBombRarity;
 	public static boolean MobBombAll;
+	public static boolean CrystalBombs;
 	public static boolean WitherSkeletons;
 	public static int WitherSkeletonRarity;
 	public static int PotionMobs;
@@ -271,6 +272,7 @@ public class ESM_Settings
 		MobBombs.addAll(Arrays.asList(tmp));
 		MobBombRarity = defConfig.get("Advanced Mobs", "Mob Bomb Rarity", 9).getInt(9);
 		MobBombAll = defConfig.get("Advanced Mobs", "Mob Bomb All", true, "Skip the Mob Bomb list and allow everything!").getBoolean(true);
+		CrystalBombs = defConfig.get("Advanced Mobs", "Crystal Bombs", false, "Mob Bombs are now Crystals instead of Creepers").getBoolean(false);
 		WitherSkeletons = defConfig.get("Advanced Mobs", "Wither Skeletons", true).getBoolean(true);
 		WitherSkeletonRarity = defConfig.get("Advanced Mobs", "Wither Skeleton Rarity", 9).getInt(9);
 		PotionMobs = defConfig.get("Advanced Mobs", "Potion Buff Chance (0-100)", 1).getInt(1);
@@ -455,6 +457,7 @@ public class ESM_Settings
 		MobBombs.addAll(Arrays.asList(tmp));
 		MobBombRarity = config.get("Advanced Mobs", "Mob Bomb Rarity", MobBombRarity).getInt(MobBombRarity);
 		MobBombAll = config.get("Advanced Mobs", "Mob Bomb All", MobBombAll, "Skip the Mob Bomb list and allow everything!").getBoolean(MobBombAll);
+		CrystalBombs = config.get("Advanced Mobs", "Crystal Bombs", CrystalBombs, "Mob Bombs are now Crystals instead of Creepers").getBoolean(CrystalBombs);
 		WitherSkeletons = config.get("Advanced Mobs", "Wither Skeletons", WitherSkeletons).getBoolean(WitherSkeletons);
 		WitherSkeletonRarity = config.get("Advanced Mobs", "Wither Skeleton Rarity", WitherSkeletonRarity).getInt(WitherSkeletonRarity);
 		PotionMobs = config.get("Advanced Mobs", "Potion Buff Chance (0-100)", PotionMobs).getInt(PotionMobs);

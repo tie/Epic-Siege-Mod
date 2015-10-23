@@ -38,6 +38,7 @@ import org.apache.logging.log4j.Level;
 import cpw.mods.fml.common.ObfuscationReflectionHelper;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import funwayguy.esm.ai.ESMPathNavigator;
+import funwayguy.esm.ai.ESM_EntityAIArrowAttack;
 import funwayguy.esm.ai.ESM_EntityAIAttackEvasion;
 import funwayguy.esm.ai.ESM_EntityAIAttackOnCollide;
 import funwayguy.esm.ai.ESM_EntityAIAvoidDetonations;
@@ -252,7 +253,7 @@ public class ESM_Utils
 				entityLiving.tasks.taskEntries.set(i, replacement);
 			} else if(task.action.getClass() == EntityAIArrowAttack.class && entityLiving instanceof IRangedAttackMob)
 			{
-				EntityAIArrowAttack tmp = new EntityAIArrowAttack((IRangedAttackMob)entityLiving, 1.0D, 20, 60, (float)ESM_Settings.SkeletonDistance);
+				ESM_EntityAIArrowAttack tmp = new ESM_EntityAIArrowAttack((IRangedAttackMob)entityLiving, 1.0D, 20, 60, (float)ESM_Settings.SkeletonDistance);
 				if(task.action == oldAA)
 				{
 					cachedAA = tmp;
@@ -286,7 +287,7 @@ public class ESM_Utils
 			{
 				ESM_EntityAIAttackOnCollide tmpAOC = cachedAOC != null? cachedAOC : new ESM_EntityAIAttackOnCollide((EntitySkeleton)entityLiving, EntityPlayer.class, 1.2D, false);
 				ObfuscationReflectionHelper.setPrivateValue(EntitySkeleton.class, (EntitySkeleton)entityLiving, tmpAOC, "field_85038_e", "aiAttackOnCollide");
-				EntityAIArrowAttack tmpAA = cachedAA != null? cachedAA : new EntityAIArrowAttack((EntitySkeleton)entityLiving, 1.0D, 20, 60, ESM_Settings.SkeletonDistance);
+				EntityAIArrowAttack tmpAA = cachedAA != null? cachedAA : new ESM_EntityAIArrowAttack((EntitySkeleton)entityLiving, 1.0D, 20, 60, ESM_Settings.SkeletonDistance);
 				ObfuscationReflectionHelper.setPrivateValue(EntitySkeleton.class, (EntitySkeleton)entityLiving, tmpAA, "field_85037_d", "aiArrowAttack");
 			}
 			

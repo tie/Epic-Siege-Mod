@@ -20,6 +20,7 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.boss.IBossDisplayData;
+import net.minecraft.entity.item.EntityEnderCrystal;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityEnderman;
@@ -166,6 +167,11 @@ public class ESM_EventManager
 			event.entity.writeToNBT(oldTags);
 			newGhast.readFromNBT(oldTags);
 			event.world.spawnEntityInWorld(newGhast);
+			newGhast.riddenByEntity = event.entity.riddenByEntity;
+			if(newGhast.riddenByEntity != null)
+			{
+				newGhast.riddenByEntity.mountEntity(newGhast);
+			}
 			event.entity.getEntityData().setBoolean("ESM_MODIFIED", true);
 			event.entity.setDead();
 			event.setCanceled(true);
@@ -268,9 +274,23 @@ public class ESM_EventManager
 			
 			if(ESM_Settings.MobBombRarity <= 0 || event.world.rand.nextInt(ESM_Settings.MobBombRarity) == 0)
 			{
-				EntityCreeper passenger = new EntityCreeper(event.entity.worldObj);
+				Entity passenger;
+				
+				if(!ESM_Settings.CrystalBombs)
+				{
+					passenger = new EntityCreeper(event.entity.worldObj);
+				} else
+				{
+					passenger = new EntityEnderCrystal(event.entity.worldObj);
+				}
+				
 				passenger.setLocationAndAngles(event.entity.posX, event.entity.posY, event.entity.posZ, event.entity.rotationYaw, 0.0F);
-				passenger.onSpawnWithEgg((IEntityLivingData)null);
+				
+				if(passenger instanceof EntityLiving)
+				{
+					((EntityLiving)passenger).onSpawnWithEgg((IEntityLivingData)null);
+				}
+				
 				event.entity.worldObj.spawnEntityInWorld(passenger);
 				passenger.mountEntity(event.entity);
 			}

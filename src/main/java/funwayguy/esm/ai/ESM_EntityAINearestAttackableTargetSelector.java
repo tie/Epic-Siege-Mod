@@ -27,7 +27,7 @@ class ESM_EntityAINearestAttackableTargetSelector implements IEntitySelector
      */
     public boolean isEntityApplicable(Entity target)
     {
-    	if(target == null)
+    	if(target == null || target == owner)
     	{
     		return false;
     	} else if(!ESM_Settings.friendlyFire && owner instanceof IMob && (ESM_Settings.Chaos? owner.getClass() == target.getClass() : target instanceof IMob))

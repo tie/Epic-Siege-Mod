@@ -21,7 +21,7 @@ public class GenericEntitySelector implements IEntitySelector
 	@Override
 	public boolean isEntityApplicable(Entity subject)
 	{
-		if(!(subject instanceof EntityLivingBase))
+		if(!(subject instanceof EntityLivingBase) || subject == host)
 		{
 			return false;
 		}

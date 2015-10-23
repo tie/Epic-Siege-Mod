@@ -34,6 +34,11 @@ public class ESM_SkeletonHandler
 					newSkeleton.setCombatTask();
 					newSkeleton.getEntityData().setBoolean("ESM_MODIFIED", true);
 					skeleton.worldObj.spawnEntityInWorld(newSkeleton);
+					newSkeleton.riddenByEntity = skeleton.riddenByEntity;
+					if(newSkeleton.riddenByEntity != null)
+					{
+						newSkeleton.riddenByEntity.mountEntity(newSkeleton);
+					}
 					ESM_Utils.replaceAI(newSkeleton, true);
 					return;
 				}
