@@ -124,6 +124,8 @@ public class ESM_Settings
 	public static boolean ambiguous_AI = true;
 	public static Configuration defConfig;
 	public static ArrayList<String> AIExempt = new ArrayList<String>();
+	public static boolean mobBoating = true;
+	public static boolean attackPets = true;
 	
 	public static void LoadMainConfig(File file)
 	{
@@ -172,6 +174,7 @@ public class ESM_Settings
 		forcePath = defConfig.get("Main", "Force Non-AI Pathing", false, "Forces non pathing mobs to attack from further away. Can cause additional lag").getBoolean(false);
 		ENFORCE_DEFAULT = defConfig.get("Main", "Enforce Defaults", true, "Ignores world specific settings and just uses the global defaults instead").getBoolean(true);
 		friendlyFire = defConfig.getBoolean("Friendly Fire", "Main", true, "Can mobs harm eachother (type specific in chaos mode)");
+		attackPets  = defConfig.getBoolean("Attack Pets", "Main", true, "Mobs will attack player owned pets");
 		
 		String[] tmpAIE = defConfig.get("Main", "AI Exempt Mob IDs", new String[]{}).getStringList();
 		AIExempt = new ArrayList<String>();
@@ -281,6 +284,7 @@ public class ESM_Settings
 		bossModifier = defConfig.getFloat("Boss Kill Modifier", "Advanced Mobs", 0.1F, 0F, Float.MAX_VALUE, "Every time a boss is killed all mob heal and damage multipliers will be increased by this");
 		animalsAttack = defConfig.getBoolean("Animals Retaliate", "Advanced Mobs", true, "Animals will fight back if provoked");
 		neutralMobs = defConfig.getBoolean("Neutral Mobs", "Advanced Mobs", false, "Mobs are passive until provoked");
+		mobBoating  = defConfig.getBoolean("Mob Boating", "Advanced Mobs", true, "Zombies and Skeletons will use boats in water to catch up to you!");
 		
 		//World
 		SpawnForts = defConfig.get("World", "Spawn Forts", true).getBoolean(true);
@@ -386,6 +390,7 @@ public class ESM_Settings
 		moreSpawning = config.get("Main", "More Spawning", moreSpawning, "Reduces spawning safe zone from 24 blocks to 8 and makes mobs require only basic conditions to spawn").getBoolean(true);
 		forcePath = config.get("Main", "Force Non-AI Pathing", forcePath, "Forces non pathing mobs to attack from further away. Can cause additional lag").getBoolean(false);
 		friendlyFire = config.getBoolean("Friendly Fire", "Main", friendlyFire, "Can mobs harm eachother (type specific in chaos mode)");
+		attackPets  = config.getBoolean("Attack Pets", "Main", attackPets, "Mobs will attack player owned pets");
 		
 		//Witch
 		customPotions = config.getStringList("Custom Potions", "Witch", customPotions, "List of potion types witches can throw (\"id:duration:lvl\")");
@@ -466,6 +471,7 @@ public class ESM_Settings
 		bossModifier = config.getFloat("Boss Kill Modifier", "Advanced Mobs", 0.1F, 0F, Float.MAX_VALUE, "Every time a boss is killed all mob heal and damage multipliers will be increased by this");
 		animalsAttack = config.getBoolean("Animals Retaliate", "Advanced Mobs", true, "Animals will fight back if provoked");
 		neutralMobs = config.getBoolean("Neutral Mobs", "Advanced Mobs", false, "Mobs are passive until provoked");
+		mobBoating  = config.getBoolean("Mob Boating", "Advanced Mobs", mobBoating, "Zombies and Skeletons will use boats in water to catch up to you!");
 		
 		//World
 		SpawnForts = config.get("World", "Spawn Forts", SpawnForts).getBoolean(SpawnForts);

@@ -4,7 +4,9 @@ import java.util.List;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.monster.IMob;
+import net.minecraft.entity.player.EntityPlayer;
 import funwayguy.esm.core.ESM_Settings;
 
 class ESM_EntityAINearestAttackableTargetSelector implements IEntitySelector
@@ -35,7 +37,9 @@ class ESM_EntityAINearestAttackableTargetSelector implements IEntitySelector
 			return false;
 		}
     	
-    	if(!ESM_Settings.Chaos) // Should we even check if the target is applicable or just allow every little thing to be targeted
+    	if(ESM_Settings.attackPets && target instanceof IEntityOwnable && ((IEntityOwnable)target).getOwner() instanceof EntityPlayer)
+    	{
+    	} else if(!ESM_Settings.Chaos) // Should we even check if the target is applicable or just allow every little thing to be targeted
     	{
 	    	boolean flag = true;
 	    	

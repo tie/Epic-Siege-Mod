@@ -42,6 +42,7 @@ import funwayguy.esm.ai.ESM_EntityAIArrowAttack;
 import funwayguy.esm.ai.ESM_EntityAIAttackEvasion;
 import funwayguy.esm.ai.ESM_EntityAIAttackOnCollide;
 import funwayguy.esm.ai.ESM_EntityAIAvoidDetonations;
+import funwayguy.esm.ai.ESM_EntityAIBoat;
 import funwayguy.esm.ai.ESM_EntityAIBreakDoor_Proxy;
 import funwayguy.esm.ai.ESM_EntityAIBuildTrap;
 import funwayguy.esm.ai.ESM_EntityAICreeperSwell;
@@ -295,6 +296,8 @@ public class ESM_Utils
 				ObfuscationReflectionHelper.setPrivateValue(EntitySkeleton.class, (EntitySkeleton)entityLiving, tmpAOC, "field_85038_e", "aiAttackOnCollide");
 				EntityAIArrowAttack tmpAA = cachedAA != null? cachedAA : new ESM_EntityAIArrowAttack((EntitySkeleton)entityLiving, 1.0D, 20, 60, ESM_Settings.SkeletonDistance);
 				ObfuscationReflectionHelper.setPrivateValue(EntitySkeleton.class, (EntitySkeleton)entityLiving, tmpAA, "field_85037_d", "aiArrowAttack");
+				
+				entityLiving.tasks.addTask(3, new ESM_EntityAIBoat(entityLiving));
 			}
 			
 			if(entityLiving instanceof EntityZombie)
@@ -312,6 +315,8 @@ public class ESM_Utils
 					entityLiving.tasks.addTask(3, new ESM_EntityAIPillarUp(entityLiving));
 					entityLiving.tasks.addTask(5, new ESM_EntityAIBuildTrap(entityLiving));
 				}
+				
+				entityLiving.tasks.addTask(3, new ESM_EntityAIBoat(entityLiving));
 			}
 		}
 	}

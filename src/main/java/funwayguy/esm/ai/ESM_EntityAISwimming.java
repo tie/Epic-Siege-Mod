@@ -1,6 +1,7 @@
 package funwayguy.esm.ai;
 
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.pathfinding.PathEntity;
 import net.minecraft.util.MathHelper;
@@ -31,11 +32,12 @@ public class ESM_EntityAISwimming extends EntityAIBase
     	}
     	
     	PathEntity path = this.theEntity.getNavigator().getPath();
+    	EntityLivingBase target = this.theEntity.getAttackTarget();
 		
 		if(path != null && path.getFinalPathPoint() != null && path.getFinalPathPoint().yCoord > this.theEntity.posY) // If our navigation says to go up then we do it
 		{
 			return true;
-		} else if(this.theEntity.getAttackTarget() != null && this.theEntity.getAir() >= 150 && this.theEntity.getAttackTarget().posY < this.theEntity.posY) // Our target is under water, swim down
+		} else if(target != null && theEntity.getAir() >= 150 && target.posY < theEntity.posY && theEntity.getDistanceToEntity(target) <= 8) // Our target is under water, swim down
 		{
 			return false;
 		}

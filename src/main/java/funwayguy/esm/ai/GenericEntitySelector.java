@@ -4,6 +4,7 @@ import funwayguy.esm.core.ESM_Settings;
 import net.minecraft.command.IEntitySelector;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityVillager;
@@ -34,7 +35,15 @@ public class GenericEntitySelector implements IEntitySelector
 			return false;
 		}
 		
-		if(subject instanceof EntityPlayer)
+		if(subject instanceof IEntityOwnable && ESM_Settings.attackPets)
+		{
+			IEntityOwnable ownable = (IEntityOwnable)subject;
+			
+			if(!(ownable.getOwner() instanceof EntityPlayer))
+			{
+				return false;
+			}
+		} else if(subject instanceof EntityPlayer)
 		{
 			EntityPlayer tmpPlayer = (EntityPlayer)subject;
 			
