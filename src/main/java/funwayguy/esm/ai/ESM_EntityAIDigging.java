@@ -34,7 +34,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
     	boolean nerfedPick = !Items.iron_pickaxe.canHarvestBlock(Blocks.stone, new ItemStack(Items.iron_pickaxe));
 		target = entityDigger.getAttackTarget();
 		
-		if(target != null && entityDigger.getNavigator().noPath() && entityDigger.getDistanceToEntity(target) > 1D && (target.onGround || !entityDigger.canEntityBeSeen(target)))
+		if(entityDigger.ticksExisted%10 == 0 && target != null && entityDigger.getNavigator().noPath() && entityDigger.getDistanceToEntity(target) > 1D && (target.onGround || !entityDigger.canEntityBeSeen(target)))
 		{
 			MovingObjectPosition mop = GetNextObstical(entityDigger, 2D);
 			
@@ -71,7 +71,12 @@ public class ESM_EntityAIDigging extends EntityAIBase
     	// Returns true if something like Iguana Tweaks is nerfing the vanilla picks. This will then cause zombies to ignore the harvestability of blocks when holding picks
     	boolean nerfedPick = !Items.iron_pickaxe.canHarvestBlock(Blocks.stone, new ItemStack(Items.iron_pickaxe));
 		
-		MovingObjectPosition mop = GetNextObstical(entityDigger, 2D);
+    	MovingObjectPosition mop = null;
+    	
+    	if(entityDigger.ticksExisted%10 == 0)
+    	{
+    		mop = GetNextObstical(entityDigger, 2D);
+    	}
 		
 		if(mop != null && mop.typeOfHit == MovingObjectType.BLOCK)
 		{

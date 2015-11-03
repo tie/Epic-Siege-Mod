@@ -1,5 +1,6 @@
 package funwayguy.esm.ai;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -25,14 +26,12 @@ public class ESMPathFinder extends PathFinder
     private boolean isWoddenDoorAllowed;
     /** should the PathFinder disregard BlockMovement type materials in its path */
     private boolean isMovementBlockAllowed;
-    private boolean isPathingInWater;
 	
 	public ESMPathFinder(IBlockAccess blockAccess, boolean allowDoors, boolean movementBlock, boolean pathWater, boolean canDrown)
 	{
 		super(blockAccess, allowDoors, movementBlock, pathWater, canDrown);
         this.isWoddenDoorAllowed = allowDoors;
         this.isMovementBlockAllowed = movementBlock;
-        this.isPathingInWater = pathWater;
 	}
 
     /**
@@ -43,10 +42,45 @@ public class ESMPathFinder extends PathFinder
 	@Override
     public int getVerticalOffset(Entity p_75855_1_, int p_75855_2_, int p_75855_3_, int p_75855_4_, PathPoint p_75855_5_)
     {
-        return VerticalOffset(p_75855_1_, p_75855_2_, p_75855_3_, p_75855_4_, p_75855_5_, this.isPathingInWater, this.isMovementBlockAllowed, this.isWoddenDoorAllowed);
+		boolean flag = false;
+		
+		if(fieldPathWater == null)
+		{
+			try
+			{
+				fieldPathWater = PathFinder.class.getDeclaredField("field_75863_g");
+				fieldPathWater.setAccessible(true);
+			} catch(Exception e1)
+			{
+				try
+				{
+					fieldPathWater = PathFinder.class.getDeclaredField("isPathingInWater");
+					fieldPathWater.setAccessible(true);
+				} catch(Exception e2)
+				{
+	        		ESM.log.log(Level.ERROR, "Unable to get field for pathing in water", e1);
+				}
+			}
+		}
+		
+		if(fieldPathWater != null)
+		{
+			try
+			{
+				flag = fieldPathWater.getBoolean(this);
+			} catch(Exception e)
+			{
+        		ESM.log.log(Level.ERROR, "Unable to read field for pathing in water", e);
+				flag = false;
+			}
+		}
+		
+        return VerticalOffset(p_75855_1_, p_75855_2_, p_75855_3_, p_75855_4_, p_75855_5_, flag, this.isMovementBlockAllowed, this.isWoddenDoorAllowed);
     }
 	
+	Field fieldPathWater = null;
 	static Method liquidVecMethod = null;
+	
     public static int VerticalOffset(Entity entity, int x, int y, int z, PathPoint point, boolean pathWater, boolean moveBlock, boolean allowDoors)
     {
     	if(liquidVecMethod == null)

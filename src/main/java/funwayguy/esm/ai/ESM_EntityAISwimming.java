@@ -34,7 +34,7 @@ public class ESM_EntityAISwimming extends EntityAIBase
 		
 		if(path != null && path.getFinalPathPoint() != null && path.getFinalPathPoint().yCoord > this.theEntity.posY) // If our navigation says to go up then we do it
 		{
-	        return true;
+			return true;
 		} else if(this.theEntity.getAttackTarget() != null && this.theEntity.getAir() >= 150 && this.theEntity.getAttackTarget().posY < this.theEntity.posY) // Our target is under water, swim down
 		{
 			return false;
@@ -48,6 +48,6 @@ public class ESM_EntityAISwimming extends EntityAIBase
      */
     public void updateTask()
     {
-        this.theEntity.getJumpHelper().setJumping();
+    	this.theEntity.getJumpHelper().setJumping();
     }
 }

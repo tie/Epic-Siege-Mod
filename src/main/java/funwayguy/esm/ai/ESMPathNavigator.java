@@ -46,6 +46,7 @@ public class ESMPathNavigator extends PathNavigate
 		this.setBreakDoors(navigator.getCanBreakDoors());
 		this.setSpeed((Double)ObfuscationReflectionHelper.getPrivateValue(PathNavigate.class, navigator, "field_75511_d", "speed"));
 		this.setEnterDoors((Boolean)ObfuscationReflectionHelper.getPrivateValue(PathNavigate.class, navigator, "field_75518_j", "canPassOpenWoodenDoors"));
+		this.setCanSwim((Boolean)ObfuscationReflectionHelper.getPrivateValue(PathNavigate.class, navigator, "field_75517_m", "canSwim"));
 	}
 
     /**

@@ -51,6 +51,7 @@ import funwayguy.esm.ai.ESM_EntityAIHurtByTarget;
 import funwayguy.esm.ai.ESM_EntityAINearestAttackableTarget;
 import funwayguy.esm.ai.ESM_EntityAIPillarUp;
 import funwayguy.esm.ai.ESM_EntityAISwimming;
+import funwayguy.esm.entities.EntityNeatZombie;
 import funwayguy.esm.handlers.ESM_PathCapHandler;
 
 public class ESM_Utils
@@ -118,6 +119,11 @@ public class ESM_Utils
 		ESMPathNavigator newNav = new ESMPathNavigator(entityLiving, entityLiving.worldObj);
 		ObfuscationReflectionHelper.setPrivateValue(EntityLiving.class, entityLiving, newNav, "field_70699_by", "navigator");
 		newNav.inherit(oldNav);
+		
+		if(entityLiving instanceof EntityNeatZombie)
+		{
+			return;
+		}
 		
 		boolean replaceNAT = false;
 		boolean replaceCS = false;
