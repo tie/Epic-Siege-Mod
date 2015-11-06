@@ -6,9 +6,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.monster.EntityGhast;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityLargeFireball;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.play.server.S28PacketEffect;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
@@ -100,14 +101,16 @@ public class EntityESMGhast extends EntityGhast
             {
                 if (this.attackCounter == 10 * ESM_Settings.GhastFireDelay)
                 {
-                    this.worldObj.playAuxSFXAtEntity((EntityPlayer)null, 1007, (int)this.posX, (int)this.posY, (int)this.posZ, 0);
+                    //this.worldObj.playAuxSFXAtEntity((EntityPlayer)null, 1007, (int)this.posX, (int)this.posY, (int)this.posZ, 0);
+                	this.PlaySound(1007);
                 }
 
                 ++this.attackCounter;
 
                 if (this.attackCounter == 20 * ESM_Settings.GhastFireDelay)
                 {
-                    this.worldObj.playAuxSFXAtEntity((EntityPlayer)null, 1008, (int)this.posX, (int)this.posY, (int)this.posZ, 0);
+                    //this.worldObj.playAuxSFXAtEntity((EntityPlayer)null, 1008, (int)this.posX, (int)this.posY, (int)this.posZ, 0);
+                    this.PlaySound(1008);
                     EntityLargeFireball entitylargefireball = new EntityLargeFireball(this.worldObj, this, d5, d6, d7);
                     entitylargefireball.field_92057_e = ESM_Settings.GhastBreaching? 3 : this.explosionStrength;
                     double d8 = 4.0D;
@@ -145,6 +148,16 @@ public class EntityESMGhast extends EntityGhast
             }
         }
     }
+	
+	public void PlaySound(int soundID)
+	{
+		if(this.worldObj.isRemote)
+		{
+			return;
+		}
+		
+        MinecraftServer.getServer().getConfigurationManager().sendToAllNearExcept(null, posX, posY, posZ, 128D, dimension, new S28PacketEffect(soundID, (int)posX, (int)posY, (int)posZ, 0, false));
+	}
 
     /**
      * True if the ghast has an unobstructed line of travel to the waypoint.

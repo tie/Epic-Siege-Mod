@@ -107,6 +107,9 @@ public class ESM_Settings
 	public static float bossModifier;
 	public static boolean animalsAttack;
 	public static boolean neutralMobs;
+	public static boolean mobBoating = true;
+	public static boolean attackPets = true;
+	public static boolean MobBombInvert = false;
 	
 	//Generation
 	public static boolean NewEnd;
@@ -124,8 +127,6 @@ public class ESM_Settings
 	public static boolean ambiguous_AI = true;
 	public static Configuration defConfig;
 	public static ArrayList<String> AIExempt = new ArrayList<String>();
-	public static boolean mobBoating = true;
-	public static boolean attackPets = true;
 	
 	public static void LoadMainConfig(File file)
 	{
@@ -176,7 +177,7 @@ public class ESM_Settings
 		friendlyFire = defConfig.getBoolean("Friendly Fire", "Main", true, "Can mobs harm eachother (type specific in chaos mode)");
 		attackPets  = defConfig.getBoolean("Attack Pets", "Main", true, "Mobs will attack player owned pets");
 		
-		String[] tmpAIE = defConfig.get("Main", "AI Exempt Mob IDs", new String[]{}).getStringList();
+		String[] tmpAIE = defConfig.get("Main", "AI Exempt Mob IDs", new String[]{"VillagerGolem"}).getStringList();
 		AIExempt = new ArrayList<String>();
 		AIExempt.addAll(Arrays.asList(tmpAIE));
 		
@@ -273,6 +274,7 @@ public class ESM_Settings
 		String[] tmp = defConfig.get("Advanced Mobs", "Mob Bombs", new String[]{EntityList.getStringFromID(52)}).getStringList();
 		MobBombs = new ArrayList<String>();
 		MobBombs.addAll(Arrays.asList(tmp));
+		MobBombInvert = defConfig.getBoolean("Mob Bomb Invert", "Advanced Mobs", false, "Inverts the mob bomb listing to be act as a blacklist");
 		MobBombRarity = defConfig.get("Advanced Mobs", "Mob Bomb Rarity", 9).getInt(9);
 		MobBombAll = defConfig.get("Advanced Mobs", "Mob Bomb All", true, "Skip the Mob Bomb list and allow everything!").getBoolean(true);
 		CrystalBombs = defConfig.get("Advanced Mobs", "Crystal Bombs", false, "Mob Bombs are now Crystals instead of Creepers").getBoolean(false);
@@ -461,6 +463,7 @@ public class ESM_Settings
 		MobBombs = new ArrayList<String>();
 		MobBombs.addAll(Arrays.asList(tmp));
 		MobBombRarity = config.get("Advanced Mobs", "Mob Bomb Rarity", MobBombRarity).getInt(MobBombRarity);
+		MobBombInvert = defConfig.getBoolean("Mob Bomb Invert", "Advanced Mobs", MobBombInvert, "Inverts the mob bomb listing to be act as a blacklist");
 		MobBombAll = config.get("Advanced Mobs", "Mob Bomb All", MobBombAll, "Skip the Mob Bomb list and allow everything!").getBoolean(MobBombAll);
 		CrystalBombs = config.get("Advanced Mobs", "Crystal Bombs", CrystalBombs, "Mob Bombs are now Crystals instead of Creepers").getBoolean(CrystalBombs);
 		WitherSkeletons = config.get("Advanced Mobs", "Wither Skeletons", WitherSkeletons).getBoolean(WitherSkeletons);

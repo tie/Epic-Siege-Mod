@@ -268,7 +268,7 @@ public class ESM_EventManager
 			ESM_EndermanHandler.onEntityJoinWorld((EntityEnderman)event.entity);
 		}
 		
-		if((ESM_Settings.MobBombAll || (ESM_Settings.MobBombs != null && ESM_Settings.MobBombs.contains(EntityList.getEntityString(event.entity)))) && event.entity.riddenByEntity == null && event.entity instanceof IMob && !event.isCanceled() && !event.entity.isDead && event.world.loadedEntityList.size() < 512)
+		if((ESM_Settings.MobBombAll || (ESM_Settings.MobBombs != null && ESM_Settings.MobBombs.contains(EntityList.getEntityString(event.entity)) != ESM_Settings.MobBombInvert)) && event.entity.riddenByEntity == null && event.entity instanceof IMob && !event.isCanceled() && !event.entity.isDead && event.world.loadedEntityList.size() < 512)
 		{
 			event.entity.getEntityData().setBoolean("ESM_MODIFIED", true);
 			

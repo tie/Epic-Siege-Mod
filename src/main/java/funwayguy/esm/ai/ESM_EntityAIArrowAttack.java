@@ -103,7 +103,7 @@ public class ESM_EntityAIArrowAttack extends EntityAIArrowAttack
     public void updateTask()
     {
         double d0 = this.entityHost.getDistanceSq(this.attackTarget.posX, this.attackTarget.boundingBox.minY, this.attackTarget.posZ);
-        boolean flag = this.entityHost.getEntitySenses().canSee(this.attackTarget);
+        boolean flag = this.entityHost.getEntitySenses().canSee(this.attackTarget) || entityHost.getDistanceToEntity(attackTarget) <= 12;
         Entity los = AIUtils.RayCastEntities(entityHost.worldObj, entityHost.posX, entityHost.posY + entityHost.getEyeHeight(), entityHost.posZ, entityHost.rotationYawHead, entityHost.rotationPitch, 8F, this.entityHost);
         
         if(los != null && los != attackTarget && (ESM_Settings.ambiguous_AI || los instanceof IMob))
@@ -120,11 +120,11 @@ public class ESM_EntityAIArrowAttack extends EntityAIArrowAttack
             this.field_75318_f = 0;
         }
 
-        if (d0 <= (double)this.field_82642_h && this.field_75318_f >= 20)
+        if (d0 <= (double)this.field_82642_h && this.field_75318_f >= 5)
         {
             this.entityHost.getNavigator().clearPathEntity();
         }
-        else
+        else if(this.entityHost.getNavigator().getPath() != null)
         {
             this.entityHost.getNavigator().tryMoveToEntityLiving(this.attackTarget, this.entityMoveSpeed);
         }

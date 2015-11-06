@@ -1056,7 +1056,6 @@ public class NeatBrain
 			return tags;
 		}
 		
-		@SuppressWarnings("unchecked")
 		public void readNBT(NBTTagCompound tags)
 		{
 			fitness = tags.getInteger("fitness");
