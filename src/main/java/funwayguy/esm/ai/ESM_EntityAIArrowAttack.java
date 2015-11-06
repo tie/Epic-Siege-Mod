@@ -95,7 +95,8 @@ public class ESM_EntityAIArrowAttack extends EntityAIArrowAttack
         this.field_75318_f = 0;
         this.rangedAttackTime = -1;
     }
-
+    
+    int pathRefresh = 20;
     /**
      * Updates the task
      */
@@ -103,15 +104,16 @@ public class ESM_EntityAIArrowAttack extends EntityAIArrowAttack
     public void updateTask()
     {
         double d0 = this.entityHost.getDistanceSq(this.attackTarget.posX, this.attackTarget.boundingBox.minY, this.attackTarget.posZ);
-        boolean flag = this.entityHost.getEntitySenses().canSee(this.attackTarget) || entityHost.getDistanceToEntity(attackTarget) <= 12;
+        boolean canSee = this.entityHost.getEntitySenses().canSee(this.attackTarget);
+        boolean isClose = entityHost.getDistanceToEntity(attackTarget) <= 12;
         Entity los = AIUtils.RayCastEntities(entityHost.worldObj, entityHost.posX, entityHost.posY + entityHost.getEyeHeight(), entityHost.posZ, entityHost.rotationYawHead, entityHost.rotationPitch, 8F, this.entityHost);
         
         if(los != null && los != attackTarget && (ESM_Settings.ambiguous_AI || los instanceof IMob))
         {
-        	flag = false;
+        	canSee = false;
         }
 
-        if (flag)
+        if (canSee || isClose)
         {
             ++this.field_75318_f;
         }
@@ -124,9 +126,16 @@ public class ESM_EntityAIArrowAttack extends EntityAIArrowAttack
         {
             this.entityHost.getNavigator().clearPathEntity();
         }
-        else if(this.entityHost.getNavigator().getPath() != null)
+        else if(this.entityHost.getNavigator().getPath() == null)
         {
-            this.entityHost.getNavigator().tryMoveToEntityLiving(this.attackTarget, this.entityMoveSpeed);
+        	if(pathRefresh <= 0)
+        	{
+        		pathRefresh = 20;
+        		this.entityHost.getNavigator().tryMoveToEntityLiving(this.attackTarget, this.entityMoveSpeed);
+        	} else
+        	{
+        		pathRefresh--;
+        	}
         }
 
         this.entityHost.getLookHelper().setLookPositionWithEntity(this.attackTarget, 30.0F, 30.0F);
@@ -134,7 +143,7 @@ public class ESM_EntityAIArrowAttack extends EntityAIArrowAttack
 
         if (--this.rangedAttackTime == 0)
         {
-            if (d0 > (double)this.field_82642_h || !flag)
+            if (d0 > (double)this.field_82642_h || !canSee)
             {
                 return;
             }
