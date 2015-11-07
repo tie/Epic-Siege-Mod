@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Iterator;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockDoor;
+import net.minecraft.block.BlockFenceGate;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
@@ -123,7 +125,7 @@ public class ESMPathFinder extends PathFinder
                         }
                         else if(!(block instanceof BlockLiquid))
                         {
-                        	if (!allowDoors && block == Blocks.wooden_door)
+                        	if (!allowDoors && (block instanceof BlockDoor ||block instanceof BlockFenceGate) && block.getMaterial().isToolNotRequired())
                             {
                                 return 0;
                             }
@@ -171,9 +173,9 @@ public class ESMPathFinder extends PathFinder
                         } else if(CanFit(entity, block, l, i1, j1))
                         {
                         	continue;
-                        } else if (!block.getBlocksMovement(entity.worldObj, l, i1, j1) && (!moveBlock || block != Blocks.wooden_door))
+                        } else if (!block.getBlocksMovement(entity.worldObj, l, i1, j1) && (!moveBlock || !((block instanceof BlockDoor || block instanceof BlockFenceGate) && block.getMaterial().isToolNotRequired())))
                         {
-                            if (k1 == 11 || block == Blocks.fence_gate || k1 == 32)
+                            if (k1 == 11 || k1 == 32)
                             {
                                 return -3;
                             }

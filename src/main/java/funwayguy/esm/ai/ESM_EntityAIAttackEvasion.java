@@ -48,7 +48,7 @@ public class ESM_EntityAIAttackEvasion extends EntityAIBase
      */
     public boolean shouldExecute()
     {
-    	if(!ESM_Settings.attackEvasion)
+    	if(!ESM_Settings.attackEvasion || theEntity.handleWaterMovement())
     	{
     		return false;
     	}

@@ -306,6 +306,7 @@ public class ESM_Utils
 				ObfuscationReflectionHelper.setPrivateValue(EntityZombie.class, (EntityZombie)entityLiving, tmp, "field_146075_bs");
 				
 				((EntityZombie)entityLiving).setCanPickUpLoot(true);
+				((EntityZombie)entityLiving).func_146070_a(true); // Break doors
 				
 				if(ESM_Settings.ZombieDiggers)
 				{

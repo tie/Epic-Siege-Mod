@@ -31,16 +31,17 @@ public class ESM_EntityAIBreakDoor extends ESM_EntityAIDoorInteract
         	return false;
         } else
         {
-        	return this.isValidDoor();
+        	boolean b = this.isValidDoor();
+        	return b;
         }
     }
     
     public boolean isValidDoor()
     {
-    	if(this.field_151504_e == Blocks.wooden_door)
+    	if(this.field_151504_e instanceof BlockDoor && this.field_151504_e.getMaterial().isToolNotRequired())
     	{
     		return !((BlockDoor)this.field_151504_e).func_150015_f(this.theEntity.worldObj, this.entityPosX, this.entityPosY, this.entityPosZ);
-    	} else if(this.field_151504_e == Blocks.trapdoor)
+    	} else if(this.field_151504_e instanceof BlockFenceGate && this.field_151504_e.getMaterial().isToolNotRequired())
     	{
     		return !BlockTrapDoor.func_150118_d(this.theEntity.worldObj.getBlockMetadata(this.entityPosX, this.entityPosY, this.entityPosZ));
     	} else if(this.field_151504_e == Blocks.fence_gate)
