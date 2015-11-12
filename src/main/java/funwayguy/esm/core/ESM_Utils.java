@@ -44,7 +44,6 @@ import funwayguy.esm.ai.ESM_EntityAIAttackOnCollide;
 import funwayguy.esm.ai.ESM_EntityAIAvoidDetonations;
 import funwayguy.esm.ai.ESM_EntityAIBoat;
 import funwayguy.esm.ai.ESM_EntityAIBreakDoor_Proxy;
-import funwayguy.esm.ai.ESM_EntityAIBuildTrap;
 import funwayguy.esm.ai.ESM_EntityAICreeperSwell;
 import funwayguy.esm.ai.ESM_EntityAIDigging;
 import funwayguy.esm.ai.ESM_EntityAIGrief;
@@ -117,9 +116,13 @@ public class ESM_Utils
 	public static void replaceAI(EntityLiving entityLiving, boolean firstPass)
 	{
 		PathNavigate oldNav = entityLiving.getNavigator();
-		ESMPathNavigator newNav = new ESMPathNavigator(entityLiving, entityLiving.worldObj);
-		ObfuscationReflectionHelper.setPrivateValue(EntityLiving.class, entityLiving, newNav, "field_70699_by", "navigator");
-		newNav.inherit(oldNav);
+		
+		if(oldNav != null && oldNav.getClass() == PathNavigate.class)
+		{
+			ESMPathNavigator newNav = new ESMPathNavigator(entityLiving, entityLiving.worldObj);
+			ObfuscationReflectionHelper.setPrivateValue(EntityLiving.class, entityLiving, newNav, "field_70699_by", "navigator");
+			newNav.inherit(oldNav);
+		}
 		
 		if(entityLiving instanceof EntityNeatZombie)
 		{
@@ -314,7 +317,6 @@ public class ESM_Utils
 					entityLiving.tasks.addTask(6, new ESM_EntityAIGrief((EntityZombie)entityLiving));
 					
 					entityLiving.tasks.addTask(3, new ESM_EntityAIPillarUp(entityLiving));
-					entityLiving.tasks.addTask(5, new ESM_EntityAIBuildTrap(entityLiving));
 				}
 				
 				entityLiving.tasks.addTask(3, new ESM_EntityAIBoat(entityLiving));

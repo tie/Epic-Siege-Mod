@@ -2,6 +2,7 @@ package funwayguy.esm.ai;
 
 import java.util.ArrayList;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.item.EntityBoat;
 
@@ -19,10 +20,12 @@ public class ESM_EntityAIBoat extends EntityAIBase
 	@Override
 	public boolean shouldExecute()
 	{
-		if(host.ridingEntity instanceof EntityBoat)
+		EntityLivingBase target = host.getAttackTarget();
+		
+		if(host.ridingEntity instanceof EntityBoat && target != null)
 		{
 			return true;
-		} else if(host.handleWaterMovement() && host.getAttackTarget() != null && host.getDistanceToEntity(host.getAttackTarget()) > 16) // Only start if we really need to catch up to someone
+		} else if(host.handleWaterMovement() && target != null && host.getDistance(target.posX, host.posY, target.posZ) > 16) // Only start if we really need to catch up to someone
 		{
 			@SuppressWarnings("unchecked")
 			ArrayList<EntityBoat> nearBoats = (ArrayList<EntityBoat>)host.worldObj.getEntitiesWithinAABB(EntityBoat.class, host.boundingBox.expand(3D, 3D, 3D));
@@ -59,8 +62,9 @@ public class ESM_EntityAIBoat extends EntityAIBase
 		}
 		
 		EntityBoat boat = (EntityBoat)host.ridingEntity;
+		EntityLivingBase target = host.getAttackTarget();
 		
-		if(boat.onGround || (boat.isCollidedHorizontally && boat.motionX <= 0.25F && boat.motionZ <= 0.25F) || (host.getAttackTarget() != null && host.getDistanceToEntity(host.getAttackTarget()) <= 4))
+		if(boat.onGround || (boat.isCollidedHorizontally && boat.motionX <= 0.25F && boat.motionZ <= 0.25F) || (target != null && host.getDistance(target.posX, target.posY, target.posZ) <= 4))
 		{
 			host.dismountEntity(boat);
 			boat.riddenByEntity = null;
