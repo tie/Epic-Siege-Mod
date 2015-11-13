@@ -69,7 +69,10 @@ public class ESM_EntityAIBoat extends EntityAIBase
 			host.dismountEntity(boat);
 			boat.riddenByEntity = null;
 			host.ridingEntity = null;
-			boat.setVelocity(0D, 0D, 0D); // Try to stop the boat from moving away
+			// Try to stop the boat from moving away
+			boat.motionX = 0D;
+			boat.motionY = 0D;
+			boat.motionZ = 0D;
 			return;
 		}
 		
