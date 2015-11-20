@@ -14,7 +14,14 @@ public class ESM_EntityAIBoat extends EntityAIBase
 	public ESM_EntityAIBoat(EntityLiving host)
 	{
 		this.host = host;
-		usedBoat = host.getRNG().nextInt(4) == 0; // Only 25% of mobs will actually have a spare boat on hand, otherwise we will try and hijack one
+		
+		if(host.getEntityData().hasKey("ESM_BOAT"))
+		{
+			usedBoat = host.getEntityData().getBoolean("ESM_BOAT");
+		} else
+		{
+			usedBoat = host.getRNG().nextInt(4) != 0; // Only 25% of mobs will actually have a spare boat on hand, otherwise we will try and hijack one
+		}
 	}
 	
 	@Override
@@ -41,6 +48,7 @@ public class ESM_EntityAIBoat extends EntityAIBase
 			
 			if(!usedBoat)
 			{
+				host.getEntityData().setBoolean("ESM_BOAT", true);
 				usedBoat = true;
 				EntityBoat boat = new EntityBoat(host.worldObj);
 				boat.setPosition(host.posX, host.posY, host.posZ);

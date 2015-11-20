@@ -104,7 +104,7 @@ public class ESM_EventManager
 			return;
 		}
 		
-		if(ESM_Settings.Apocalypse && event.entity instanceof EntityLivingBase && !(event.entity instanceof EntityZombie || event.entity instanceof EntityPlayer || (event.entity instanceof EntityEnderman && ESM_Settings.EndermanSlender)))
+		if(ESM_Settings.Apocalypse && (event.entity instanceof IMob || event.entity instanceof EntityMob) && !(event.entity instanceof EntityZombie || event.entity instanceof EntityPlayer || (event.entity instanceof EntityEnderman && ESM_Settings.EndermanSlender)))
 		{
 			event.entity.setDead();
 			event.setCanceled(true);
