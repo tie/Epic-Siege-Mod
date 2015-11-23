@@ -10,15 +10,13 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.MovingObjectPosition.MovingObjectType;
 import net.minecraft.util.Vec3;
 import funwayguy.esm.core.ESM_Settings;
 
-public class ESM_EntityAICreeperSwell extends EntityAIBase
+public class ESM_EntityAIJohnCena extends EntityAIBase
 {
     /** The creeper that is swelling. */
     EntityCreeper swellingCreeper;
@@ -31,15 +29,12 @@ public class ESM_EntityAICreeperSwell extends EntityAIBase
     double detDist = 9.0D;
     boolean detLock = false;
 
-    public ESM_EntityAICreeperSwell(EntityCreeper par1EntityCreeper)
+    public ESM_EntityAIJohnCena(EntityCreeper par1EntityCreeper)
     {
         this.swellingCreeper = par1EntityCreeper;
     	detDist = (double)getCreeperRadius(swellingCreeper) + 0.5D;
     	detDist = detDist * detDist;
-    	if(!ESM_Settings.CreeperChargers)
-    	{
-    		this.setMutexBits(1); // We can run at the target while detonating
-    	}
+    	// John Cena always charges in
     }
 	
 	public static int getCreeperRadius(EntityCreeper creeper)
@@ -79,7 +74,9 @@ public class ESM_EntityAICreeperSwell extends EntityAIBase
      */
     public void startExecuting()
     {
+    	this.swellingCreeper.worldObj.playSoundAtEntity(swellingCreeper, "esm:cena_creeper.start", 1.0F, 1.0F);
         this.creeperAttackTarget = this.swellingCreeper.getAttackTarget();
+        this.swellingCreeper.setCustomNameTag("John Cena");
     }
 
     /**
@@ -95,45 +92,8 @@ public class ESM_EntityAICreeperSwell extends EntityAIBase
      */
     public void updateTask()
     {
-    	if(detLock)
-    	{
-    		if(ESM_Settings.CreeperChargers)
-    		{
-    			this.swellingCreeper.addPotionEffect(new PotionEffect(Potion.moveSpeed.id, 20, 1));
-    		}
-    		
-            this.swellingCreeper.setCreeperState(1);
-            return;
-    	}
-    	
-    	boolean enableBreach = this.swellingCreeper.ticksExisted >= 60 && this.creeperAttackTarget != null && swellingCreeper.ridingEntity == null && !this.swellingCreeper.getEntitySenses().canSee(this.creeperAttackTarget) && ESM_Settings.CreeperBreaching && swellingCreeper.getNavigator().noPath() && !this.CheckForDiggers();
-    	
-    	if(enableBreach)
-    	{
-            MovingObjectPosition mop = GetMovingObjectPosition(this.swellingCreeper, false);
-            enableBreach = mop != null && mop.typeOfHit == MovingObjectType.BLOCK;
-    	}
-    	
-        if (this.creeperAttackTarget == null)
-        {
-            this.swellingCreeper.setCreeperState(-1);
-        }
-        else if (this.swellingCreeper.getDistanceSqToEntity(this.creeperAttackTarget) > (detDist * (ESM_Settings.CreeperChargers? 3 : 2)) && !enableBreach)
-        {
-            this.swellingCreeper.setCreeperState(-1);
-        }
-        else if (!this.swellingCreeper.getEntitySenses().canSee(this.creeperAttackTarget) && !enableBreach)
-        {
-            this.swellingCreeper.setCreeperState(-1);
-        }
-        else
-        {
-        	if(!enableBreach)
-        	{
-        		detLock = true; // Prevents creepers who are in clear line of sight of the player canceling their detonation
-        	}
-            this.swellingCreeper.setCreeperState(1);
-        }
+    	this.swellingCreeper.setCreeperState(1);
+    	return;
     }
     
     public boolean CheckForDiggers()

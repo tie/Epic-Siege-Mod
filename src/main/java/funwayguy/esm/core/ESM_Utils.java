@@ -48,6 +48,7 @@ import funwayguy.esm.ai.ESM_EntityAICreeperSwell;
 import funwayguy.esm.ai.ESM_EntityAIDigging;
 import funwayguy.esm.ai.ESM_EntityAIGrief;
 import funwayguy.esm.ai.ESM_EntityAIHurtByTarget;
+import funwayguy.esm.ai.ESM_EntityAIJohnCena;
 import funwayguy.esm.ai.ESM_EntityAINearestAttackableTarget;
 import funwayguy.esm.ai.ESM_EntityAIPillarUp;
 import funwayguy.esm.ai.ESM_EntityAISwimming;
@@ -218,7 +219,15 @@ public class ESM_Utils
 				if(!replaceCS)
 				{
 					replaceCS = true;
-					EntityAITaskEntry replacement = entityLiving.tasks.new EntityAITaskEntry(task.priority, new ESM_EntityAICreeperSwell((EntityCreeper)entityLiving));
+					EntityAITaskEntry replacement;
+					
+					if(!ESM_Settings.CenaCreeper)
+					{
+						replacement = entityLiving.tasks.new EntityAITaskEntry(task.priority, new ESM_EntityAICreeperSwell((EntityCreeper)entityLiving));
+					} else
+					{
+						replacement = entityLiving.tasks.new EntityAITaskEntry(task.priority, new ESM_EntityAIJohnCena((EntityCreeper)entityLiving));
+					}
 					entityLiving.tasks.taskEntries.set(i, replacement);
 				} else
 				{

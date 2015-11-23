@@ -311,9 +311,20 @@ public class ESM_EventManager
 	@SubscribeEvent
 	public void onExplode(ExplosionEvent.Start event)
 	{
-		if(ESM_Settings.CreeperNapalm && event.explosion.getExplosivePlacedBy() instanceof EntityCreeper)
+		EntityLivingBase source = event.explosion.getExplosivePlacedBy();
+		
+		if(source instanceof EntityCreeper)
 		{
-			event.explosion.isFlaming = true;
+			if(ESM_Settings.CreeperNapalm)
+			{
+				event.explosion.isFlaming = true;
+			}
+			
+			if(((EntityCreeper)source).getCustomNameTag().equals("John Cena"))
+			{
+				event.explosion.explosionSize *= 3F;
+				event.world.playSoundAtEntity(source, "esm:cena_creeper.end", 1.0F, 1.0F);
+			}
 		}
 	}
 	

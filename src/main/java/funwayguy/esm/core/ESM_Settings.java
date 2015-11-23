@@ -58,6 +58,8 @@ public class ESM_Settings
 	public static boolean CreeperNapalm;
 	public static boolean CreeperPowered;
 	public static int CreeperPoweredRarity;
+	public static boolean CreeperChargers;
+	public static boolean CenaCreeper = false;
 	
 	//Blaze
 	public static boolean BlazeSpawn;
@@ -198,6 +200,8 @@ public class ESM_Settings
 		CreeperNapalm = defConfig.get("Creeper", "Napalm", true).getBoolean(true);
 		CreeperPowered = defConfig.get("Creeper", "Powered", true).getBoolean(true);
 		CreeperPoweredRarity = defConfig.get("Creeper", "Powered Rarity", 9).getInt(9);
+		CreeperChargers = defConfig.getBoolean("Chargering", "Creeper", true, "Creepers will run at you at speed before detonating");
+		CenaCreeper = defConfig.getBoolean("Cena Creeper", "Creeper", false, "AND HIS NAME IS...");
 		
 		//Skeletons
 		SkeletonAccuracy = defConfig.get("Skeleton", "Arrow Error", 0).getInt(0);
@@ -375,7 +379,7 @@ public class ESM_Settings
 		String[] tmpAIE = config.get("Main", "AI Exempt Mob IDs", AIExempt.toArray(new String[]{})).getStringList();
 		AIExempt = new ArrayList<String>();
 		AIExempt.addAll(Arrays.asList(tmpAIE));
-
+		
 		timedDifficulty = config.getInt("Warm Up Days", "Main", timedDifficulty, 0, Integer.MAX_VALUE, "How many days until ESM spawns mobs at full rate.");
 		hardDay = config.getInt("Hardcore Day Cycle", "Main", hardDay, 0, Integer.MAX_VALUE, "The interval in which 'hard' days will occur where mob spawning is increased and lighting is ignored (0 = off, default = 8/full moon)");
 		Awareness = config.get("Main", "Awareness Radius", Awareness).getInt(Awareness);
@@ -402,6 +406,8 @@ public class ESM_Settings
 		CreeperNapalm = config.get("Creeper", "Napalm", CreeperNapalm).getBoolean(CreeperNapalm);
 		CreeperPowered = config.get("Creeper", "Powered", CreeperPowered).getBoolean(CreeperPowered);
 		CreeperPoweredRarity = config.get("Creeper", "Powered Rarity", CreeperPoweredRarity).getInt(CreeperPoweredRarity);
+		CreeperChargers = config.getBoolean("Chargering", "Creeper", true, "Creepers will run at you at speed before detonating");
+		CenaCreeper = config.getBoolean("Cena Creeper", "Creeper", false, "AND HIS NAME IS...");
 		
 		//Skeletons
 		SkeletonAccuracy = config.get("Skeleton", "Arrow Error", SkeletonAccuracy).getInt(SkeletonAccuracy);
