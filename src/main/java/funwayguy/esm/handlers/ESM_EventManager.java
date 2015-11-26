@@ -901,6 +901,8 @@ public class ESM_EventManager
 			{
 				config.save();
 			}
+			
+			ESM_Utils.UpdateBiomeSpawns();
 		}
 	}
 	

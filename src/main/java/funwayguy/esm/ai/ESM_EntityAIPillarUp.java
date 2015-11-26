@@ -5,10 +5,15 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.MathHelper;
+import net.minecraftforge.common.util.ForgeDirection;
 import funwayguy.esm.core.ESM_Settings;
 
 public class ESM_EntityAIPillarUp extends EntityAIBase
 {
+	/**
+	 * Potential surfaces zombies can initialise pillaring on
+	 */
+	static final ForgeDirection[] placeSurface = new ForgeDirection[]{ForgeDirection.DOWN,ForgeDirection.NORTH,ForgeDirection.EAST,ForgeDirection.SOUTH,ForgeDirection.WEST};
 	public int placeDelay = 15;
 	public int blocks = ESM_Settings.ZombiePillaring;
 	public EntityLiving builder;
@@ -46,7 +51,18 @@ public class ESM_EntityAIPillarUp extends EntityAIBase
 			int xOff = (int)Math.signum(MathHelper.floor_double(target.posX) - origI);
 			int zOff = (int)Math.signum(MathHelper.floor_double(target.posZ) - origK);
 			
-			if(target.posY - builder.posY < 16 && builder.worldObj.getBlock(i, j - 2, k).isNormalCube())
+			boolean canPlace = false;
+			
+			for(ForgeDirection dir : placeSurface)
+			{
+				if(builder.worldObj.getBlock(i + dir.offsetX, j + dir.offsetY, k + dir.offsetZ).isNormalCube())
+				{
+					canPlace = true;
+					break;
+				}
+			}
+			
+			if(target.posY - builder.posY < 16 && builder.worldObj.getBlock(i, j - 2, k).isNormalCube() && builder.worldObj.getBlock(i, j - 1, k).isNormalCube()) // Sideways pillaring
 			{
 				if(builder.worldObj.getBlock(i + xOff, j - 1, k).getMaterial().isReplaceable())
 				{
@@ -65,7 +81,7 @@ public class ESM_EntityAIPillarUp extends EntityAIBase
 				return false;
 			}
 			
-			if(!builder.worldObj.getBlock(origI, origJ - 1, origK).isNormalCube() || builder.worldObj.getBlock(origI, origJ + 2, origK).getMaterial().blocksMovement() || builder.worldObj.getBlock(i, j + 2, k).getMaterial().blocksMovement())
+			if(!canPlace || builder.worldObj.getBlock(origI, origJ + 2, origK).getMaterial().blocksMovement() || builder.worldObj.getBlock(i, j + 2, k).getMaterial().blocksMovement())
 			{
 				return false;
 			}

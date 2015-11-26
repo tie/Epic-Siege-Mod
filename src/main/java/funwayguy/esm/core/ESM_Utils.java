@@ -221,12 +221,12 @@ public class ESM_Utils
 					replaceCS = true;
 					EntityAITaskEntry replacement;
 					
-					if(!ESM_Settings.CenaCreeper)
-					{
-						replacement = entityLiving.tasks.new EntityAITaskEntry(task.priority, new ESM_EntityAICreeperSwell((EntityCreeper)entityLiving));
-					} else
+					if(ESM_Settings.CenaCreeper && (ESM_Settings.CenaCreeperRarity <= 0 || entityLiving.worldObj.rand.nextInt(ESM_Settings.CenaCreeperRarity) == 0))
 					{
 						replacement = entityLiving.tasks.new EntityAITaskEntry(task.priority, new ESM_EntityAIJohnCena((EntityCreeper)entityLiving));
+					} else
+					{
+						replacement = entityLiving.tasks.new EntityAITaskEntry(task.priority, new ESM_EntityAICreeperSwell((EntityCreeper)entityLiving));
 					}
 					entityLiving.tasks.taskEntries.set(i, replacement);
 				} else
@@ -388,6 +388,7 @@ public class ESM_Utils
 			{
 				if(ESM_Settings.BlazeSpawn)
 				{
+					EntityRegistry.removeSpawn(EntityBlaze.class, EnumCreatureType.monster, biome);
 					EntityRegistry.addSpawn(EntityBlaze.class, MathHelper.ceiling_float_int(100F/(float)(ESM_Settings.BlazeRarity <= 0? 1: ESM_Settings.BlazeRarity)), 1, 1, EnumCreatureType.monster, biome);
 				} else
 				{
@@ -399,6 +400,7 @@ public class ESM_Utils
 			{
 				if(ESM_Settings.GhastSpawn)
 				{
+					EntityRegistry.removeSpawn(EntityBlaze.class, EnumCreatureType.monster, biome);
 					EntityRegistry.addSpawn(EntityGhast.class, MathHelper.ceiling_float_int(100F/(float)(ESM_Settings.GhastRarity <= 0? 1 : ESM_Settings.GhastRarity)), 1, 1, EnumCreatureType.monster, biome);
 				} else
 				{

@@ -60,6 +60,7 @@ public class ESM_Settings
 	public static int CreeperPoweredRarity;
 	public static boolean CreeperChargers;
 	public static boolean CenaCreeper = false;
+	public static int CenaCreeperRarity = 9;
 	
 	//Blaze
 	public static boolean BlazeSpawn;
@@ -202,6 +203,7 @@ public class ESM_Settings
 		CreeperPoweredRarity = defConfig.get("Creeper", "Powered Rarity", 9).getInt(9);
 		CreeperChargers = defConfig.getBoolean("Chargering", "Creeper", true, "Creepers will run at you at speed before detonating");
 		CenaCreeper = defConfig.getBoolean("Cena Creeper", "Creeper", false, "AND HIS NAME IS...");
+		CenaCreeperRarity = defConfig.getInt("Cena Creeper Rarity", "Creeper", 9, 0, Integer.MAX_VALUE, "How rare are they");
 		
 		//Skeletons
 		SkeletonAccuracy = defConfig.get("Skeleton", "Arrow Error", 0).getInt(0);
@@ -408,6 +410,7 @@ public class ESM_Settings
 		CreeperPoweredRarity = config.get("Creeper", "Powered Rarity", CreeperPoweredRarity).getInt(CreeperPoweredRarity);
 		CreeperChargers = config.getBoolean("Chargering", "Creeper", true, "Creepers will run at you at speed before detonating");
 		CenaCreeper = config.getBoolean("Cena Creeper", "Creeper", false, "AND HIS NAME IS...");
+		CenaCreeperRarity = config.getInt("Cena Creeper Rarity", "Creeper", 9, 0, Integer.MAX_VALUE, "How rare are they");
 		
 		//Skeletons
 		SkeletonAccuracy = config.get("Skeleton", "Arrow Error", SkeletonAccuracy).getInt(SkeletonAccuracy);
