@@ -45,6 +45,7 @@ import funwayguy.esm.ai.ESM_EntityAIAvoidDetonations;
 import funwayguy.esm.ai.ESM_EntityAIBoat;
 import funwayguy.esm.ai.ESM_EntityAIBreakDoor_Proxy;
 import funwayguy.esm.ai.ESM_EntityAICreeperSwell;
+import funwayguy.esm.ai.ESM_EntityAIDemolition;
 import funwayguy.esm.ai.ESM_EntityAIDigging;
 import funwayguy.esm.ai.ESM_EntityAIGrief;
 import funwayguy.esm.ai.ESM_EntityAIHurtByTarget;
@@ -326,6 +327,11 @@ public class ESM_Utils
 					entityLiving.tasks.addTask(6, new ESM_EntityAIGrief((EntityZombie)entityLiving));
 					
 					entityLiving.tasks.addTask(3, new ESM_EntityAIPillarUp(entityLiving));
+				}
+				
+				if(ESM_Settings.DemolitionZombies)
+				{
+					entityLiving.tasks.addTask(3, new ESM_EntityAIDemolition(entityLiving));
 				}
 				
 				entityLiving.tasks.addTask(3, new ESM_EntityAIBoat(entityLiving));

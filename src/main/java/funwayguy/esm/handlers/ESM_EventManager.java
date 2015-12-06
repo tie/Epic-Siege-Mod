@@ -197,9 +197,9 @@ public class ESM_EventManager
 				{
 					((EntityZombie)event.entity).setCurrentItemOrArmor(0, new ItemStack(Items.iron_pickaxe));
 				}
-			} else if(ESM_Settings.ZombieTraps && event.world.rand.nextFloat() < 0.1F)
+			} else if(ESM_Settings.DemolitionZombies && event.world.rand.nextFloat() < 0.1F)
 			{
-				((EntityZombie)event.entity).setCurrentItemOrArmor(0, new ItemStack(Blocks.stone_pressure_plate));
+				((EntityZombie)event.entity).setCurrentItemOrArmor(0, new ItemStack(Blocks.tnt));
 			}
 		} else if(event.entity.getClass() == EntityArrow.class) // Changed because other people like replacing arrows and not saying they did
 		{

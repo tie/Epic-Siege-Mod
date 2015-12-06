@@ -84,11 +84,11 @@ public class ESM_Settings
 	public static boolean ZombieInfectious;
 	public static boolean ZombieDiggers;
 	public static boolean ZombieDiggerTools;
-	public static boolean ZombieTraps;
 	public static int ZombiePillaring;
 	public static ArrayList<String> ZombieGriefBlocks;
 	public static ArrayList<String> ZombieDigBlacklist;
 	public static boolean ZombieSwapList;
+	public static boolean DemolitionZombies;
 	
 	//Enderman
 	public static boolean EndermanSlender;
@@ -213,7 +213,6 @@ public class ESM_Settings
 		ZombieInfectious = defConfig.get("Zombie", "Infectious", true).getBoolean(true);
 		ZombieDiggers = defConfig.get("Zombie", "Diggers", true).getBoolean(true);
 		ZombieDiggerTools = defConfig.get("Zombie", "Need Required Tools", true).getBoolean(true);
-		ZombieTraps = defConfig.get("Zombie", "Zombies Build Traps", true).getBoolean(true);
 		ZombiePillaring = defConfig.get("Zombie", "Pillaring Blocks", 64, "How many blocks to give zombies to pillar up with").getInt(64);
 		String[] defGrief = new String[]
 		{
@@ -244,6 +243,7 @@ public class ESM_Settings
 		ZombieGriefBlocks = new ArrayList<String>(Arrays.asList(defConfig.get("Zombie", "General Griefable Blocks", defGrief, "What blocks will be targeted for destruction when not attacking players (Does not affect general digging, light sources are included by default, add ':#' for metadata e.g. 'minecraft:wool:1')").getStringList()));
 		ZombieDigBlacklist = new ArrayList<String>(Arrays.asList(defConfig.get("Zombie", "Digging Blacklist", new String[]{}, "Blacklisted blocks for digging (Add ':#' for metadata e.g. 'minecraft:wool:1')").getStringList()));
 		ZombieSwapList = defConfig.get("Zombie", "Blacklist to Whitelist", false, "Use the digging blacklist as a whitelist instead").getBoolean(false);
+		DemolitionZombies = defConfig.get("Zombie", "Demolition Zombies", true, "Zombies can placed armed TNT").getBoolean(true);
 		
 		//Blazes
 		BlazeSpawn = defConfig.get("Blaze", "Spawn", true).getBoolean(true);
@@ -420,11 +420,11 @@ public class ESM_Settings
 		ZombieInfectious = config.get("Zombie", "Infectious", ZombieInfectious).getBoolean(ZombieInfectious);
 		ZombieDiggers = config.get("Zombie", "Diggers", ZombieDiggers).getBoolean(ZombieDiggers);
 		ZombieDiggerTools = config.get("Zombie", "Need Required Tools", ZombieDiggerTools).getBoolean(ZombieDiggerTools);
-		ZombieTraps = config.get("Zombie", "Zombies Build Traps", ZombieTraps).getBoolean(ZombieTraps);
 		ZombiePillaring = config.get("Zombie", "Pillaring Blocks", ZombiePillaring, "How many blocks to give zombies to pillar up with").getInt(ZombiePillaring);
 		ZombieGriefBlocks = new ArrayList<String>(Arrays.asList(config.get("Zombie", "General Griefable Blocks", ZombieGriefBlocks.toArray(new String[]{}), "What blocks will be targeted for destruction when not attacking players (Does not affect general digging, light sources are included by default, add ':#' for metadata e.g. 'minecraft:wool:1')").getStringList()));
 		ZombieDigBlacklist = new ArrayList<String>(Arrays.asList(config.get("Zombie", "Digging Blacklist", ZombieDigBlacklist.toArray(new String[]{}), "Blacklisted blocks for digging (Add ':#' for metadata e.g. 'minecraft:wool:1')").getStringList()));
 		ZombieSwapList = config.get("Zombie", "Blacklist to Whitelist", false, "Use the digging blacklist as a whitelist instead").getBoolean(false);
+		DemolitionZombies = config.get("Zombie", "Demolition Zombies", true, "Zombies can placed armed TNT").getBoolean(true);
 		
 		//Blazes
 		BlazeSpawn = config.get("Blaze", "Spawn", BlazeSpawn).getBoolean(BlazeSpawn);
