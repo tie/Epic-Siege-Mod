@@ -99,7 +99,7 @@ public class ESM_EventManager
 	@SubscribeEvent
 	public void onEntityJoinWorld(EntityJoinWorldEvent event)
 	{
-		if(event.world.isRemote)
+		if(event.world.isRemote || event.entity instanceof EntityPlayer)
 		{
 			return;
 		}
@@ -609,7 +609,7 @@ public class ESM_EventManager
 	@SubscribeEvent
 	public void onLivingUpdate(LivingUpdateEvent event)
 	{
-		if(event.entity.worldObj.isRemote)
+		if(event.entity.worldObj.isRemote || event.entityLiving instanceof EntityPlayer)
 		{
 			return;
 		}
