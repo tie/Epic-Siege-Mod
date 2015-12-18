@@ -45,6 +45,8 @@ public class ESM_Settings
 	public static int timedDifficulty;
 	public static int hardDay;
 	public static boolean friendlyFire;
+	public static ArrayList<String> AIExempt = new ArrayList<String>();
+	public static boolean flipBlacklist = false;
 	
 	public static HashMap<Integer, DimSettings> dimSettings = new HashMap<Integer, DimSettings>();
 	
@@ -129,7 +131,6 @@ public class ESM_Settings
 	public static File worldDir = null;
 	public static boolean ambiguous_AI = true;
 	public static Configuration defConfig;
-	public static ArrayList<String> AIExempt = new ArrayList<String>();
 	
 	public static void LoadMainConfig(File file)
 	{
@@ -179,6 +180,7 @@ public class ESM_Settings
 		ENFORCE_DEFAULT = defConfig.get("Main", "Enforce Defaults", true, "Ignores world specific settings and just uses the global defaults instead").getBoolean(true);
 		friendlyFire = defConfig.getBoolean("Friendly Fire", "Main", true, "Can mobs harm eachother (type specific in chaos mode)");
 		attackPets  = defConfig.getBoolean("Attack Pets", "Main", true, "Mobs will attack player owned pets");
+		flipBlacklist = defConfig.getBoolean("Flip Exemtions", "Main", false, "Flips the exemption listing to whitelist mode");
 		
 		String[] tmpAIE = defConfig.get("Main", "AI Exempt Mob IDs", new String[]{"VillagerGolem"}).getStringList();
 		AIExempt = new ArrayList<String>();
@@ -298,7 +300,7 @@ public class ESM_Settings
 		SpawnForts = defConfig.get("World", "Spawn Forts", true).getBoolean(true);
 		fortRarity = defConfig.get("World", "Fort Rarity", 100).getInt(100);
 		fortDistance = defConfig.get("World", "Fort Distance", 1024).getInt(1024);
-		String[] defSpawn = new String[]{"Zombie", "Creeer", "Skeleton", "CaveSpider", "Silverfish", "Spider", "Slime", "Witch"};
+		String[] defSpawn = new String[]{"Zombie", "Creeper", "Skeleton", "CaveSpider", "Silverfish", "Spider", "Slime", "Witch"};
 		fortSpawners = new ArrayList<String>(Arrays.asList(defConfig.get("World", "Fort Spawner Types", defSpawn).getStringList()));
 		int[] tmpFD = defConfig.get("World", "Fort Dimensions", new int[]{0}).getIntList();
 		
@@ -355,6 +357,7 @@ public class ESM_Settings
 		
 		if(ENFORCE_DEFAULT)
 		{
+			ESM_Utils.UpdateBiomeSpawns();
 			return;
 		}
 		
@@ -399,6 +402,7 @@ public class ESM_Settings
 		forcePath = config.get("Main", "Force Non-AI Pathing", forcePath, "Forces non pathing mobs to attack from further away. Can cause additional lag").getBoolean(false);
 		friendlyFire = config.getBoolean("Friendly Fire", "Main", friendlyFire, "Can mobs harm eachother (type specific in chaos mode)");
 		attackPets  = config.getBoolean("Attack Pets", "Main", attackPets, "Mobs will attack player owned pets");
+		flipBlacklist = config.getBoolean("Flip Exemtions", "Main", false, "Flips the exemption listing to whitelist mode");
 		
 		//Witch
 		customPotions = config.getStringList("Custom Potions", "Witch", customPotions, "List of potion types witches can throw (\"id:duration:lvl\")");
@@ -428,7 +432,7 @@ public class ESM_Settings
 		
 		//Blazes
 		BlazeSpawn = config.get("Blaze", "Spawn", BlazeSpawn).getBoolean(BlazeSpawn);
-		BlazeRarity = config.get("Blaze", "Rarity", BlazeRarity).getInt(BlazeRarity);
+		BlazeRarity = config.getInt("Rarity", "Blaze", 9, 1, 1000, "How rare are Blazes");
 		BlazeFireballs = config.get("Blaze", "Fireballs", BlazeFireballs).getInt(BlazeFireballs);
 		int[] tmpBDB = new int[BlazeDimensionBlacklist.size()];
 		for(int i = 0; i < BlazeDimensionBlacklist.size(); i++)
@@ -444,7 +448,7 @@ public class ESM_Settings
 		
 		//Ghasts
 		GhastSpawn = config.get("Ghast", "Spawn", GhastSpawn).getBoolean(GhastSpawn);
-		GhastRarity = config.get("Ghast", "Rarity", GhastRarity).getInt(GhastRarity);
+		GhastRarity = config.getInt("Rarity", "Ghast", 9, 1, 1000, "How rare are Ghasts");
 		GhastFireDelay = config.get("Ghast", "Fire Delay", GhastFireDelay).getDouble(GhastFireDelay);
 		GhastBreaching = config.get("Ghast", "Breaching", GhastBreaching).getBoolean(GhastBreaching);
 		GhastFireDist = config.get("Ghast", "Fire Distance", GhastFireDist).getDouble(GhastFireDist);
@@ -489,6 +493,8 @@ public class ESM_Settings
 		SpawnForts = config.get("World", "Spawn Forts", SpawnForts).getBoolean(SpawnForts);
 		fortRarity = config.get("World", "Fort Rarity", fortRarity).getInt(fortRarity);
 		fortDistance = config.get("World", "Fort Distance", fortDistance).getInt(fortDistance);
+		String[] defSpawn = new String[]{"Zombie", "Creeper", "Skeleton", "CaveSpider", "Silverfish", "Spider", "Slime", "Witch"};
+		fortSpawners = new ArrayList<String>(Arrays.asList(config.get("World", "Fort Spawner Types", defSpawn).getStringList()));
 		int[] tmpFDDef = new int[fortDimensions.size()];
 		for(int i = 0; i < fortDimensions.size(); i++)
 		{

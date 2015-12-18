@@ -111,7 +111,7 @@ public class ESM_EventManager
 			return;
 		}
 		
-		if(event.entity instanceof EntityLiving && (event.entity instanceof IMob || ESM_Settings.ambiguous_AI) && !ESM_Settings.AIExempt.contains(EntityList.getEntityString(event.entity)))
+		if(event.entity instanceof EntityLiving && (event.entity instanceof IMob || ESM_Settings.ambiguous_AI) && ESM_Settings.AIExempt.contains(EntityList.getEntityString(event.entity)) == ESM_Settings.flipBlacklist)
 		{
 			ESM_Utils.replaceAI((EntityLiving)event.entity, true);
 			if(event.entity instanceof EntityMob || (event.entity instanceof EntitySpider && !event.world.isDaytime()))
@@ -120,13 +120,13 @@ public class ESM_EventManager
 			}
 		}
 		
-		if(event.entity.getEntityData().getBoolean("ESM_MODIFIED") || ESM_Settings.AIExempt.contains(EntityList.getEntityString(event.entity)))
+		if(event.entity.getEntityData().getBoolean("ESM_MODIFIED") || ESM_Settings.AIExempt.contains(EntityList.getEntityString(event.entity)) == !ESM_Settings.flipBlacklist)
 		{
 			event.entity.getEntityData().setBoolean("ESM_MODIFIED", true);
 			return;
 		}
 		
-		if(event.entity instanceof EntityLivingBase && (event.entity instanceof IMob || ESM_Settings.ambiguous_AI) && !ESM_Settings.AIExempt.contains(EntityList.getEntityString(event.entity)))
+		if(event.entity instanceof EntityLivingBase && (event.entity instanceof IMob || ESM_Settings.ambiguous_AI) && ESM_Settings.AIExempt.contains(EntityList.getEntityString(event.entity)) == ESM_Settings.flipBlacklist)
 		{
 			EntityLivingBase entityLiving = (EntityLivingBase)event.entity;
 			DimSettings dimSet = ESM_Settings.dimSettings.get(event.world.provider.dimensionId);
@@ -620,7 +620,7 @@ public class ESM_EventManager
 			return;
 		}
 		
-		if(ESM_Settings.AIExempt.contains(EntityList.getEntityString(event.entity)))
+		if(ESM_Settings.AIExempt.contains(EntityList.getEntityString(event.entity)) == !ESM_Settings.flipBlacklist)
 		{
 			return;
 		}

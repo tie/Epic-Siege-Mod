@@ -26,7 +26,7 @@ public class WorldGenFortress implements IWorldGenerator
 		int blockX = chunkX * 16 + 8;
 		int blockZ = chunkZ * 16 + 8;
 		
-		if(spawnPoint.getDistanceSquared(blockX, 64, blockZ) < (ESM_Settings.fortDistance * ESM_Settings.fortDistance))
+		if(spawnPoint.getDistanceSquared(blockX, 64, blockZ) < (ESM_Settings.fortDistance * ESM_Settings.fortDistance) || !ESM_Settings.fortDimensions.contains(world.provider.dimensionId))
 		{
 			return;
 		}
