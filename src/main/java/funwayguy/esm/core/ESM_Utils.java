@@ -395,7 +395,7 @@ public class ESM_Utils
 				if(ESM_Settings.BlazeSpawn)
 				{
 					EntityRegistry.removeSpawn(EntityBlaze.class, EnumCreatureType.monster, biome);
-					EntityRegistry.addSpawn(EntityBlaze.class, MathHelper.ceiling_float_int(1000F/Math.max(1F, ESM_Settings.BlazeRarity)), 1, 1, EnumCreatureType.monster, biome);
+					EntityRegistry.addSpawn(EntityBlaze.class, MathHelper.ceiling_float_int(100F/Math.max(1F, ESM_Settings.BlazeRarity)), 1, 1, EnumCreatureType.monster, biome);
 				} else
 				{
 					EntityRegistry.removeSpawn(EntityBlaze.class, EnumCreatureType.monster, biome);
@@ -407,7 +407,7 @@ public class ESM_Utils
 				if(ESM_Settings.GhastSpawn)
 				{
 					EntityRegistry.removeSpawn(EntityBlaze.class, EnumCreatureType.monster, biome);
-					EntityRegistry.addSpawn(EntityGhast.class, MathHelper.ceiling_float_int(1000F/Math.max(1F, ESM_Settings.GhastRarity)), 1, 1, EnumCreatureType.monster, biome);
+					EntityRegistry.addSpawn(EntityGhast.class, MathHelper.ceiling_float_int(100F/Math.max(1F, ESM_Settings.GhastRarity)), 1, 1, EnumCreatureType.monster, biome);
 				} else
 				{
 					EntityRegistry.removeSpawn(EntityGhast.class, EnumCreatureType.monster, biome);

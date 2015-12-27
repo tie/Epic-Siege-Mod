@@ -104,7 +104,7 @@ public class ESM_EventManager
 			return;
 		}
 		
-		if(ESM_Settings.Apocalypse && (event.entity instanceof IMob || event.entity instanceof EntityMob) && !(event.entity instanceof EntityZombie || event.entity instanceof EntityPlayer || (event.entity instanceof EntityEnderman && ESM_Settings.EndermanSlender)))
+		if(ESM_Settings.Apocalypse && (event.entity instanceof IMob || event.entity instanceof EntityMob) && !(event.entity instanceof IBossDisplayData || event.entity instanceof EntityZombie || event.entity instanceof EntityPlayer || (event.entity instanceof EntityEnderman && ESM_Settings.EndermanSlender)))
 		{
 			event.entity.setDead();
 			event.setCanceled(true);
@@ -614,7 +614,7 @@ public class ESM_EventManager
 			return;
 		}
 		
-		if(ESM_Settings.Apocalypse && !(event.entityLiving instanceof EntityPlayer || event.entityLiving instanceof EntityZombie || (event.entityLiving instanceof EntityEnderman && ESM_Settings.EndermanSlender)))
+		if(ESM_Settings.Apocalypse && (event.entity instanceof IMob || event.entity instanceof EntityMob) && !(event.entity instanceof IBossDisplayData || event.entity instanceof EntityPlayer || event.entity instanceof EntityZombie || (event.entity instanceof EntityEnderman && ESM_Settings.EndermanSlender)))
 		{
 			event.entityLiving.setDead();
 			return;

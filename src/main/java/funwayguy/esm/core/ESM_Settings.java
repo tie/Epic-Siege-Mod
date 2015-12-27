@@ -432,7 +432,7 @@ public class ESM_Settings
 		
 		//Blazes
 		BlazeSpawn = config.get("Blaze", "Spawn", BlazeSpawn).getBoolean(BlazeSpawn);
-		BlazeRarity = config.getInt("Rarity", "Blaze", 9, 1, 1000, "How rare are Blazes");
+		BlazeRarity = config.getInt("Rarity", "Blaze", 9, 1, 100, "How rare are Blazes");
 		BlazeFireballs = config.get("Blaze", "Fireballs", BlazeFireballs).getInt(BlazeFireballs);
 		int[] tmpBDB = new int[BlazeDimensionBlacklist.size()];
 		for(int i = 0; i < BlazeDimensionBlacklist.size(); i++)
@@ -448,7 +448,7 @@ public class ESM_Settings
 		
 		//Ghasts
 		GhastSpawn = config.get("Ghast", "Spawn", GhastSpawn).getBoolean(GhastSpawn);
-		GhastRarity = config.getInt("Rarity", "Ghast", 9, 1, 1000, "How rare are Ghasts");
+		GhastRarity = config.getInt("Rarity", "Ghast", 9, 1, 100, "How rare are Ghasts");
 		GhastFireDelay = config.get("Ghast", "Fire Delay", GhastFireDelay).getDouble(GhastFireDelay);
 		GhastBreaching = config.get("Ghast", "Breaching", GhastBreaching).getBoolean(GhastBreaching);
 		GhastFireDist = config.get("Ghast", "Fire Distance", GhastFireDist).getDouble(GhastFireDist);
