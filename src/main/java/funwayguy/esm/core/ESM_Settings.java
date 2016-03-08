@@ -44,6 +44,7 @@ public class ESM_Settings
 	public static boolean forcePath;
 	public static int timedDifficulty;
 	public static int hardDay;
+	public static boolean hardDamage;
 	public static boolean friendlyFire;
 	public static ArrayList<String> AIExempt = new ArrayList<String>();
 	public static boolean flipBlacklist = false;
@@ -164,6 +165,7 @@ public class ESM_Settings
 		//Main
 		timedDifficulty = defConfig.getInt("Warm Up Days", "Main", 7, 0, Integer.MAX_VALUE, "How many days until ESM spawns mobs at full rate.");
 		hardDay = defConfig.getInt("Hardcore Day Cycle", "Main", 8, 0, Integer.MAX_VALUE, "The interval in which 'hard' days will occur where mob spawning is increased and lighting is ignored (0 = off, default = 8/full moon)");
+		hardDamage = defConfig.getBoolean("Hardcore Double Damage", "Main", false, "Mobs inflict double damage on hardcore days");
 		Awareness = defConfig.get("Main", "Awareness Radius", 64).getInt(64);
 		Xray = defConfig.get("Main", "Xray Mobs", true).getBoolean(true);
 		TargetCap = defConfig.get("Main", "Pathing Cap", 16).getInt(16);
@@ -387,6 +389,7 @@ public class ESM_Settings
 		
 		timedDifficulty = config.getInt("Warm Up Days", "Main", timedDifficulty, 0, Integer.MAX_VALUE, "How many days until ESM spawns mobs at full rate.");
 		hardDay = config.getInt("Hardcore Day Cycle", "Main", hardDay, 0, Integer.MAX_VALUE, "The interval in which 'hard' days will occur where mob spawning is increased and lighting is ignored (0 = off, default = 8/full moon)");
+		hardDamage = config.getBoolean("Hardcore Double Damage", "Main", hardDamage, "Mobs inflict double damage on hardcore days");
 		Awareness = config.get("Main", "Awareness Radius", Awareness).getInt(Awareness);
 		Xray = config.get("Main", "Xray Mobs", Xray).getBoolean(Xray);
 		TargetCap = config.get("Main", "Pathing Cap", TargetCap).getInt(TargetCap);

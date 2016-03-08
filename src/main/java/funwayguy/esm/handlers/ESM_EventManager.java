@@ -403,7 +403,7 @@ public class ESM_EventManager
 		{
 			int day = (int)(event.entityLiving.worldObj.getWorldTime()/24000);
 			
-			if(ESM_Settings.hardDay != 0 && day != 0 && day%ESM_Settings.hardDay == 0)
+			if(ESM_Settings.hardDay != 0 && day != 0 && day%ESM_Settings.hardDay == 0 && ESM_Settings.hardDamage)
 			{
 				event.ammount *= 2F;
 			}
