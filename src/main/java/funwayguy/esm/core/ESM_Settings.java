@@ -135,6 +135,7 @@ public class ESM_Settings
 	
 	public static void LoadMainConfig(File file)
 	{
+		boolean flag = !file.exists();
 		Configuration config = new Configuration(file, true);
 		ESM.log.log(Level.INFO, "Loading ESM Global Config");
 		
@@ -149,10 +150,10 @@ public class ESM_Settings
 		
 		config.save();
 		
-		ResetToDefault();
+		ResetToDefault(flag);
 	}
 	
-	public static void ResetToDefault()
+	public static void ResetToDefault(boolean newFile)
 	{
 		if(defConfig == null)
 		{
@@ -314,7 +315,7 @@ public class ESM_Settings
 		dimSettings.clear();
 		Set<ConfigCategory> cats = defConfig.getCategory("Dimension Tweaks").getChildren();
 		
-		if(cats.size() <= 0)
+		if(cats.size() <= 0 && newFile)
 		{
 			String name = "Overworld";
 			
@@ -355,7 +356,7 @@ public class ESM_Settings
 			return;
 		}
 		
-		ResetToDefault();
+		ResetToDefault(false);
 		
 		if(ENFORCE_DEFAULT)
 		{
@@ -364,12 +365,14 @@ public class ESM_Settings
 		}
 		
 		File conFile = new File(worldDir, "ESM_Options.cfg");
+		boolean newFile = false;
 		
 		if(!conFile.exists())
 		{
 			try
 			{
 				conFile.createNewFile();
+				newFile = true;
 			} catch(Exception e)
 			{
 				ESM.log.log(Level.INFO, "Failed to load ESM Config: " + conFile.getPath(), e);
@@ -513,7 +516,7 @@ public class ESM_Settings
 		dimSettings.clear();
 		Set<ConfigCategory> cats = config.getCategory("Dimension Tweaks").getChildren();
 		
-		if(cats.size() <= 0)
+		if(cats.size() <= 0 && newFile)
 		{
 			String name = "Overworld";
 			

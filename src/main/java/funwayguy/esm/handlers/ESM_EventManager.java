@@ -131,9 +131,9 @@ public class ESM_EventManager
 			EntityLivingBase entityLiving = (EntityLivingBase)event.entity;
 			DimSettings dimSet = ESM_Settings.dimSettings.get(event.world.provider.dimensionId);
 			
-			if(dimSet == null && curBossMod > 0F)
+			if(dimSet == null && curBossMod > 0F && ESM_Settings.bossModifier != 0F)
 			{
-				dimSet = new DimSettings(1F, 1F, 1F, 1F);
+				dimSet = new DimSettings(1D, 1D, 1D, 1D);
 			}
 			
 			if(dimSet != null)
