@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import net.minecraft.block.Block;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -414,7 +415,13 @@ public class ESM_EventManager
 			int i = MathHelper.floor_double(event.entityLiving.posX);
 			int j = MathHelper.floor_double(event.entityLiving.posY);
 			int k = MathHelper.floor_double(event.entityLiving.posZ);
-			event.entityLiving.worldObj.setBlock(i, j, k, Blocks.web);
+			
+			Block b = event.entityLiving.worldObj.getBlock(i, j, k);
+			
+			if(b.getMaterial().isReplaceable())
+			{
+				event.entityLiving.worldObj.setBlock(i, j, k, Blocks.web);
+			}
 		}
 	}
 	
