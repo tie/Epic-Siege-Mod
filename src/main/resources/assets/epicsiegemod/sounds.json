@@ -1,0 +1,17 @@
+{
+	"cena_creeper.start": {
+		"category": "hostile",
+		"replace": true,
+		"sounds": [
+			"epicsiegemod:cena_creeper_start"
+		]
+	},
+    
+	"cena_creeper.end": {
+		"category": "hostile",
+		"replace": true,
+		"sounds": [
+			"epicsiegemod:cena_creeper_end"
+		]
+	}
+}
