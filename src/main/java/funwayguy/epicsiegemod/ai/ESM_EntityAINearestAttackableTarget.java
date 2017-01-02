@@ -5,12 +5,14 @@ import java.util.Collections;
 import java.util.List;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.monster.SkeletonType;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -23,6 +25,7 @@ import com.google.common.base.Predicate;
 import funwayguy.epicsiegemod.ai.utils.PredicateTargetBasic;
 import funwayguy.epicsiegemod.capabilities.combat.CapabilityAttackerHandler;
 import funwayguy.epicsiegemod.capabilities.combat.IAttackerHandler;
+import funwayguy.epicsiegemod.core.ESM_Settings;
 
 public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
 {
@@ -134,6 +137,16 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
     		}
     	}
     	
+    	if(!flag && ESM_Settings.attackPets && target instanceof IEntityOwnable)
+    	{
+    		IEntityOwnable pet = (IEntityOwnable)target;
+    		
+    		if(pet.getOwner() instanceof EntityPlayer)
+    		{
+    			flag = true;
+    		}
+    	}
+    	
     	return flag;
     }
     
@@ -164,7 +177,7 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
 	            if(itemstack.getItem() == Items.SKULL)
 	            {
 	                int i = itemstack.getItemDamage();
-	                boolean flag0 = host instanceof EntitySkeleton && ((EntitySkeleton)host).func_189771_df() == SkeletonType.NORMAL && i == 0;
+	                boolean flag0 = host instanceof EntitySkeleton && ((EntitySkeleton)host).getSkeletonType() == SkeletonType.NORMAL && i == 0;
 	                boolean flag1 = host instanceof EntityZombie && i == 2;
 	                boolean flag2 = host instanceof EntityCreeper && i == 4;
 	                

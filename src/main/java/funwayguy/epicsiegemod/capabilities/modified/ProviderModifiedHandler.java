@@ -30,14 +30,12 @@ public class ProviderModifiedHandler implements ICapabilityProvider, INBTSeriali
 	@Override
 	public NBTTagCompound serializeNBT()
 	{
-		NBTTagCompound tag = new NBTTagCompound();
-		tag.setBoolean("modified", handler.isModified());
-		return tag;
+		return handler.writeToNBT(new NBTTagCompound());
 	}
 	
 	@Override
 	public void deserializeNBT(NBTTagCompound tag)
 	{
-		handler.setModified(tag.getBoolean("modified"));
+		handler.readFromNBT(tag);
 	}
 }

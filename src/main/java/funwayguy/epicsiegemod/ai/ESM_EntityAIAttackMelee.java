@@ -1,5 +1,6 @@
 package funwayguy.epicsiegemod.ai;
 
+import funwayguy.epicsiegemod.core.ESM_Settings;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -160,9 +161,9 @@ public class ESM_EntityAIAttackMelee extends EntityAIBase
             }
         }
         
-        if(d0 < 8*8)
+        if(ESM_Settings.attackEvasion && d0 < 8*8)
         {
-        	float sSpd = this.attacker.getCustomNameTag().equalsIgnoreCase("Vash505")? 0.8F : 0.5F;
+        	float sSpd = this.attacker.getCustomNameTag().equalsIgnoreCase("Vash505")? 1F : 0.5F;
             this.attacker.getMoveHelper().strafe(sSpd, this.strafeClockwise ? sSpd : -sSpd);
             this.attacker.faceEntity(entitylivingbase, 30.0F, 30.0F);
         }

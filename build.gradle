@@ -13,13 +13,16 @@ buildscript {
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-version = "FWG_ESM_VER"
-group= "funwayguy.esm"
+version = "CI_MOD_VERSION"
+group= "funwayguy.epicsiegemod"
 archivesBaseName = "EpicSiegeMod"
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 minecraft {
-    version = "1.10-12.18.0.2000-1.10.0"
-    mappings = "snapshot_20160518"
+    version = "1.10.2-12.18.3.2185"
+    mappings = "snapshot_20161111"
 }
 
 dependencies {

@@ -89,7 +89,7 @@ public class SkeletonHandler
 				}
 				
 				skeleton.targetTasks.addTask(0, new EntityAIAttackMelee(skeleton, 1.2D, false));
-				skeleton.func_189768_a(SkeletonType.WITHER);
+				skeleton.setSkeletonType(SkeletonType.WITHER);
 	            skeleton.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
 	            skeleton.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4.0D);
 			}
@@ -147,7 +147,7 @@ public class SkeletonHandler
             entityarrow.setKnockbackStrength(j);
         }
         
-        if (shooter.isBurning() || EnchantmentHelper.getEnchantmentLevel(Enchantments.FLAME, shooter.getHeldItem(EnumHand.MAIN_HAND)) > 0 || (shooter instanceof EntitySkeleton && ((EntitySkeleton)shooter).func_189771_df() == SkeletonType.WITHER))
+        if (shooter.isBurning() || EnchantmentHelper.getEnchantmentLevel(Enchantments.FLAME, shooter.getHeldItem(EnumHand.MAIN_HAND)) > 0 || (shooter instanceof EntitySkeleton && ((EntitySkeleton)shooter).getSkeletonType() == SkeletonType.WITHER))
         {
             entityarrow.setFire(100);
         }

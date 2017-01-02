@@ -90,7 +90,7 @@ public class CreeperHandler
 				}
 			}
 			
-			if(ESM_Settings.CenaCreeper && entity.getCustomNameTag().equalsIgnoreCase("John Cena"))
+			if(ESM_Settings.CenaCreeperRarity > 0 && entity.getCustomNameTag().equalsIgnoreCase("John Cena"))
 			{
 				try
 				{

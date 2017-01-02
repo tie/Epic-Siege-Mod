@@ -485,7 +485,7 @@ public class WalkNodeProcessorProxy extends WalkNodeProcessor
             PathNodeType pathnodetype1 = this.getPathNodeTypeRaw(accessIn, x, y - 1, z);
             pathnodetype = pathnodetype1 != PathNodeType.WALKABLE && pathnodetype1 != PathNodeType.OPEN && pathnodetype1 != PathNodeType.WATER && pathnodetype1 != PathNodeType.LAVA ? PathNodeType.WALKABLE : PathNodeType.OPEN;
 
-            if (pathnodetype1 == PathNodeType.DAMAGE_FIRE || block == Blocks.field_189877_df)
+            if (pathnodetype1 == PathNodeType.DAMAGE_FIRE || block == Blocks.MAGMA)
             {
                 pathnodetype = PathNodeType.DAMAGE_FIRE;
             }

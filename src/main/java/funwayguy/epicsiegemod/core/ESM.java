@@ -18,7 +18,9 @@ import funwayguy.epicsiegemod.handlers.ConfigHandler;
 public class ESM
 {
 	public static final String MODID = "epicsiegemod";
-	public static final String VERSION = "FWG_ESM_VER";
+    public static final String VERSION = "CI_MOD_VERSION";
+    public static final String BRANCH = "CI_MOD_BRANCH";
+    public static final String HASH = "CI_MOD_HASH";
 	public static final String NAME = "Epic Siege Mod";
 	public static final String PROXY = "funwayguy.epicsiegemod.core.proxies";
 	public static final String CHANNEL = "ESM_CH";

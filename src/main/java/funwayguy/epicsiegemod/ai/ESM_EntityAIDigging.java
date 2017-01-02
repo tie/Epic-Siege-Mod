@@ -91,7 +91,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
 			this.resetTask();
 		} else if(digTick%5 == 0)
 		{
-			digger.worldObj.playSound(null, curBlock, state.getBlock().getSoundType().getHitSound(), SoundCategory.BLOCKS, 1F, 1F);
+			digger.worldObj.playSound(null, curBlock, state.getBlock().getSoundType(state, digger.worldObj, curBlock, digger).getHitSound(), SoundCategory.BLOCKS, 1F, 1F);
 			digger.swingArm(EnumHand.MAIN_HAND);
 			digger.worldObj.sendBlockBreakProgress(digger.getEntityId(), curBlock, (int)(str * 10F));
 		}
@@ -143,7 +143,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
 			BlockPos pos = ray.getBlockPos();
 			IBlockState state = entityLiving.worldObj.getBlockState(pos);
 			
-			if(canHarvest(entityLiving, pos) && !ESM_Settings.ZombieDigBlacklist.contains(state.getBlock().getRegistryName().toString()))
+			if(canHarvest(entityLiving, pos) && ESM_Settings.ZombieDigBlacklist.contains(state.getBlock().getRegistryName().toString()) == ESM_Settings.ZombieSwapList)
 			{
 				return pos;
 			}

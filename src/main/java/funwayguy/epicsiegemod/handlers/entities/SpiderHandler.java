@@ -17,7 +17,6 @@ public class SpiderHandler
 			return;
 		}
 		
-		// Start pile of if statement checks
 		if(event.getEntityLiving() instanceof EntityPlayer && event.getSource() != null)
 		{
 			if(event.getSource().getEntity() instanceof EntitySpider && event.getEntityLiving().getRNG().nextInt(100) < ESM_Settings.SpiderWebChance)

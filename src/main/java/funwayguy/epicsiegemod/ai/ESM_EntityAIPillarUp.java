@@ -7,7 +7,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import funwayguy.epicsiegemod.core.ESM_Settings;
 
 public class ESM_EntityAIPillarUp extends EntityAIBase
 {
@@ -16,7 +15,6 @@ public class ESM_EntityAIPillarUp extends EntityAIBase
 	 */
 	static final EnumFacing[] placeSurface = new EnumFacing[]{EnumFacing.DOWN,EnumFacing.NORTH,EnumFacing.EAST,EnumFacing.SOUTH,EnumFacing.WEST};
 	public int placeDelay = 15;
-	public int blocks = ESM_Settings.ZombiePillaring;
 	public EntityLiving builder;
 	public EntityLivingBase target;
 	

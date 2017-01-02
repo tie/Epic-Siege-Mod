@@ -5,6 +5,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
 import funwayguy.epicsiegemod.ai.ESM_EntityAIAvoidExplosion;
 import funwayguy.epicsiegemod.api.ITaskAddition;
+import funwayguy.epicsiegemod.core.ESM_Settings;
 
 public class AdditionAvoidExplosives implements ITaskAddition
 {
@@ -23,7 +24,7 @@ public class AdditionAvoidExplosives implements ITaskAddition
 	@Override
 	public boolean isValid(EntityLiving entityLiving)
 	{
-		return entityLiving instanceof EntityCreature;
+		return ESM_Settings.attackEvasion && entityLiving instanceof EntityCreature;
 	}
 	
 	@Override

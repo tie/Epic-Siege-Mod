@@ -33,7 +33,7 @@ public class AdditionDemolition implements ITaskAddition
 	@Override
 	public EntityAIBase getAdditionalAI(EntityLiving entityLiving)
 	{
-		if(!entityLiving.worldObj.isRemote && (entityLiving.getRNG().nextFloat() < ESM_Settings.demolitionChance || (entityLiving.getRNG().nextInt(3) == 0 && entityLiving.getCustomNameTag().equalsIgnoreCase("Funwayguy"))))
+		if(!entityLiving.worldObj.isRemote && (entityLiving.getRNG().nextInt(100) < ESM_Settings.demolitionChance || (entityLiving.getRNG().nextInt(3) == 0 && entityLiving.getCustomNameTag().equalsIgnoreCase("Funwayguy"))))
 		{
 			entityLiving.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(Blocks.TNT));
 		}

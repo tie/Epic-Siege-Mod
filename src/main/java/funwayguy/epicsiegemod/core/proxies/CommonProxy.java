@@ -20,12 +20,15 @@ import funwayguy.epicsiegemod.ai.modifiers.ModifierZombieAttack;
 import funwayguy.epicsiegemod.api.TaskRegistry;
 import funwayguy.epicsiegemod.capabilities.combat.CapabilityAttackerHandler;
 import funwayguy.epicsiegemod.capabilities.modified.CapabilityModifiedHandler;
+import funwayguy.epicsiegemod.client.UpdateNotification;
 import funwayguy.epicsiegemod.handlers.MainHandler;
 import funwayguy.epicsiegemod.handlers.entities.CreeperHandler;
+import funwayguy.epicsiegemod.handlers.entities.GeneralEntityHandler;
 import funwayguy.epicsiegemod.handlers.entities.PlayerHandler;
 import funwayguy.epicsiegemod.handlers.entities.SkeletonHandler;
 import funwayguy.epicsiegemod.handlers.entities.SpiderHandler;
 import funwayguy.epicsiegemod.handlers.entities.WitchHandler;
+import funwayguy.epicsiegemod.handlers.entities.ZombieHandler;
 
 public class CommonProxy
 {
@@ -36,6 +39,8 @@ public class CommonProxy
 	
 	public void registerHandlers()
 	{
+		MinecraftForge.EVENT_BUS.register(new UpdateNotification());
+		
 		CapabilityAttackerHandler.register();
 		CapabilityModifiedHandler.register();
 		MinecraftForge.EVENT_BUS.register(new MainHandler());
@@ -44,6 +49,8 @@ public class CommonProxy
 		MinecraftForge.EVENT_BUS.register(new WitchHandler());
 		MinecraftForge.EVENT_BUS.register(new SpiderHandler());
 		MinecraftForge.EVENT_BUS.register(new PlayerHandler());
+		MinecraftForge.EVENT_BUS.register(new ZombieHandler());
+		MinecraftForge.EVENT_BUS.register(new GeneralEntityHandler());
 		
 		TaskRegistry.INSTANCE.registerTaskModifier(new ModifierSwimming());
 		TaskRegistry.INSTANCE.registerTaskModifier(new ModifierNearestAttackable());

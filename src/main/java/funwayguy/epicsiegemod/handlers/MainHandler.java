@@ -2,6 +2,7 @@ package funwayguy.epicsiegemod.handlers;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -19,7 +20,6 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.apache.logging.log4j.Level;
-import funwayguy.epicsiegemod.ai.hooks.ESMPathNavigateGround;
 import funwayguy.epicsiegemod.ai.hooks.EntityAITasksProxy;
 import funwayguy.epicsiegemod.ai.hooks.EntitySensesProxy;
 import funwayguy.epicsiegemod.api.EsmTaskEvent;
@@ -64,7 +64,7 @@ public class MainHandler
 					
 					if(entityLiving.getNavigator().getClass() == PathNavigateGround.class)
 					{
-						f_navigator.set(entityLiving, new ESMPathNavigateGround(entityLiving, event.getWorld()));
+						//f_navigator.set(entityLiving, new ESMPathNavigateGround(entityLiving, event.getWorld()));
 					}
 				} catch(Exception e)
 				{
@@ -108,13 +108,13 @@ public class MainHandler
 	}
 	
 	@SubscribeEvent
-	public void onAttachCapability(AttachCapabilitiesEvent.Entity event)
+	public void onAttachCapability(AttachCapabilitiesEvent<Entity> event)
 	{
-		if(event.getEntity() instanceof EntityLiving)
+		if(event.getObject() instanceof EntityLiving)
 		{
 			event.addCapability(CapabilityAttackerHandler.ATTACKER_HANDLER_ID, new ProviderAttackerHandler());
 			event.addCapability(CapabilityModifiedHandler.MODIFIED_HANDLER_ID, new ProviderModifiedHandler());
-		} else if(event.getEntity().getClass() == EntityTippedArrow.class || event.getEntity().getClass() == EntityPotion.class)
+		} else if(event.getObject().getClass() == EntityTippedArrow.class || event.getObject().getClass() == EntityPotion.class)
 		{
 			event.addCapability(CapabilityModifiedHandler.MODIFIED_HANDLER_ID, new ProviderModifiedHandler());
 		}

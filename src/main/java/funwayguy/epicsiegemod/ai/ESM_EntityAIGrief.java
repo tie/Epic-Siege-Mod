@@ -1,6 +1,7 @@
 package funwayguy.epicsiegemod.ai;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -21,15 +22,16 @@ public class ESM_EntityAIGrief extends EntityAIBase
 	public ESM_EntityAIGrief(EntityLiving entity)
 	{
 		this.entityLiving = entity;
+		this.setMutexBits(5);
 	}
 	
 	@Override
 	public boolean shouldExecute()
 	{
-		if(this.entityLiving.getRNG().nextInt(4) != 0) // Severely nerfs how many time the next part of the script can run
+		/*if(this.entityLiving.getRNG().nextInt(4) != 0) // Severely nerfs how many time the next part of the script can run
 		{
 			return false;
-		}
+		}*/
 		
 		BlockPos curPos = entityLiving.getPosition();
 		
@@ -41,7 +43,7 @@ public class ESM_EntityAIGrief extends EntityAIBase
 		IBlockState state = entityLiving.worldObj.getBlockState(tarPos);
 		ResourceLocation regName = Block.REGISTRY.getNameForObject(state.getBlock());
 		
-		if((ESM_Settings.ZombieGriefBlocks.contains(regName) || ESM_Settings.ZombieGriefBlocks.contains(regName.toString()) || state.getLightValue(entityLiving.worldObj, tarPos) > 0) && state.getBlockHardness(entityLiving.worldObj, tarPos) >= 0 && !state.getMaterial().isLiquid())
+		if((ESM_Settings.ZombieGriefBlocks.contains(regName.toString()) || state.getLightValue(entityLiving.worldObj, tarPos) > 0) && state.getBlockHardness(entityLiving.worldObj, tarPos) >= 0 && !state.getMaterial().isLiquid())
 		{
 			if(!ESM_Settings.ZombieDiggerTools || (item != null && item.getItem().canHarvestBlock(state, item)) || state.getMaterial().isToolNotRequired())
 			{
@@ -125,7 +127,8 @@ public class ESM_EntityAIGrief extends EntityAIBase
 		{
 			if(digTick%5 == 0)
 			{
-				entityLiving.playSound(state.getBlock().getSoundType().getHitSound(), state.getBlock().getSoundType().volume, state.getBlock().getSoundType().pitch);
+				SoundType sndType = state.getBlock().getSoundType(state, entityLiving.worldObj, markedLoc, entityLiving);
+				entityLiving.playSound(sndType.getHitSound(), sndType.volume, sndType.pitch);
 				entityLiving.swingArm(EnumHand.MAIN_HAND);
 			}
 		}

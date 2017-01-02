@@ -41,6 +41,11 @@ public class ModifierNearestAttackable implements ITaskModifier
 	@Override
 	public EntityAIBase getReplacement(EntityLiving host, EntityAIBase task)
 	{
+		if(ESM_Settings.neutralMobs)
+		{
+			return null;
+		}
+		
 		boolean hasExisting = false;
 		ESM_EntityAINearestAttackableTarget ai = null;
 		
