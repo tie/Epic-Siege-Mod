@@ -28,10 +28,10 @@ public class ESM_EntityAIGrief extends EntityAIBase
 	@Override
 	public boolean shouldExecute()
 	{
-		/*if(this.entityLiving.getRNG().nextInt(4) != 0) // Severely nerfs how many time the next part of the script can run
+		if(this.entityLiving.getRNG().nextInt(4) != 0) // Severely nerfs how many time the next part of the script can run
 		{
 			return false;
-		}*/
+		}
 		
 		BlockPos curPos = entityLiving.getPosition();
 		

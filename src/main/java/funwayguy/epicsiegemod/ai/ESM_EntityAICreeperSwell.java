@@ -14,6 +14,7 @@ public class ESM_EntityAICreeperSwell extends EntityAIBase
     EntityLivingBase attackTarget;
     CreeperHooks creeperHooks;
     boolean detLocked = false;
+    int blastSize = -1;
     
     public ESM_EntityAICreeperSwell(EntityCreeper creeper)
     {
@@ -31,7 +32,12 @@ public class ESM_EntityAICreeperSwell extends EntityAIBase
     public boolean shouldExecute()
     {
         EntityLivingBase target = this.creeper.getAttackTarget();
-        int blastSize = creeperHooks.getExplosionSize(); // Powered state is ignored for now
+        
+        if(blastSize < 0)
+        {
+        	blastSize = creeperHooks.getExplosionSize(); // Powered state is ignored for now
+        }
+        
         return this.creeper.getCreeperState() > 0 || canBreachEntity(target) || (target != null && this.creeper.getDistanceSqToEntity(target) < blastSize * blastSize);
     }
     
@@ -73,7 +79,7 @@ public class ESM_EntityAICreeperSwell extends EntityAIBase
     		return;
     	}
     	
-    	int blastSize = creeperHooks.getExplosionSize() * (creeperHooks.isPowered()? 2 : 1);
+    	int finalBlastSize = blastSize * (creeperHooks.isPowered()? 2 : 1);
     	boolean breaching = false;
     	
     	if(canBreachEntity(attackTarget))
@@ -85,7 +91,7 @@ public class ESM_EntityAICreeperSwell extends EntityAIBase
         {
             this.creeper.setCreeperState(-1);
         }
-        else if (this.creeper.getDistanceSqToEntity(this.attackTarget) > blastSize * blastSize && !breaching)
+        else if (this.creeper.getDistanceSqToEntity(this.attackTarget) > finalBlastSize * finalBlastSize && !breaching)
         {
             this.creeper.setCreeperState(-1);
         }
