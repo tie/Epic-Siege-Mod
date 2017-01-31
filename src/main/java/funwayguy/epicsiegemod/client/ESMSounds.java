@@ -1,9 +1,9 @@
 package funwayguy.epicsiegemod.client;
 
-import funwayguy.epicsiegemod.core.ESM;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import funwayguy.epicsiegemod.core.ESM;
 
 public class ESMSounds
 {

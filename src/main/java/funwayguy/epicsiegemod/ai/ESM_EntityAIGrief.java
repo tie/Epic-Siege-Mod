@@ -40,10 +40,10 @@ public class ESM_EntityAIGrief extends EntityAIBase
 		
 		BlockPos tarPos = curPos.add(entityLiving.getRNG().nextInt(32) - 16, entityLiving.getRNG().nextInt(16) - 8, entityLiving.getRNG().nextInt(32) - 16);
 		
-		IBlockState state = entityLiving.worldObj.getBlockState(tarPos);
+		IBlockState state = entityLiving.world.getBlockState(tarPos);
 		ResourceLocation regName = Block.REGISTRY.getNameForObject(state.getBlock());
 		
-		if((ESM_Settings.ZombieGriefBlocks.contains(regName.toString()) || state.getLightValue(entityLiving.worldObj, tarPos) > 0) && state.getBlockHardness(entityLiving.worldObj, tarPos) >= 0 && !state.getMaterial().isLiquid())
+		if((ESM_Settings.ZombieGriefBlocks.contains(regName.toString()) || state.getLightValue(entityLiving.world, tarPos) > 0) && state.getBlockHardness(entityLiving.world, tarPos) >= 0 && !state.getMaterial().isLiquid())
 		{
 			if(!ESM_Settings.ZombieDiggerTools || (item != null && item.getItem().canHarvestBlock(state, item)) || state.getMaterial().isToolNotRequired())
 			{
@@ -72,10 +72,10 @@ public class ESM_EntityAIGrief extends EntityAIBase
 			return false;
 		}
 		
-		IBlockState state = entityLiving.worldObj.getBlockState(markedLoc);
+		IBlockState state = entityLiving.world.getBlockState(markedLoc);
 		ResourceLocation regName = Block.REGISTRY.getNameForObject(state.getBlock());
 		
-		if(state.getBlock() == Blocks.AIR || (!ESM_Settings.ZombieGriefBlocks.contains(regName) && !ESM_Settings.ZombieGriefBlocks.contains(regName.toString()) && state.getLightValue(entityLiving.worldObj, markedLoc) <= 0))
+		if(state.getBlock() == Blocks.AIR || (!ESM_Settings.ZombieGriefBlocks.contains(regName) && !ESM_Settings.ZombieGriefBlocks.contains(regName.toString()) && state.getLightValue(entityLiving.world, markedLoc) <= 0))
 		{
 			markedLoc = null;
 			return false;
@@ -104,10 +104,10 @@ public class ESM_EntityAIGrief extends EntityAIBase
 			return;
 		}
 		
-		IBlockState state = entityLiving.worldObj.getBlockState(markedLoc);
+		IBlockState state = entityLiving.world.getBlockState(markedLoc);
 		digTick++;
 		
-		float str = AiUtils.getBlockStrength(entityLiving, entityLiving.worldObj, markedLoc) * (digTick + 1);
+		float str = AiUtils.getBlockStrength(entityLiving, entityLiving.world, markedLoc) * (digTick + 1);
 		
 		if(str >= 1F)
 		{
@@ -117,7 +117,7 @@ public class ESM_EntityAIGrief extends EntityAIBase
 			{
 				ItemStack item = entityLiving.getHeldItemMainhand();
 				boolean canHarvest = state.getMaterial().isToolNotRequired() || (item != null && item.getItem().canHarvestBlock(state, item));
-				entityLiving.worldObj.destroyBlock(markedLoc, canHarvest);
+				entityLiving.world.destroyBlock(markedLoc, canHarvest);
 				markedLoc = null;
 			} else
 			{
@@ -127,7 +127,7 @@ public class ESM_EntityAIGrief extends EntityAIBase
 		{
 			if(digTick%5 == 0)
 			{
-				SoundType sndType = state.getBlock().getSoundType(state, entityLiving.worldObj, markedLoc, entityLiving);
+				SoundType sndType = state.getBlock().getSoundType(state, entityLiving.world, markedLoc, entityLiving);
 				entityLiving.playSound(sndType.getHitSound(), sndType.volume, sndType.pitch);
 				entityLiving.swingArm(EnumHand.MAIN_HAND);
 			}
@@ -136,9 +136,9 @@ public class ESM_EntityAIGrief extends EntityAIBase
 	
 	public boolean canHarvest(EntityLiving entity, BlockPos pos)
 	{
-		IBlockState state = entity.worldObj.getBlockState(pos);
+		IBlockState state = entity.world.getBlockState(pos);
 		
-		if(!state.getMaterial().isSolid() || state.getBlockHardness(entity.worldObj, pos) < 0F)
+		if(!state.getMaterial().isSolid() || state.getBlockHardness(entity.world, pos) < 0F)
 		{
 			return false;
 		} else if(state.getMaterial().isToolNotRequired() || !ESM_Settings.ZombieDiggerTools)

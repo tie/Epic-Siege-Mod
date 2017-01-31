@@ -1,11 +1,11 @@
 package funwayguy.epicsiegemod.ai.hooks;
 
 import java.util.List;
-import com.google.common.collect.Lists;
-import funwayguy.epicsiegemod.core.ESM_Settings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntitySenses;
+import com.google.common.collect.Lists;
+import funwayguy.epicsiegemod.core.ESM_Settings;
 
 public class EntitySensesProxy extends EntitySenses
 {
@@ -45,9 +45,9 @@ public class EntitySensesProxy extends EntitySenses
         }
         else
         {
-            this.entityObj.worldObj.theProfiler.startSection("canSee");
+            this.entityObj.world.theProfiler.startSection("canSee");
             boolean flag = ESM_Settings.Xray || this.entityObj.canEntityBeSeen(entityIn);
-            this.entityObj.worldObj.theProfiler.endSection();
+            this.entityObj.world.theProfiler.endSection();
 
             if (flag)
             {

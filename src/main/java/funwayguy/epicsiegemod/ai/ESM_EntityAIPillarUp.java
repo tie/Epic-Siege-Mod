@@ -40,26 +40,26 @@ public class ESM_EntityAIPillarUp extends EntityAIBase
 			BlockPos tmpPos = builder.getPosition();
 			BlockPos orgPos = tmpPos;
 			
-			int xOff = (int)Math.signum(MathHelper.floor_double(target.posX) - orgPos.getX());
-			int zOff = (int)Math.signum(MathHelper.floor_double(target.posZ) - orgPos.getZ());
+			int xOff = (int)Math.signum(MathHelper.floor(target.posX) - orgPos.getX());
+			int zOff = (int)Math.signum(MathHelper.floor(target.posZ) - orgPos.getZ());
 			
 			boolean canPlace = false;
 			
 			for(EnumFacing dir : placeSurface)
 			{
-				if(builder.worldObj.getBlockState(tmpPos.offset(dir)).isNormalCube())
+				if(builder.world.getBlockState(tmpPos.offset(dir)).isNormalCube())
 				{
 					canPlace = true;
 					break;
 				}
 			}
 			
-			if(target.posY - builder.posY < 16 && builder.worldObj.getBlockState(tmpPos.add(0, -2, 0)).isNormalCube() && builder.worldObj.getBlockState(tmpPos.add(0, -1, 0)).isNormalCube()) // Sideways pillaring
+			if(target.posY - builder.posY < 16 && builder.world.getBlockState(tmpPos.add(0, -2, 0)).isNormalCube() && builder.world.getBlockState(tmpPos.add(0, -1, 0)).isNormalCube()) // Sideways pillaring
 			{
-				if(builder.worldObj.getBlockState(tmpPos.add(xOff, -1, 0)).getMaterial().isReplaceable())
+				if(builder.world.getBlockState(tmpPos.add(xOff, -1, 0)).getMaterial().isReplaceable())
 				{
 					tmpPos = tmpPos.add(xOff, -1, 0);
-				} else if(builder.worldObj.getBlockState(tmpPos.add(0, -1, zOff)).getMaterial().isReplaceable())
+				} else if(builder.world.getBlockState(tmpPos.add(0, -1, zOff)).getMaterial().isReplaceable())
 				{
 					tmpPos = tmpPos.add(0, -1, zOff);
 				} else if(target.posY <= builder.posY)
@@ -71,7 +71,7 @@ public class ESM_EntityAIPillarUp extends EntityAIBase
 				return false;
 			}
 			
-			if(!canPlace || builder.worldObj.getBlockState(orgPos.add(0, 2, 0)).getMaterial().blocksMovement() || builder.worldObj.getBlockState(tmpPos.add(0, 2, 0)).getMaterial().blocksMovement())
+			if(!canPlace || builder.world.getBlockState(orgPos.add(0, 2, 0)).getMaterial().blocksMovement() || builder.world.getBlockState(tmpPos.add(0, 2, 0)).getMaterial().blocksMovement())
 			{
 				return false;
 			}
@@ -109,9 +109,9 @@ public class ESM_EntityAIPillarUp extends EntityAIBase
 
 			builder.setPositionAndUpdate(blockPos.getX() + 0.5D, blockPos.getY() + 1D, blockPos.getZ() + 0.5D);
 			
-			if(builder.worldObj.getBlockState(blockPos).getMaterial().isReplaceable())
+			if(builder.world.getBlockState(blockPos).getMaterial().isReplaceable())
 			{
-				builder.worldObj.setBlockState(blockPos, Blocks.COBBLESTONE.getDefaultState());
+				builder.world.setBlockState(blockPos, Blocks.COBBLESTONE.getDefaultState());
 			}
 			
 			builder.getNavigator().setPath(builder.getNavigator().getPathToEntityLiving(target), builder.getMoveHelper().getSpeed());

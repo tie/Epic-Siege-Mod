@@ -83,7 +83,7 @@ public class MainHandler
 				
 				if(entry != null)
 				{
-					EsmTaskEvent taskEvent = new EsmTaskEvent.Addition(add);
+					EsmTaskEvent taskEvent = new EsmTaskEvent.Addition(entityLiving, add);
 					MinecraftForge.EVENT_BUS.post(taskEvent);
 					
 					if(taskEvent.getResult() != Event.Result.DENY)
@@ -133,7 +133,7 @@ public class MainHandler
 	@SubscribeEvent
 	public void onLivingUpdate(LivingUpdateEvent event)
 	{
-		if(event.getEntityLiving().worldObj.isRemote)
+		if(event.getEntityLiving().world.isRemote)
 		{
 			return;
 		}

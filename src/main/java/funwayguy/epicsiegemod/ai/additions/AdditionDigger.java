@@ -33,7 +33,7 @@ public class AdditionDigger implements ITaskAddition
 	@Override
 	public EntityAIBase getAdditionalAI(EntityLiving entityLiving)
 	{
-		if(!entityLiving.worldObj.isRemote && (entityLiving.getRNG().nextInt(20) == 0 || (entityLiving.getRNG().nextInt(3) == 0 && entityLiving.getCustomNameTag().equalsIgnoreCase("Funwayguy"))))
+		if(!entityLiving.world.isRemote && (entityLiving.getRNG().nextInt(20) == 0 || (entityLiving.getRNG().nextInt(3) == 0 && entityLiving.getCustomNameTag().equalsIgnoreCase("Funwayguy"))))
 		{
 			entityLiving.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.IRON_PICKAXE));
 		}

@@ -1,11 +1,11 @@
 package funwayguy.epicsiegemod.ai.utils;
 
 import java.lang.reflect.Field;
-import org.apache.logging.log4j.Level;
-import funwayguy.epicsiegemod.core.ESM;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import org.apache.logging.log4j.Level;
+import funwayguy.epicsiegemod.core.ESM;
 
 public class CreeperHooks
 {

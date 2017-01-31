@@ -89,20 +89,20 @@ public class GeneralEntityHandler
 				modHandler.getModificationData(DIM_MODIFIER).setBoolean("hasModifiers", true);
 			}
 			
-			if(!modHandler.getModificationData(DIM_MODIFIER).getBoolean("checkMobBomb") && (ESM_Settings.MobBombAll || ESM_Settings.MobBombs.contains(EntityList.getEntityString(entityLiving))) && entityLiving.getPassengers().size() == 0 && entityLiving.worldObj.loadedEntityList.size() < 512)
+			if(!modHandler.getModificationData(DIM_MODIFIER).getBoolean("checkMobBomb") && (ESM_Settings.MobBombAll || ESM_Settings.MobBombs.contains(EntityList.getEntityString(entityLiving))) && entityLiving.getPassengers().size() == 0 && entityLiving.world.loadedEntityList.size() < 512)
 			{
 				if(ESM_Settings.MobBombRarity <= 0 || entityLiving.getRNG().nextInt(ESM_Settings.MobBombRarity) == 0)
 				{
-					EntityLiving passenger = new EntityCreeper(entityLiving.worldObj);
+					EntityLiving passenger = new EntityCreeper(entityLiving.world);
 					
 					passenger.setLocationAndAngles(entityLiving.posX, entityLiving.posY, entityLiving.posZ, entityLiving.rotationYaw, 0.0F);
 					
 					if(passenger instanceof EntityLiving)
 					{
-						((EntityLiving)passenger).onInitialSpawn(entityLiving.worldObj.getDifficultyForLocation(new BlockPos(entityLiving)), (IEntityLivingData)null);
+						((EntityLiving)passenger).onInitialSpawn(entityLiving.world.getDifficultyForLocation(new BlockPos(entityLiving)), (IEntityLivingData)null);
 					}
 					
-					entityLiving.worldObj.spawnEntityInWorld(passenger);
+					entityLiving.world.spawnEntity(passenger);
 					passenger.startRiding(entityLiving);
 				}
 				
@@ -114,7 +114,7 @@ public class GeneralEntityHandler
 	@SubscribeEvent
 	public void onEntityKilled(LivingDeathEvent event)
 	{
-		if(event.getEntity().worldObj.isRemote || event.getEntity().isNonBoss())
+		if(event.getEntity().world.isRemote || event.getEntity().isNonBoss())
 		{
 			return;
 		}

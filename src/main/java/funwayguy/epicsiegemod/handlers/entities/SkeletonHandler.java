@@ -3,19 +3,13 @@ package funwayguy.epicsiegemod.handlers.entities;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.EntityAIAttackMelee;
-import net.minecraft.entity.ai.EntityAIAttackRangedBow;
-import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.ai.EntityAITasks.EntityAITaskEntry;
 import net.minecraft.entity.monster.EntitySkeleton;
-import net.minecraft.entity.monster.SkeletonType;
+import net.minecraft.entity.monster.EntityWitherSkeleton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityTippedArrow;
 import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionType;
@@ -24,7 +18,6 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import funwayguy.epicsiegemod.ai.ESM_EntityAIAttackMelee;
 import funwayguy.epicsiegemod.capabilities.modified.CapabilityModifiedHandler;
 import funwayguy.epicsiegemod.capabilities.modified.IModifiedHandler;
 import funwayguy.epicsiegemod.core.ESM_Settings;
@@ -62,36 +55,18 @@ public class SkeletonHandler
 			return; // This handler needs to be present
 		}
 		
-		if(event.getEntity() instanceof EntitySkeleton)
+		if(event.getEntity() instanceof EntitySkeleton && event.getWorld().provider.getDimension() != -1)
 		{
 			EntitySkeleton skeleton = (EntitySkeleton)event.getEntity();
 			
 			if(skeleton.getRNG().nextInt(100) < ESM_Settings.WitherSkeletonRarity)
 			{
-				EntityAIBase remAI = null;
+				event.setCanceled(true);
+				skeleton.setDead();
 				
-				for(EntityAITaskEntry task : skeleton.targetTasks.taskEntries)
-				{
-					if(task.action instanceof EntityAIAttackMelee || task.action instanceof ESM_EntityAIAttackMelee)
-					{
-						remAI = task.action;
-						break;
-					} else if(task.action instanceof EntityAIAttackRangedBow)
-					{
-						remAI = task.action;
-						break;
-					}
-				}
-				
-				if(remAI != null)
-				{
-					skeleton.targetTasks.removeTask(remAI);
-				}
-				
-				skeleton.targetTasks.addTask(0, new EntityAIAttackMelee(skeleton, 1.2D, false));
-				skeleton.setSkeletonType(SkeletonType.WITHER);
-	            skeleton.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.STONE_SWORD));
-	            skeleton.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE).setBaseValue(4.0D);
+				EntityWitherSkeleton wSkel = new EntityWitherSkeleton(event.getWorld());
+				wSkel.setPosition(skeleton.posX, skeleton.posY, skeleton.posZ);
+				event.getWorld().spawnEntity(wSkel);
 			}
 		} else if(event.getEntity().getClass() == EntityTippedArrow.class)
 		{
@@ -114,7 +89,7 @@ public class SkeletonHandler
 	
 	public static void replaceArrowAttack(EntityLiving shooter, EntityLivingBase targetEntity, double par2, PotionType potions)
 	{
-		EntityTippedArrow entityarrow = new EntityTippedArrow(shooter.worldObj, shooter);
+		EntityTippedArrow entityarrow = new EntityTippedArrow(shooter.world, shooter);
 		ItemStack itemTip = new ItemStack(Items.TIPPED_ARROW);
 		PotionUtils.addPotionToItemStack(itemTip, potions);
     	entityarrow.setPotionEffect(itemTip); // Preserve effects (could be modified here)
@@ -124,7 +99,7 @@ public class SkeletonHandler
         double d0 = (targetEntity.posX + (targetEntity.posX - targetEntity.lastTickPosX) * (targetDist/fireSpeed)) - shooter.posX;
         double d1 = targetEntity.getEntityBoundingBox().minY + (double)(targetEntity.height / 3.0F) - entityarrow.posY;
         double d2 = (targetEntity.posZ + (targetEntity.posZ - targetEntity.lastTickPosZ) * (targetDist/fireSpeed)) - shooter.posZ;
-        double d3 = (double)MathHelper.sqrt_double(d0 * d0 + d2 * d2);
+        double d3 = (double)MathHelper.sqrt(d0 * d0 + d2 * d2);
         
         if (d3 >= 1.0E-7D)
         {
@@ -147,7 +122,7 @@ public class SkeletonHandler
             entityarrow.setKnockbackStrength(j);
         }
         
-        if (shooter.isBurning() || EnchantmentHelper.getEnchantmentLevel(Enchantments.FLAME, shooter.getHeldItem(EnumHand.MAIN_HAND)) > 0 || (shooter instanceof EntitySkeleton && ((EntitySkeleton)shooter).getSkeletonType() == SkeletonType.WITHER))
+        if (shooter.isBurning() || EnchantmentHelper.getEnchantmentLevel(Enchantments.FLAME, shooter.getHeldItem(EnumHand.MAIN_HAND)) > 0 || (shooter instanceof EntitySkeleton && shooter instanceof EntityWitherSkeleton))
         {
             entityarrow.setFire(100);
         }
@@ -160,6 +135,6 @@ public class SkeletonHandler
         	modHandler.setModified(true);
         }
         
-        shooter.worldObj.spawnEntityInWorld(entityarrow);
+        shooter.world.spawnEntity(entityarrow);
 	}
 }

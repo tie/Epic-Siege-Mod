@@ -11,7 +11,7 @@ public class ZombieHandler
 	@SubscribeEvent
 	public void onEntityDeath(LivingDeathEvent event)
 	{
-		if(event.getEntity().worldObj.isRemote)
+		if(event.getEntity().world.isRemote)
 		{
 			return;
 		}
@@ -20,12 +20,12 @@ public class ZombieHandler
 		{
 			if(event.getSource().getSourceOfDamage() instanceof EntityZombie && ESM_Settings.ZombieInfectious)
 			{
-				EntityZombie zombie = new EntityZombie(event.getEntity().worldObj);
+				EntityZombie zombie = new EntityZombie(event.getEntity().world);
 				zombie.setPosition(event.getEntity().posX, event.getEntity().posY, event.getEntity().posZ);
 				zombie.setCanPickUpLoot(true);
 				zombie.setCustomNameTag(event.getEntity().getName() + " (" + event.getSource().getSourceOfDamage().getName() + ")");
 				zombie.getEntityData().setBoolean("ESM_MODIFIED", true);
-				event.getEntity().worldObj.spawnEntityInWorld(zombie);
+				event.getEntity().world.spawnEntity(zombie);
 			}
 		}
 	}

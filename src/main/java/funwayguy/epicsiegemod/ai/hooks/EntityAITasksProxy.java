@@ -1,13 +1,13 @@
 package funwayguy.epicsiegemod.ai.hooks;
 
-import funwayguy.epicsiegemod.api.EsmTaskEvent;
-import funwayguy.epicsiegemod.api.ITaskModifier;
-import funwayguy.epicsiegemod.api.TaskRegistry;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.Event;
+import funwayguy.epicsiegemod.api.EsmTaskEvent;
+import funwayguy.epicsiegemod.api.ITaskModifier;
+import funwayguy.epicsiegemod.api.TaskRegistry;
 
 /**
  * Intercepts AI additions to apply modifications or replacements
@@ -18,7 +18,7 @@ public class EntityAITasksProxy extends EntityAITasks
 	
 	public EntityAITasksProxy(EntityLiving host, EntityAITasks original)
 	{
-		super(host.worldObj == null? null : host.worldObj.theProfiler);
+		super(host.world == null? null : host.world.theProfiler);
 		this.host = host;
 		
 		for(EntityAITaskEntry entry : original.taskEntries)
@@ -38,7 +38,7 @@ public class EntityAITasksProxy extends EntityAITasks
 				
 				if(ai != null)
 				{
-					EsmTaskEvent event = new EsmTaskEvent.Modified(mod);
+					EsmTaskEvent event = new EsmTaskEvent.Modified(host, mod);
 					MinecraftForge.EVENT_BUS.post(event);
 					
 					if(event.getResult() != Event.Result.DENY)

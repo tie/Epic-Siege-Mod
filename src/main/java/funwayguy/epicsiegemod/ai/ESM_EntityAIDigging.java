@@ -76,31 +76,31 @@ public class ESM_EntityAIDigging extends EntityAIBase
 		digger.getNavigator().clearPathEntity();
 		
 		digTick++;
-		float str = AiUtils.getBlockStrength(digger, digger.worldObj, curBlock) * (digTick + 1F);
+		float str = AiUtils.getBlockStrength(digger, digger.world, curBlock) * (digTick + 1F);
 		ItemStack heldItem = digger.getHeldItem(EnumHand.MAIN_HAND);
-		IBlockState state = digger.worldObj.getBlockState(curBlock);
+		IBlockState state = digger.world.getBlockState(curBlock);
 		
-		if(digger.worldObj.isAirBlock(curBlock))
+		if(digger.world.isAirBlock(curBlock))
 		{
 			this.resetTask();
 		} else if(str >= 1F)
 		{
 			boolean canHarvest = state.getMaterial().isToolNotRequired() || (heldItem != null && heldItem.canHarvestBlock(state));
-			digger.worldObj.destroyBlock(curBlock, canHarvest);
+			digger.world.destroyBlock(curBlock, canHarvest);
 			digger.getNavigator().setPath(digger.getNavigator().getPathToEntityLiving(target), digger.getMoveHelper().getSpeed());
 			this.resetTask();
 		} else if(digTick%5 == 0)
 		{
-			digger.worldObj.playSound(null, curBlock, state.getBlock().getSoundType(state, digger.worldObj, curBlock, digger).getHitSound(), SoundCategory.BLOCKS, 1F, 1F);
+			digger.world.playSound(null, curBlock, state.getBlock().getSoundType(state, digger.world, curBlock, digger).getHitSound(), SoundCategory.BLOCKS, 1F, 1F);
 			digger.swingArm(EnumHand.MAIN_HAND);
-			digger.worldObj.sendBlockBreakProgress(digger.getEntityId(), curBlock, (int)(str * 10F));
+			digger.world.sendBlockBreakProgress(digger.getEntityId(), curBlock, (int)(str * 10F));
 		}
 	}
 	
 	public BlockPos getNextBlock(EntityLiving entityLiving, EntityLivingBase target, double dist)
 	{
-        int digWidth = MathHelper.ceiling_double_int(entityLiving.width);
-        int digHeight = MathHelper.ceiling_double_int(entityLiving.height);
+        int digWidth = MathHelper.ceil(entityLiving.width);
+        int digHeight = MathHelper.ceil(entityLiving.height);
         
         int passMax = digWidth * digWidth * digHeight;
 
@@ -135,13 +135,13 @@ public class ESM_EntityAIDigging extends EntityAIBase
 			//rayOffset = rayOrigin.add(digger.getLook(1F).scale(dist));
 		}
 		
-		RayTraceResult ray = entityLiving.worldObj.rayTraceBlocks(rayOrigin, rayOffset, false, true, false);
+		RayTraceResult ray = entityLiving.world.rayTraceBlocks(rayOrigin, rayOffset, false, true, false);
 		scanTick = (scanTick + 1)%passMax;
 		
 		if(ray != null && ray.typeOfHit == RayTraceResult.Type.BLOCK)
 		{
 			BlockPos pos = ray.getBlockPos();
-			IBlockState state = entityLiving.worldObj.getBlockState(pos);
+			IBlockState state = entityLiving.world.getBlockState(pos);
 			
 			if(canHarvest(entityLiving, pos) && ESM_Settings.ZombieDigBlacklist.contains(state.getBlock().getRegistryName().toString()) == ESM_Settings.ZombieSwapList)
 			{
@@ -154,9 +154,9 @@ public class ESM_EntityAIDigging extends EntityAIBase
 	
 	public boolean canHarvest(EntityLiving entity, BlockPos pos)
 	{
-		IBlockState state = entity.worldObj.getBlockState(pos);
+		IBlockState state = entity.world.getBlockState(pos);
 		
-		if(!state.getMaterial().isSolid() || state.getBlockHardness(entity.worldObj, pos) < 0F)
+		if(!state.getMaterial().isSolid() || state.getBlockHardness(entity.world, pos) < 0F)
 		{
 			return false;
 		} else if(state.getMaterial().isToolNotRequired() || !ESM_Settings.ZombieDiggerTools)

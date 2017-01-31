@@ -160,15 +160,15 @@ public class ESM_EntityAIAttackRanged extends EntityAIBase
                 return;
             }
 
-            float f = MathHelper.sqrt_double(d0) / this.attackRadius;
-            float lvt_5_1_ = MathHelper.clamp_float(f, 0.1F, 1.0F);
+            float f = MathHelper.sqrt(d0) / this.attackRadius;
+            float lvt_5_1_ = MathHelper.clamp(f, 0.1F, 1.0F);
             this.rangedAttackEntityHost.attackEntityWithRangedAttack(this.attackTarget, lvt_5_1_);
-            this.rangedAttackTime = MathHelper.floor_float(f * (float)(this.maxRangedAttackTime - this.attackIntervalMin) + (float)this.attackIntervalMin);
+            this.rangedAttackTime = MathHelper.floor(f * (float)(this.maxRangedAttackTime - this.attackIntervalMin) + (float)this.attackIntervalMin);
         }
         else if (this.rangedAttackTime < 0)
         {
-            float f2 = MathHelper.sqrt_double(d0) / this.attackRadius;
-            this.rangedAttackTime = MathHelper.floor_float(f2 * (float)(this.maxRangedAttackTime - this.attackIntervalMin) + (float)this.attackIntervalMin);
+            float f2 = MathHelper.sqrt(d0) / this.attackRadius;
+            this.rangedAttackTime = MathHelper.floor(f2 * (float)(this.maxRangedAttackTime - this.attackIntervalMin) + (float)this.attackIntervalMin);
         }
     }
 }

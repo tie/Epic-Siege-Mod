@@ -46,8 +46,8 @@ public class ESM_EntityAIDemolition extends EntityAIBase
 	public void startExecuting()
 	{
 		delay = 200;
-		EntityTNTPrimed tnt = new EntityTNTPrimed(host.worldObj, host.posX, host.posY, host.posZ, host);
-		host.worldObj.spawnEntityInWorld(tnt);
-        host.worldObj.playSound((EntityPlayer)null, tnt.posX, tnt.posY, tnt.posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
+		EntityTNTPrimed tnt = new EntityTNTPrimed(host.world, host.posX, host.posY, host.posZ, host);
+		host.world.spawnEntity(tnt);
+        host.world.playSound((EntityPlayer)null, tnt.posX, tnt.posY, tnt.posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
 	}
 }

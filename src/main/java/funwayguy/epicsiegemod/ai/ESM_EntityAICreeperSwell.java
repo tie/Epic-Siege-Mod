@@ -1,10 +1,10 @@
 package funwayguy.epicsiegemod.ai;
 
-import funwayguy.epicsiegemod.ai.utils.CreeperHooks;
-import funwayguy.epicsiegemod.core.ESM_Settings;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.monster.EntityCreeper;
+import funwayguy.epicsiegemod.ai.utils.CreeperHooks;
+import funwayguy.epicsiegemod.core.ESM_Settings;
 
 public class ESM_EntityAICreeperSwell extends EntityAIBase
 {

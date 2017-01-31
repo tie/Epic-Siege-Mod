@@ -2,13 +2,6 @@ package funwayguy.epicsiegemod.handlers.entities;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import org.apache.logging.log4j.Level;
-import funwayguy.epicsiegemod.capabilities.modified.CapabilityModifiedHandler;
-import funwayguy.epicsiegemod.capabilities.modified.IModifiedHandler;
-import funwayguy.epicsiegemod.client.ESMSounds;
-import funwayguy.epicsiegemod.core.ESM;
-import funwayguy.epicsiegemod.core.ESM_Settings;
-import funwayguy.epicsiegemod.handlers.MainHandler;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.network.datasync.DataParameter;
@@ -19,6 +12,13 @@ import net.minecraft.world.Explosion;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import org.apache.logging.log4j.Level;
+import funwayguy.epicsiegemod.capabilities.modified.CapabilityModifiedHandler;
+import funwayguy.epicsiegemod.capabilities.modified.IModifiedHandler;
+import funwayguy.epicsiegemod.client.ESMSounds;
+import funwayguy.epicsiegemod.core.ESM;
+import funwayguy.epicsiegemod.core.ESM_Settings;
+import funwayguy.epicsiegemod.handlers.MainHandler;
 
 public class CreeperHandler
 {

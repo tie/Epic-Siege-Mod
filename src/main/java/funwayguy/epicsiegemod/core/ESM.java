@@ -25,7 +25,7 @@ public class ESM
 	public static final String PROXY = "funwayguy.epicsiegemod.core.proxies";
 	public static final String CHANNEL = "ESM_CH";
 	
-	@Instance(ESM.MODID)
+	@Instance(MODID)
     public static ESM instance;
 	
 	@SidedProxy(clientSide = ESM.PROXY + ".ClientProxy", serverSide = ESM.PROXY + ".CommonProxy")

@@ -20,7 +20,7 @@ public class ModifierCreeperSwell implements ITaskModifier
 	@Override
 	public EntityAIBase getReplacement(EntityLiving host, EntityAIBase entry)
 	{
-		if(host.worldObj.rand.nextInt(100) < ESM_Settings.CenaCreeperRarity)
+		if(host.world.rand.nextInt(100) < ESM_Settings.CenaCreeperRarity)
 		{
 			return new ESM_EntityAIJohnCena((EntityCreeper)host);
 		} else

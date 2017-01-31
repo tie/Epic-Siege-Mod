@@ -11,7 +11,6 @@ import net.minecraft.entity.monster.EntityCreeper;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntityZombie;
-import net.minecraft.entity.monster.SkeletonType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -74,7 +73,7 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
             return false;
         }
         
-        List<EntityLivingBase> list = this.taskOwner.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, this.func_188511_a(this.getTargetDistance()), this.targetEntitySelector);
+        List<EntityLivingBase> list = this.taskOwner.world.getEntitiesWithinAABB(EntityLivingBase.class, this.func_188511_a(this.getTargetDistance()), this.targetEntitySelector);
         
         if (list.isEmpty())
         {
@@ -177,7 +176,7 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
 	            if(itemstack.getItem() == Items.SKULL)
 	            {
 	                int i = itemstack.getItemDamage();
-	                boolean flag0 = host instanceof EntitySkeleton && ((EntitySkeleton)host).getSkeletonType() == SkeletonType.NORMAL && i == 0;
+	                boolean flag0 = host instanceof EntitySkeleton && i == 0;
 	                boolean flag1 = host instanceof EntityZombie && i == 2;
 	                boolean flag2 = host instanceof EntityCreeper && i == 4;
 	                

@@ -38,7 +38,7 @@ public class ESMPathNavigateGround extends PathNavigateGround
             {
                 double d0 = (double)(this.theEntity.width * this.theEntity.width);
 
-                if (this.theEntity.getDistanceSqToCenter(this.targetPosition) >= d0 && (this.theEntity.posY <= (double)this.targetPosition.getY() || this.theEntity.getDistanceSqToCenter(new BlockPos(this.targetPosition.getX(), MathHelper.floor_double(this.theEntity.posY), this.targetPosition.getZ())) >= d0))
+                if (this.theEntity.getDistanceSqToCenter(this.targetPosition) >= d0 && (this.theEntity.posY <= (double)this.targetPosition.getY() || this.theEntity.getDistanceSqToCenter(new BlockPos(this.targetPosition.getX(), MathHelper.floor(this.theEntity.posY), this.targetPosition.getZ())) >= d0))
                 {
                     this.theEntity.getMoveHelper().setMoveTo((double)this.targetPosition.getX(), (double)this.targetPosition.getY(), (double)this.targetPosition.getZ(), this.speed);
                 }
@@ -83,11 +83,11 @@ public class ESMPathNavigateGround extends PathNavigateGround
     public Path getPathToPos(BlockPos pos)
     {
         this.targetPosition = pos;
-        if (this.worldObj.getBlockState(pos).getMaterial() == Material.AIR)
+        if (this.world.getBlockState(pos).getMaterial() == Material.AIR)
         {
             BlockPos blockpos;
 
-            for (blockpos = pos.down(); blockpos.getY() > 0 && this.worldObj.getBlockState(blockpos).getMaterial() == Material.AIR; blockpos = blockpos.down())
+            for (blockpos = pos.down(); blockpos.getY() > 0 && this.world.getBlockState(blockpos).getMaterial() == Material.AIR; blockpos = blockpos.down())
             {
                 ;
             }
@@ -97,7 +97,7 @@ public class ESMPathNavigateGround extends PathNavigateGround
                 return super.getPathToPos(blockpos.up());
             }
 
-            while (blockpos.getY() < this.worldObj.getHeight() && this.worldObj.getBlockState(blockpos).getMaterial() == Material.AIR)
+            while (blockpos.getY() < this.world.getHeight() && this.world.getBlockState(blockpos).getMaterial() == Material.AIR)
             {
                 blockpos = blockpos.up();
             }
@@ -105,7 +105,7 @@ public class ESMPathNavigateGround extends PathNavigateGround
             pos = blockpos;
         }
 
-        if (!this.worldObj.getBlockState(pos).getMaterial().isSolid())
+        if (!this.world.getBlockState(pos).getMaterial().isSolid())
         {
             return super.getPathToPos(pos);
         }
@@ -113,7 +113,7 @@ public class ESMPathNavigateGround extends PathNavigateGround
         {
             BlockPos blockpos1;
 
-            for (blockpos1 = pos.up(); blockpos1.getY() < this.worldObj.getHeight() && this.worldObj.getBlockState(blockpos1).getMaterial().isSolid(); blockpos1 = blockpos1.up())
+            for (blockpos1 = pos.up(); blockpos1.getY() < this.world.getHeight() && this.world.getBlockState(blockpos1).getMaterial().isSolid(); blockpos1 = blockpos1.up())
             {
                 ;
             }
@@ -140,13 +140,13 @@ public class ESMPathNavigateGround extends PathNavigateGround
         if (this.theEntity.isInWater() && this.getCanSwim())
         {
             int i = (int)this.theEntity.getEntityBoundingBox().minY;
-            Block block = this.worldObj.getBlockState(new BlockPos(MathHelper.floor_double(this.theEntity.posX), i, MathHelper.floor_double(this.theEntity.posZ))).getBlock();
+            Block block = this.world.getBlockState(new BlockPos(MathHelper.floor(this.theEntity.posX), i, MathHelper.floor(this.theEntity.posZ))).getBlock();
             int j = 0;
 
             while (block == Blocks.FLOWING_WATER || block == Blocks.WATER)
             {
                 ++i;
-                block = this.worldObj.getBlockState(new BlockPos(MathHelper.floor_double(this.theEntity.posX), i, MathHelper.floor_double(this.theEntity.posZ))).getBlock();
+                block = this.world.getBlockState(new BlockPos(MathHelper.floor(this.theEntity.posX), i, MathHelper.floor(this.theEntity.posZ))).getBlock();
                 ++j;
 
                 if (j > 16)
@@ -159,14 +159,14 @@ public class ESMPathNavigateGround extends PathNavigateGround
         } else if(this.theEntity.isOnLadder())
         {
             int i = (int)this.theEntity.getEntityBoundingBox().minY;
-            BlockPos blockpos = new BlockPos(MathHelper.floor_double(this.theEntity.posX), i, MathHelper.floor_double(this.theEntity.posZ));
-            IBlockState state = this.worldObj.getBlockState(blockpos);
+            BlockPos blockpos = new BlockPos(MathHelper.floor(this.theEntity.posX), i, MathHelper.floor(this.theEntity.posZ));
+            IBlockState state = this.world.getBlockState(blockpos);
             
-            while(state.getBlock().isLadder(state, this.theEntity.worldObj, blockpos, this.theEntity))
+            while(state.getBlock().isLadder(state, this.theEntity.world, blockpos, this.theEntity))
             {
             	i++;
-                blockpos = new BlockPos(MathHelper.floor_double(this.theEntity.posX), i, MathHelper.floor_double(this.theEntity.posZ));
-                state = this.worldObj.getBlockState(blockpos);
+                blockpos = new BlockPos(MathHelper.floor(this.theEntity.posX), i, MathHelper.floor(this.theEntity.posZ));
+                state = this.world.getBlockState(blockpos);
             }
             
             return i;
@@ -188,7 +188,7 @@ public class ESMPathNavigateGround extends PathNavigateGround
         {
             PathPoint pathpoint = this.currentPath.getPathPointFromIndex(i);
             PathPoint pathpoint1 = i + 1 < this.currentPath.getCurrentPathLength() ? this.currentPath.getPathPointFromIndex(i + 1) : null;
-            IBlockState iblockstate = this.worldObj.getBlockState(new BlockPos(pathpoint.xCoord, pathpoint.yCoord, pathpoint.zCoord));
+            IBlockState iblockstate = this.world.getBlockState(new BlockPos(pathpoint.xCoord, pathpoint.yCoord, pathpoint.zCoord));
             Block block = iblockstate.getBlock();
 
             if (block == Blocks.CAULDRON)
@@ -204,7 +204,7 @@ public class ESMPathNavigateGround extends PathNavigateGround
 
         if (this.shouldAvoidSun)
         {
-            if (this.worldObj.canSeeSky(new BlockPos(MathHelper.floor_double(this.theEntity.posX), (int)(this.theEntity.getEntityBoundingBox().minY + 0.5D), MathHelper.floor_double(this.theEntity.posZ))))
+            if (this.world.canSeeSky(new BlockPos(MathHelper.floor(this.theEntity.posX), (int)(this.theEntity.getEntityBoundingBox().minY + 0.5D), MathHelper.floor(this.theEntity.posZ))))
             {
                 return;
             }
@@ -213,7 +213,7 @@ public class ESMPathNavigateGround extends PathNavigateGround
             {
                 PathPoint pathpoint2 = this.currentPath.getPathPointFromIndex(j);
 
-                if (this.worldObj.canSeeSky(new BlockPos(pathpoint2.xCoord, pathpoint2.yCoord, pathpoint2.zCoord)))
+                if (this.world.canSeeSky(new BlockPos(pathpoint2.xCoord, pathpoint2.yCoord, pathpoint2.zCoord)))
                 {
                     this.currentPath.setCurrentPathLength(j - 1);
                     return;
@@ -228,8 +228,8 @@ public class ESMPathNavigateGround extends PathNavigateGround
     @Override
     protected boolean isDirectPathBetweenPoints(Vec3d posVec31, Vec3d posVec32, int sizeX, int sizeY, int sizeZ)
     {
-    	int i = MathHelper.floor_double(posVec31.xCoord);
-        int j = MathHelper.floor_double(posVec31.zCoord);
+    	int i = MathHelper.floor(posVec31.xCoord);
+        int j = MathHelper.floor(posVec31.zCoord);
         double d0 = posVec32.xCoord - posVec31.xCoord;
         double d1 = posVec32.zCoord - posVec31.zCoord;
         double d2 = d0 * d0 + d1 * d1;
@@ -273,8 +273,8 @@ public class ESMPathNavigateGround extends PathNavigateGround
                 d7 = d7 / d1;
                 int k = d0 < 0.0D ? -1 : 1;
                 int l = d1 < 0.0D ? -1 : 1;
-                int i1 = MathHelper.floor_double(posVec32.xCoord);
-                int j1 = MathHelper.floor_double(posVec32.zCoord);
+                int i1 = MathHelper.floor(posVec32.xCoord);
+                int j1 = MathHelper.floor(posVec32.zCoord);
                 int k1 = i1 - i;
                 int l1 = j1 - j;
 
@@ -327,7 +327,7 @@ public class ESMPathNavigateGround extends PathNavigateGround
 
                     if (d0 * p_179683_8_ + d1 * p_179683_10_ >= 0.0D)
                     {
-                        PathNodeType pathnodetype = this.nodeProcessor.getPathNodeType(this.worldObj, k, y - 1, l, this.theEntity, sizeX, sizeY, sizeZ, true, true);
+                        PathNodeType pathnodetype = this.nodeProcessor.getPathNodeType(this.world, k, y - 1, l, this.theEntity, sizeX, sizeY, sizeZ, true, true);
 
                         if (pathnodetype == PathNodeType.WATER)
                         {
@@ -344,7 +344,7 @@ public class ESMPathNavigateGround extends PathNavigateGround
                             return false;
                         }
 
-                        pathnodetype = this.nodeProcessor.getPathNodeType(this.worldObj, k, y, l, this.theEntity, sizeX, sizeY, sizeZ, true, true);
+                        pathnodetype = this.nodeProcessor.getPathNodeType(this.world, k, y, l, this.theEntity, sizeX, sizeY, sizeZ, true, true);
                         float f = this.theEntity.getPathPriority(pathnodetype);
 
                         if (f < 0.0F || f >= 8.0F)
@@ -376,9 +376,9 @@ public class ESMPathNavigateGround extends PathNavigateGround
 
             if (d0 * p_179692_8_ + d1 * p_179692_10_ >= 0.0D)
             {
-                Block block = this.worldObj.getBlockState(blockpos).getBlock();
+                Block block = this.world.getBlockState(blockpos).getBlock();
 
-                if (!block.isPassable(this.worldObj, blockpos))
+                if (!block.isPassable(this.world, blockpos))
                 {
                     return false;
                 }

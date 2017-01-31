@@ -1,6 +1,5 @@
 package funwayguy.epicsiegemod.ai;
 
-import funwayguy.epicsiegemod.core.ESM_Settings;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -12,6 +11,7 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import funwayguy.epicsiegemod.core.ESM_Settings;
 
 public class ESM_EntityAIAttackMelee extends EntityAIBase
 {
@@ -37,7 +37,7 @@ public class ESM_EntityAIAttackMelee extends EntityAIBase
     public ESM_EntityAIAttackMelee(EntityLiving creature, double speedIn, boolean useLongMemory)
     {
         this.attacker = creature;
-        this.worldObj = creature.worldObj;
+        this.worldObj = creature.world;
         this.speedTowardsTarget = speedIn;
         this.longMemory = useLongMemory;
         this.setMutexBits(3);

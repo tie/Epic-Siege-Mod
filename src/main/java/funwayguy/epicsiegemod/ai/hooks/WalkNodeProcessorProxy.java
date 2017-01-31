@@ -61,17 +61,17 @@ public class WalkNodeProcessorProxy extends WalkNodeProcessor
         if (this.getCanSwim() && this.entity.isInWater())
         {
             i = (int)this.entity.getEntityBoundingBox().minY;
-            BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(MathHelper.floor_double(this.entity.posX), i, MathHelper.floor_double(this.entity.posZ));
+            BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos(MathHelper.floor(this.entity.posX), i, MathHelper.floor(this.entity.posZ));
 
             for (Block block = this.blockaccess.getBlockState(blockpos$mutableblockpos).getBlock(); block == Blocks.FLOWING_WATER || block == Blocks.WATER; block = this.blockaccess.getBlockState(blockpos$mutableblockpos).getBlock())
             {
                 ++i;
-                blockpos$mutableblockpos.setPos(MathHelper.floor_double(this.entity.posX), i, MathHelper.floor_double(this.entity.posZ));
+                blockpos$mutableblockpos.setPos(MathHelper.floor(this.entity.posX), i, MathHelper.floor(this.entity.posZ));
             }
         }
         else if (this.entity.onGround)
         {
-            i = MathHelper.floor_double(this.entity.getEntityBoundingBox().minY + 0.5D);
+            i = MathHelper.floor(this.entity.getEntityBoundingBox().minY + 0.5D);
         }
         else
         {
@@ -116,7 +116,7 @@ public class WalkNodeProcessorProxy extends WalkNodeProcessor
 	@Override
     public PathPoint getPathPointToCoords(double x, double y, double z)
     {
-        return this.openPoint(MathHelper.floor_double(x - (double)(this.entity.width / 2.0F)), MathHelper.floor_double(y), MathHelper.floor_double(z - (double)(this.entity.width / 2.0F)));
+        return this.openPoint(MathHelper.floor(x - (double)(this.entity.width / 2.0F)), MathHelper.floor(y), MathHelper.floor(z - (double)(this.entity.width / 2.0F)));
     }
 	
 	@Override
@@ -128,7 +128,7 @@ public class WalkNodeProcessorProxy extends WalkNodeProcessor
 
         if (this.entity.getPathPriority(pathnodetype) >= 0.0F)
         {
-            j = MathHelper.floor_float(Math.max(1.0F, this.entity.stepHeight));
+            j = MathHelper.floor(Math.max(1.0F, this.entity.stepHeight));
         }
 
         BlockPos blockpos = (new BlockPos(currentPoint.xCoord, currentPoint.yCoord, currentPoint.zCoord)).down();
@@ -221,8 +221,8 @@ public class WalkNodeProcessorProxy extends WalkNodeProcessor
         
         if(entity != null)
         {
-        	AxisAlignedBB bBounds = blockstate1.getCollisionBoundingBox(entity.worldObj, blockpos);
-	        AxisAlignedBB bBounds1 = blockstate1.getCollisionBoundingBox(entity.worldObj, blockpos1);
+        	AxisAlignedBB bBounds = blockstate1.getCollisionBoundingBox(entity.world, blockpos);
+	        AxisAlignedBB bBounds1 = blockstate1.getCollisionBoundingBox(entity.world, blockpos1);
 	        
 	        if(bBounds1 == null || (bBounds1.maxX - bBounds1.minX) < 0.5F || (bBounds1.maxZ - bBounds1.minZ) < 0.5F)
 	        {
@@ -294,7 +294,7 @@ public class WalkNodeProcessorProxy extends WalkNodeProcessor
                         AxisAlignedBB axisalignedbb1 = blockstate.getBoundingBox(this.blockaccess, blockpos);
                         AxisAlignedBB axisalignedbb2 = axisalignedbb.addCoord(0.0D, axisalignedbb1.maxY - 0.002D, 0.0D);
 
-                        if (this.entity.worldObj.collidesWithAnyBlock(axisalignedbb2))
+                        if (this.entity.world.collidesWithAnyBlock(axisalignedbb2))
                         {
                             pathpoint = null;
                         }
@@ -305,7 +305,7 @@ public class WalkNodeProcessorProxy extends WalkNodeProcessor
                 {
                     AxisAlignedBB axisalignedbb3 = new AxisAlignedBB((double)x - d1 + 0.5D, (double)y + 0.001D, (double)z - d1 + 0.5D, (double)x + d1 + 0.5D, (double)((float)y + this.entity.height), (double)z + d1 + 0.5D);
 
-                    if (this.entity.worldObj.collidesWithAnyBlock(axisalignedbb3))
+                    if (this.entity.world.collidesWithAnyBlock(axisalignedbb3))
                     {
                         return null;
                     }
@@ -359,7 +359,7 @@ public class WalkNodeProcessorProxy extends WalkNodeProcessor
     
     public static boolean CanFit(Entity entity, IBlockState state, BlockPos pos)
     {
-    	if(state == null || (entity != null && state.getBoundingBox(entity.worldObj, pos) == null))
+    	if(state == null || (entity != null && state.getBoundingBox(entity.world, pos) == null))
     	{
     		return true;
     	} else if(entity == null || entity.getEntityBoundingBox() == null)
@@ -368,7 +368,7 @@ public class WalkNodeProcessorProxy extends WalkNodeProcessor
     	}
     	
     	AxisAlignedBB eBounds = entity.getEntityBoundingBox();
-    	AxisAlignedBB bBounds = state.getBoundingBox(entity.worldObj, pos);
+    	AxisAlignedBB bBounds = state.getBoundingBox(entity.world, pos);
     	
     	double BW = Math.max(bBounds.maxX - bBounds.minX, bBounds.maxZ - bBounds.minZ);
     	double BH = bBounds.maxY - bBounds.minY;

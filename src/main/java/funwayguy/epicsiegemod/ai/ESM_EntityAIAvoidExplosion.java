@@ -40,7 +40,7 @@ public class ESM_EntityAIAvoidExplosion extends EntityAIBase
      */
     public boolean shouldExecute()
     {
-        List<Entity> list = this.theEntity.worldObj.getEntitiesWithinAABB(Entity.class, this.theEntity.getEntityBoundingBox().expand((double)this.avoidDistance, 3.0D, (double)this.avoidDistance), explosiveSelector);
+        List<Entity> list = this.theEntity.world.getEntitiesWithinAABB(Entity.class, this.theEntity.getEntityBoundingBox().expand((double)this.avoidDistance, 3.0D, (double)this.avoidDistance), explosiveSelector);
 
         if (list.isEmpty())
         {

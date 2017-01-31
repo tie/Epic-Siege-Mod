@@ -1,13 +1,13 @@
 package funwayguy.epicsiegemod.capabilities.combat;
 
 import java.util.concurrent.Callable;
-import funwayguy.epicsiegemod.core.ESM;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityInject;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import funwayguy.epicsiegemod.core.ESM;
 
 public class CapabilityAttackerHandler
 {

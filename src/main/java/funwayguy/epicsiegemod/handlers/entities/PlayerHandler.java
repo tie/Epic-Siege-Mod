@@ -33,7 +33,7 @@ public class PlayerHandler
 	@SubscribeEvent
 	public void onLivingUpdate(LivingUpdateEvent event)
 	{
-		if(event.getEntity().worldObj.isRemote || !(event.getEntity() instanceof EntityPlayer) || !(event.getEntity().worldObj instanceof WorldServer))
+		if(event.getEntity().world.isRemote || !(event.getEntity() instanceof EntityPlayer) || !(event.getEntity().world instanceof WorldServer))
 		{
 			return;
 		}
@@ -41,7 +41,7 @@ public class PlayerHandler
 		EntityPlayer player = (EntityPlayer)event.getEntity();
 		
 		boolean hard = false;
-		int day = (int)(player.worldObj.getWorldTime()/24000);
+		int day = (int)(player.world.getWorldTime()/24000);
 		
 		if(!hard && ESM_Settings.hardDay != 0 && day != 0 && day%ESM_Settings.hardDay == 0)
 		{
@@ -50,29 +50,29 @@ public class PlayerHandler
 		
 		Random rand = player.getRNG();
 		
-		if(hard && rand.nextInt(10) == 0 && player.worldObj.getDifficulty() != EnumDifficulty.PEACEFUL && player.worldObj.getGameRules().getBoolean("doMobSpawning") && player.worldObj.loadedEntityList.size() < 512)
+		if(hard && rand.nextInt(10) == 0 && player.world.getDifficulty() != EnumDifficulty.PEACEFUL && player.world.getGameRules().getBoolean("doMobSpawning") && player.world.loadedEntityList.size() < 512)
 		{
-			int x = MathHelper.floor_double(player.posX) + rand.nextInt(48) - 24;
-			int y = MathHelper.floor_double(player.posY) + rand.nextInt(48) - 24;
-			int z = MathHelper.floor_double(player.posZ) + rand.nextInt(48) - 24;
+			int x = MathHelper.floor(player.posX) + rand.nextInt(48) - 24;
+			int y = MathHelper.floor(player.posY) + rand.nextInt(48) - 24;
+			int z = MathHelper.floor(player.posZ) + rand.nextInt(48) - 24;
 			BlockPos spawnPos = new BlockPos(x, y, z);
 			
-			if(player.worldObj.getClosestPlayer(x, y, z, 8D, false) == null && WorldEntitySpawner.canCreatureTypeSpawnAtLocation(EntityLiving.SpawnPlacementType.ON_GROUND, player.worldObj, spawnPos))
+			if(player.world.getClosestPlayer(x, y, z, 8D, false) == null && WorldEntitySpawner.canCreatureTypeSpawnAtLocation(EntityLiving.SpawnPlacementType.ON_GROUND, player.world, spawnPos))
 			{
-                SpawnListEntry spawnlistentry = ((WorldServer)player.worldObj).getSpawnListEntryForTypeAt(EnumCreatureType.MONSTER, spawnPos);
+                SpawnListEntry spawnlistentry = ((WorldServer)player.world).getSpawnListEntryForTypeAt(EnumCreatureType.MONSTER, spawnPos);
                 
                 if(spawnlistentry != null)
                 {
 	                try
 	                {
-	                	EntityLiving entityliving = (EntityLiving)spawnlistentry.entityClass.getConstructor(new Class[] {World.class}).newInstance(new Object[] {player.worldObj});
+	                	EntityLiving entityliving = (EntityLiving)spawnlistentry.entityClass.getConstructor(new Class[] {World.class}).newInstance(new Object[] {player.world});
 	
 	                    entityliving.setLocationAndAngles((double)x, (double)y, (double)z, rand.nextFloat() * 360.0F, 0.0F);
 	
-	                    Result canSpawn = ForgeEventFactory.canEntitySpawn(entityliving, player.worldObj, x, y, z);
+	                    Result canSpawn = ForgeEventFactory.canEntitySpawn(entityliving, player.world, x, y, z);
 	                    if (canSpawn == Result.ALLOW || (canSpawn == Result.DEFAULT && entityliving.getCanSpawnHere()))
 	                    {
-	                    	player.worldObj.spawnEntityInWorld(entityliving);
+	                    	player.world.spawnEntity(entityliving);
 	                    }
 	                }
 	                catch (Exception exception)
@@ -114,7 +114,7 @@ public class PlayerHandler
 	@SubscribeEvent
 	public void onPlayerSleepInBed(PlayerSleepInBedEvent event)
 	{
-		if(ESM_Settings.AllowSleep || event.getEntityPlayer().worldObj.isRemote)
+		if(ESM_Settings.AllowSleep || event.getEntityPlayer().world.isRemote)
 		{
 			return;
 		}
@@ -124,12 +124,12 @@ public class PlayerHandler
             return;
         }
         
-        if (!event.getEntityPlayer().worldObj.provider.canRespawnHere())
+        if (!event.getEntityPlayer().world.provider.canRespawnHere())
         {
             return;
         }
         
-        if (event.getEntityPlayer().worldObj.isDaytime())
+        if (event.getEntityPlayer().world.isDaytime())
         {
             return;
         }
@@ -140,7 +140,7 @@ public class PlayerHandler
         }
         double d0 = 8.0D;
         double d1 = 5.0D;
-        List<?> list = event.getEntityPlayer().worldObj.getEntitiesWithinAABB(EntityMob.class, new AxisAlignedBB((double)event.getPos().getX() - d0, (double)event.getPos().getY() - d1, (double)event.getPos().getZ() - d0, (double)event.getPos().getX() + d0, (double)event.getPos().getY() + d1, (double)event.getPos().getZ() + d0));
+        List<?> list = event.getEntityPlayer().world.getEntitiesWithinAABB(EntityMob.class, new AxisAlignedBB((double)event.getPos().getX() - d0, (double)event.getPos().getY() - d1, (double)event.getPos().getZ() - d0, (double)event.getPos().getX() + d0, (double)event.getPos().getY() + d1, (double)event.getPos().getZ() + d0));
         
         if (!list.isEmpty())
         {
@@ -155,6 +155,6 @@ public class PlayerHandler
 	    }
 	    
 		event.getEntityPlayer().setSpawnChunk(event.getPos(), false, event.getEntityPlayer().dimension);
-		event.getEntityPlayer().addChatMessage(new TextComponentString("Spawnpoint set"));
+		event.getEntityPlayer().sendMessage(new TextComponentString("Spawnpoint set"));
 	}
 }
