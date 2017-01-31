@@ -38,7 +38,7 @@ public class EntityAITasksProxy extends EntityAITasks
 				
 				if(ai != null)
 				{
-					EsmTaskEvent event = new EsmTaskEvent.Modified(mod);
+					EsmTaskEvent event = new EsmTaskEvent.Modified(host, mod);
 					MinecraftForge.EVENT_BUS.post(event);
 					
 					if(event.getResult() != Event.Result.DENY)

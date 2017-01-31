@@ -20,7 +20,6 @@ import funwayguy.epicsiegemod.ai.modifiers.ModifierZombieAttack;
 import funwayguy.epicsiegemod.api.TaskRegistry;
 import funwayguy.epicsiegemod.capabilities.combat.CapabilityAttackerHandler;
 import funwayguy.epicsiegemod.capabilities.modified.CapabilityModifiedHandler;
-import funwayguy.epicsiegemod.client.UpdateNotification;
 import funwayguy.epicsiegemod.handlers.MainHandler;
 import funwayguy.epicsiegemod.handlers.entities.CreeperHandler;
 import funwayguy.epicsiegemod.handlers.entities.GeneralEntityHandler;
@@ -39,8 +38,6 @@ public class CommonProxy
 	
 	public void registerHandlers()
 	{
-		MinecraftForge.EVENT_BUS.register(new UpdateNotification());
-		
 		CapabilityAttackerHandler.register();
 		CapabilityModifiedHandler.register();
 		MinecraftForge.EVENT_BUS.register(new MainHandler());

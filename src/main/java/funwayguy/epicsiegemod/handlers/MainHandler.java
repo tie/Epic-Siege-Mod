@@ -83,7 +83,7 @@ public class MainHandler
 				
 				if(entry != null)
 				{
-					EsmTaskEvent taskEvent = new EsmTaskEvent.Addition(add);
+					EsmTaskEvent taskEvent = new EsmTaskEvent.Addition(entityLiving, add);
 					MinecraftForge.EVENT_BUS.post(taskEvent);
 					
 					if(taskEvent.getResult() != Event.Result.DENY)

@@ -16,5 +16,7 @@ public class ClientProxy extends CommonProxy
 		super.registerHandlers();
 		
 		ESMSounds.registerSounds();
+		
+		//MinecraftForge.EVENT_BUS.register(new UpdateNotification());
 	}
 }
