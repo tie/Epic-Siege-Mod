@@ -1,8 +1,9 @@
 package funwayguy.epicsiegemod.ai.additions;
 
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import funwayguy.epicsiegemod.ai.ESM_EntityAIGrief;
 import funwayguy.epicsiegemod.api.ITaskAddition;
 import funwayguy.epicsiegemod.core.ESM_Settings;
@@ -24,7 +25,8 @@ public class AdditionGrief implements ITaskAddition
 	@Override
 	public boolean isValid(EntityLiving entityLiving)
 	{
-		return ESM_Settings.diggerList.contains(EntityList.getEntityString(entityLiving));
+		EntityEntry ee = EntityRegistry.getEntry(entityLiving.getClass());
+		return ee != null && ESM_Settings.diggerList.contains(ee.getRegistryName());
 	}
 	
 	@Override

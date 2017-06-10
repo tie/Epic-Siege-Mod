@@ -2,6 +2,7 @@ package funwayguy.epicsiegemod.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import net.minecraft.util.ResourceLocation;
 
 public class ESM_Settings
 {
@@ -15,12 +16,12 @@ public class ESM_Settings
 	public static boolean AllowSleep;
 	public static int ResistanceCoolDown;
 	public static int hardDay = 8;
-	public static ArrayList<String> AIExempt = new ArrayList<String>();
+	public static ArrayList<ResourceLocation> AIExempt = new ArrayList<ResourceLocation>();
 	
 	public static HashMap<Integer, DimSettings> dimSettings = new HashMap<Integer, DimSettings>();
-	public static ArrayList<String> diggerList = new ArrayList<String>();
-	public static ArrayList<String> demolitionList = new ArrayList<String>();
-	public static ArrayList<String> pillarList = new ArrayList<String>();
+	public static ArrayList<ResourceLocation> diggerList = new ArrayList<ResourceLocation>();
+	public static ArrayList<ResourceLocation> demolitionList = new ArrayList<ResourceLocation>();
+	public static ArrayList<ResourceLocation> pillarList = new ArrayList<ResourceLocation>();
 	
 	//Witch
 	public static String[] customPotions = new String[0];

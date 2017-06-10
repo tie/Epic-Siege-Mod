@@ -3,7 +3,6 @@ package funwayguy.epicsiegemod.handlers;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -19,6 +18,8 @@ import net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import org.apache.logging.log4j.Level;
 import funwayguy.epicsiegemod.ai.hooks.EntityAITasksProxy;
 import funwayguy.epicsiegemod.ai.hooks.EntitySensesProxy;
@@ -53,8 +54,9 @@ public class MainHandler
 		if(event.getEntity() instanceof EntityLiving)
 		{
 			EntityLiving entityLiving = (EntityLiving)event.getEntity();
+			EntityEntry ee = EntityRegistry.getEntry(entityLiving.getClass());
 			
-			if(!ESM_Settings.AIExempt.contains(EntityList.getEntityString(entityLiving)))
+			if(ee != null && !ESM_Settings.AIExempt.contains(ee.getRegistryName()))
 			{
 				try
 				{

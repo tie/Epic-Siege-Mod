@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.PotionTypes;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.Level;
 import funwayguy.epicsiegemod.core.ESM;
@@ -41,7 +42,10 @@ public class ConfigHandler
 		ESM_Settings.attackPets =			config.getBoolean("Attack Pets", CAT_MAIN, true, "Mobs will attack any player owned pets they find");
 		
 		ESM_Settings.AIExempt.clear();
-		ESM_Settings.AIExempt.addAll(Arrays.asList(config.getStringList("AI Blacklist", CAT_MAIN, new String[]{"VillagerGolem"}, "Mobs that are exempt from AI modifications")));
+		for(String s : config.getStringList("AI Blacklist", CAT_MAIN, new String[]{"minecraft:villager_golem"}, "Mobs that are exempt from AI modifications"))
+		{
+			ESM_Settings.AIExempt.add(new ResourceLocation(s));
+		}
 		
 		// === CREEPER ===
 		ESM_Settings.CreeperBreaching =		config.getBoolean("Breaching", CAT_CREEPER, true, "Creepers will attempt to blast through walls");
@@ -67,7 +71,11 @@ public class ConfigHandler
 		//ESM_Settings.mobBoating  =		config.getBoolean("Mob Boating", CAT_ADVANCED, true, "Zombies and Skeletons will use boats in water to catch up to you!");
 		
 		ESM_Settings.diggerList.clear();
-		ESM_Settings.diggerList.addAll(Arrays.asList(config.getStringList("Digging Mobs", CAT_ADVANCED, new String[]{"Zombie"}, "List of mobs that can dig through blocks")));
+		for(String s : config.getStringList("Digging Mobs", CAT_ADVANCED, new String[]{"minecraft:zombie"}, "List of mobs that can dig through blocks"))
+		{
+			ESM_Settings.diggerList.add(new ResourceLocation(s));
+		}
+		
 		ESM_Settings.ZombieDiggerTools =	config.getBoolean("Digging Tools Only", CAT_ADVANCED, true, "Digging mobs require the proper tools to dig");
 		ESM_Settings.ZombieSwapList =		config.getBoolean("Invert Digging Blacklist", CAT_ADVANCED, false, "Use the digging blacklist as a whitelist instead");
 		ESM_Settings.ZombieDigBlacklist.clear();
@@ -102,11 +110,18 @@ public class ConfigHandler
 		ESM_Settings.ZombieGriefBlocks = new ArrayList<String>(Arrays.asList(config.getStringList("General Griefable Blocks", CAT_ADVANCED, defGrief, "What blocks will be targeted for destruction when idle (Light sources included by default. Format: 'minecraft:wool:1')")));
 		
 		ESM_Settings.demolitionList.clear();
-		ESM_Settings.demolitionList.addAll(Arrays.asList(config.getStringList("Demolition Mobs", CAT_ADVANCED, new String[]{"Zombie"}, "List of mobs that can drop live TNT")));
+		for(String s : config.getStringList("Demolition Mobs", CAT_ADVANCED, new String[]{"minecraft:zombie"}, "List of mobs that can drop live TNT"))
+		{
+			ESM_Settings.demolitionList.add(new ResourceLocation(s));
+		}
+		
 		ESM_Settings.demolitionChance =		config.getInt("Demolition Chance", CAT_ADVANCED, 10, 0, 100, "How common demolition variants are");
 		
 		ESM_Settings.pillarList.clear();
-		ESM_Settings.pillarList.addAll(Arrays.asList(config.getStringList("Building Mobs", CAT_ADVANCED, new String[]{"Zombie"}, "List of mobs that can pillar up and build stairs")));
+		for(String s : config.getStringList("Building Mobs", CAT_ADVANCED, new String[]{"minecraft:zombie"}, "List of mobs that can pillar up and build stairs"))
+		{
+			ESM_Settings.pillarList.add(new ResourceLocation(s));
+		}
 		
 		ESM_Settings.EndermanPlayerTele =	config.getBoolean("Player Teleport", CAT_ADVANCED, true, "Allows Enderman to teleport the player instead of themelves");
 		ESM_Settings.SpiderWebChance =		config.getInt("Webbing Chance", CAT_ADVANCED, 25, 0, 100, "The chance a Spider will web its target to the ground");

@@ -23,6 +23,8 @@ import net.minecraftforge.event.world.WorldEvent.Unload;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import funwayguy.epicsiegemod.capabilities.modified.CapabilityModifiedHandler;
 import funwayguy.epicsiegemod.capabilities.modified.IModifiedHandler;
 import funwayguy.epicsiegemod.core.DimSettings;
@@ -47,7 +49,9 @@ public class GeneralEntityHandler
 			return;
 		}
 		
-		if(event.getEntity() instanceof EntityMob && !ESM_Settings.AIExempt.contains(EntityList.getEntityString(event.getEntity())))
+		EntityEntry ee = EntityRegistry.getEntry(event.getEntity().getClass());
+		
+		if(event.getEntity() instanceof EntityMob && ee != null && !ESM_Settings.AIExempt.contains(ee.getRegistryName()))
 		{
 			EntityLivingBase entityLiving = (EntityLivingBase)event.getEntity();
 			IModifiedHandler modHandler = entityLiving.getCapability(CapabilityModifiedHandler.MODIFIED_HANDLER_CAPABILITY, null);
@@ -89,11 +93,17 @@ public class GeneralEntityHandler
 				modHandler.getModificationData(DIM_MODIFIER).setBoolean("hasModifiers", true);
 			}
 			
-			if(!modHandler.getModificationData(DIM_MODIFIER).getBoolean("checkMobBomb") && (ESM_Settings.MobBombAll || ESM_Settings.MobBombs.contains(EntityList.getEntityString(entityLiving))) && entityLiving.getPassengers().size() == 0 && entityLiving.world.loadedEntityList.size() < 512)
+			if(!modHandler.getModificationData(DIM_MODIFIER).getBoolean("checkMobBomb") && (ESM_Settings.MobBombAll || ESM_Settings.MobBombs.contains(EntityList.getEntityString(entityLiving))) && entityLiving.getPassengers().size() == 0 && entityLiving.getRidingEntity() == null && entityLiving.world.loadedEntityList.size() < 512)
 			{
 				if(ESM_Settings.MobBombRarity <= 0 || entityLiving.getRNG().nextInt(ESM_Settings.MobBombRarity) == 0)
 				{
 					EntityLiving passenger = new EntityCreeper(entityLiving.world);
+					IModifiedHandler passHandler = passenger.getCapability(CapabilityModifiedHandler.MODIFIED_HANDLER_CAPABILITY, null);
+					
+					if(passHandler != null)
+					{
+						passHandler.getModificationData(DIM_MODIFIER).setBoolean("checkMobBomb", true);
+					}
 					
 					passenger.setLocationAndAngles(entityLiving.posX, entityLiving.posY, entityLiving.posZ, entityLiving.rotationYaw, 0.0F);
 					
@@ -106,6 +116,9 @@ public class GeneralEntityHandler
 					passenger.startRiding(entityLiving);
 				}
 				
+				modHandler.getModificationData(DIM_MODIFIER).setBoolean("checkMobBomb", true);
+			} else
+			{
 				modHandler.getModificationData(DIM_MODIFIER).setBoolean("checkMobBomb", true);
 			}
 		}

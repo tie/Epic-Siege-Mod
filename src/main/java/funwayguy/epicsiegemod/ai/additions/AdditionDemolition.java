@@ -1,11 +1,12 @@
 package funwayguy.epicsiegemod.ai.additions;
 
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.fml.common.registry.EntityEntry;
+import net.minecraftforge.fml.common.registry.EntityRegistry;
 import funwayguy.epicsiegemod.ai.ESM_EntityAIDemolition;
 import funwayguy.epicsiegemod.api.ITaskAddition;
 import funwayguy.epicsiegemod.core.ESM_Settings;
@@ -27,7 +28,8 @@ public class AdditionDemolition implements ITaskAddition
 	@Override
 	public boolean isValid(EntityLiving entityLiving)
 	{
-		return ESM_Settings.demolitionList.contains(EntityList.getEntityString(entityLiving));
+		EntityEntry ee = EntityRegistry.getEntry(entityLiving.getClass());
+		return ee != null && ESM_Settings.demolitionList.contains(ee.getRegistryName());
 	}
 	
 	@Override
