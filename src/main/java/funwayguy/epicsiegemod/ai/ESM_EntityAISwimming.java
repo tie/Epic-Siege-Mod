@@ -33,7 +33,7 @@ public class ESM_EntityAISwimming extends EntityAIBase
 		if(host.getAir() < 150) // Past 50% air, swim up!
 		{
 			return true;
-		} else if(path != null && path.getFinalPathPoint() != null && path.getFinalPathPoint().yCoord < pos.getY())
+		} else if(path != null && path.getFinalPathPoint() != null && path.getFinalPathPoint().y < pos.getY())
 		{
 			return false;
 		} else if(target != null && target.getPosition().getY() < pos.getY() && host.getDistanceToEntity(target) < 8F)

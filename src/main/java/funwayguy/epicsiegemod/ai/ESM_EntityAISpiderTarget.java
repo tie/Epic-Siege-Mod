@@ -15,7 +15,7 @@ public class ESM_EntityAISpiderTarget extends ESM_EntityAINearestAttackableTarge
 	@Override
     public boolean shouldExecute()
     {
-        float f = this.spider.getBrightness(1.0F);
+        float f = this.spider.getBrightness();
         return f >= 0.5F ? false : super.shouldExecute();
     }
 }

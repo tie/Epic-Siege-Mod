@@ -18,12 +18,12 @@ public class ZombieHandler
 		
 		if(event.getEntity() instanceof EntityPlayer)
 		{
-			if(event.getSource().getSourceOfDamage() instanceof EntityZombie && ESM_Settings.ZombieInfectious)
+			if(event.getSource().getTrueSource() instanceof EntityZombie && ESM_Settings.ZombieInfectious)
 			{
 				EntityZombie zombie = new EntityZombie(event.getEntity().world);
 				zombie.setPosition(event.getEntity().posX, event.getEntity().posY, event.getEntity().posZ);
 				zombie.setCanPickUpLoot(true);
-				zombie.setCustomNameTag(event.getEntity().getName() + " (" + event.getSource().getSourceOfDamage().getName() + ")");
+				zombie.setCustomNameTag(event.getEntity().getName() + " (" + event.getSource().getTrueSource().getName() + ")");
 				zombie.getEntityData().setBoolean("ESM_MODIFIED", true);
 				event.getEntity().world.spawnEntity(zombie);
 			}

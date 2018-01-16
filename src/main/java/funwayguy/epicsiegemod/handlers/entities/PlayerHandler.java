@@ -69,7 +69,7 @@ public class PlayerHandler
 	
 	                    entityliving.setLocationAndAngles((double)x, (double)y, (double)z, rand.nextFloat() * 360.0F, 0.0F);
 	
-	                    Result canSpawn = ForgeEventFactory.canEntitySpawn(entityliving, player.world, x, y, z);
+	                    Result canSpawn = ForgeEventFactory.canEntitySpawn(entityliving, player.world, x, y, z, false);
 	                    if (canSpawn == Result.ALLOW || (canSpawn == Result.DEFAULT && entityliving.getCanSpawnHere()))
 	                    {
 	                    	player.world.spawnEntity(entityliving);

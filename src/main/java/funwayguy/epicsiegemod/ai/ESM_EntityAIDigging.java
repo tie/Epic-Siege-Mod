@@ -59,7 +59,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
 	}
 	
 	@Override
-	public boolean continueExecuting()
+	public boolean shouldContinueExecuting()
 	{
 		return curBlock != null && digger.getDistanceSq(curBlock) <= (4D * 4D) && canHarvest(digger, curBlock);
 	}
@@ -67,7 +67,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
 	@Override
 	public void updateTask()
 	{
-		if(!this.continueExecuting())
+		if(!this.shouldContinueExecuting())
 		{
 			return;
 		}

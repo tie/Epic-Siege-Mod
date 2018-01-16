@@ -89,7 +89,7 @@ public class ESM_EntityAINearestAttackableTarget extends ESM_EntityAITarget
 
     protected AxisAlignedBB func_188511_a(double p_188511_1_)
     {
-        return this.taskOwner.getEntityBoundingBox().expand(p_188511_1_, 16.0D, p_188511_1_);
+        return this.taskOwner.getEntityBoundingBox().grow(p_188511_1_, 16.0D, p_188511_1_);
     }
     
     /**

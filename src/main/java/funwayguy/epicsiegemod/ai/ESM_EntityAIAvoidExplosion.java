@@ -40,7 +40,7 @@ public class ESM_EntityAIAvoidExplosion extends EntityAIBase
      */
     public boolean shouldExecute()
     {
-        List<Entity> list = this.theEntity.world.getEntitiesWithinAABB(Entity.class, this.theEntity.getEntityBoundingBox().expand((double)this.avoidDistance, 3.0D, (double)this.avoidDistance), explosiveSelector);
+        List<Entity> list = this.theEntity.world.getEntitiesWithinAABB(Entity.class, this.theEntity.getEntityBoundingBox().grow((double)this.avoidDistance, 3.0D, (double)this.avoidDistance), explosiveSelector);
 
         if (list.isEmpty())
         {
@@ -55,13 +55,13 @@ public class ESM_EntityAIAvoidExplosion extends EntityAIBase
             {
                 return false;
             }
-            else if (this.closestLivingEntity.getDistanceSq(vec3d.xCoord, vec3d.yCoord, vec3d.zCoord) < this.closestLivingEntity.getDistanceSqToEntity(this.theEntity))
+            else if (this.closestLivingEntity.getDistanceSq(vec3d.x, vec3d.y, vec3d.z) < this.closestLivingEntity.getDistanceSqToEntity(this.theEntity))
             {
                 return false;
             }
             else
             {
-                this.entityPathEntity = this.entityPathNavigate.getPathToXYZ(vec3d.xCoord, vec3d.yCoord, vec3d.zCoord);
+                this.entityPathEntity = this.entityPathNavigate.getPathToXYZ(vec3d.x, vec3d.y, vec3d.z);
                 return this.entityPathEntity != null;
             }
         }
@@ -71,7 +71,7 @@ public class ESM_EntityAIAvoidExplosion extends EntityAIBase
      * Returns whether an in-progress EntityAIBase should continue executing
      */
     @Override
-    public boolean continueExecuting()
+    public boolean shouldContinueExecuting()
     {
         return !this.entityPathNavigate.noPath();
     }

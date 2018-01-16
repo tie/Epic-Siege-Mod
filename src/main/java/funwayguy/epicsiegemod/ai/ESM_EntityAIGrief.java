@@ -64,7 +64,7 @@ public class ESM_EntityAIGrief extends EntityAIBase
 	}
 	
 	@Override
-	public boolean continueExecuting()
+	public boolean shouldContinueExecuting()
 	{
 		if(markedLoc == null || !entityLiving.isEntityAlive())
 		{
@@ -88,7 +88,7 @@ public class ESM_EntityAIGrief extends EntityAIBase
 	@Override
 	public void updateTask()
 	{
-		if(!continueExecuting())
+		if(!shouldContinueExecuting())
 		{
 			digTick = 0;
 			return;

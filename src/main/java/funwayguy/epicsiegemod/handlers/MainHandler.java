@@ -9,7 +9,6 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.entity.projectile.EntityTippedArrow;
-import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -22,7 +21,6 @@ import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import org.apache.logging.log4j.Level;
 import funwayguy.epicsiegemod.ai.hooks.EntityAITasksProxy;
-import funwayguy.epicsiegemod.ai.hooks.EntitySensesProxy;
 import funwayguy.epicsiegemod.api.EsmTaskEvent;
 import funwayguy.epicsiegemod.api.ITaskAddition;
 import funwayguy.epicsiegemod.api.TaskRegistry;
@@ -62,12 +60,6 @@ public class MainHandler
 				{
 					f_tasks.set(entityLiving, new EntityAITasksProxy(entityLiving, entityLiving.tasks));
 					f_targetTasks.set(entityLiving, new EntityAITasksProxy(entityLiving, entityLiving.targetTasks));
-					f_senses.set(entityLiving, new EntitySensesProxy(entityLiving));
-					
-					if(entityLiving.getNavigator().getClass() == PathNavigateGround.class)
-					{
-						//f_navigator.set(entityLiving, new ESMPathNavigateGround(entityLiving, event.getWorld()));
-					}
 				} catch(Exception e)
 				{
 					ESM.logger.log(Level.ERROR, "Unable to set AI hooks in " + entityLiving.getName(), e);

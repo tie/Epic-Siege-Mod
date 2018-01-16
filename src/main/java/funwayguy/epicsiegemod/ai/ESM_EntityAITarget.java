@@ -245,8 +245,8 @@ public abstract class ESM_EntityAITarget extends EntityAIBase
             }
             else
             {
-                int i = pathpoint.xCoord - MathHelper.floor(target.posX);
-                int j = pathpoint.zCoord - MathHelper.floor(target.posZ);
+                int i = pathpoint.x - MathHelper.floor(target.posX);
+                int j = pathpoint.z - MathHelper.floor(target.posZ);
                 return (double)(i * i + j * j) <= 2.25D;
             }
         }

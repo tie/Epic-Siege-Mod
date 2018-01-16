@@ -45,9 +45,9 @@ public class EntitySensesProxy extends EntitySenses
         }
         else
         {
-            this.entityObj.world.theProfiler.startSection("canSee");
+            this.entityObj.world.profiler.startSection("canSee");
             boolean flag = ESM_Settings.Xray || this.entityObj.canEntityBeSeen(entityIn);
-            this.entityObj.world.theProfiler.endSection();
+            this.entityObj.world.profiler.endSection();
 
             if (flag)
             {

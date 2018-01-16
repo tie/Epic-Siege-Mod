@@ -28,10 +28,10 @@ public class ModifierBowAttack implements ITaskModifier
 		
 		try
 		{
-			return new EntityAIAttackRangedBow(skeleton, f_moveSpeedAmp.getDouble(entry), f_attackCooldown.getInt(entry), ESM_Settings.SkeletonDistance);
+			return new EntityAIAttackRangedBow<EntitySkeleton>(skeleton, f_moveSpeedAmp.getDouble(entry), f_attackCooldown.getInt(entry), ESM_Settings.SkeletonDistance);
 		} catch(Exception e)
 		{
-			return new EntityAIAttackRangedBow(skeleton, 1D, 20, ESM_Settings.SkeletonDistance);
+			return new EntityAIAttackRangedBow<EntitySkeleton>(skeleton, 1D, 20, ESM_Settings.SkeletonDistance);
 		}
 	}
 	

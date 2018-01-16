@@ -18,7 +18,7 @@ public class EntityAITasksProxy extends EntityAITasks
 	
 	public EntityAITasksProxy(EntityLiving host, EntityAITasks original)
 	{
-		super(host.world == null? null : host.world.theProfiler);
+		super(host.world == null? null : host.world.profiler);
 		this.host = host;
 		
 		for(EntityAITaskEntry entry : original.taskEntries)

@@ -42,7 +42,7 @@ public class ESM_EntityAIJohnCena extends EntityAIBase
     }
     
     @Override
-    public boolean continueExecuting()
+    public boolean shouldContinueExecuting()
     {
     	return true;
     }

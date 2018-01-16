@@ -19,7 +19,7 @@ public class SpiderHandler
 		
 		if(event.getEntityLiving() instanceof EntityPlayer && event.getSource() != null)
 		{
-			if(event.getSource().getEntity() instanceof EntitySpider && event.getEntityLiving().getRNG().nextInt(100) < ESM_Settings.SpiderWebChance)
+			if(event.getSource().getTrueSource() instanceof EntitySpider && event.getEntityLiving().getRNG().nextInt(100) < ESM_Settings.SpiderWebChance)
 			{
 				if(event.getEntityLiving().world.getBlockState(event.getEntityLiving().getPosition()).getMaterial().isReplaceable())
 				{

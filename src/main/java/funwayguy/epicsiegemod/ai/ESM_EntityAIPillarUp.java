@@ -91,7 +91,7 @@ public class ESM_EntityAIPillarUp extends EntityAIBase
 	}
 	
 	@Override
-	public boolean continueExecuting()
+	public boolean shouldContinueExecuting()
 	{
 		return shouldExecute();
 	}

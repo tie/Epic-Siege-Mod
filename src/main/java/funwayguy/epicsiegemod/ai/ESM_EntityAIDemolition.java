@@ -37,7 +37,7 @@ public class ESM_EntityAIDemolition extends EntityAIBase
 	}
 	
 	@Override
-	public boolean continueExecuting()
+	public boolean shouldContinueExecuting()
 	{
 		return false;
 	}

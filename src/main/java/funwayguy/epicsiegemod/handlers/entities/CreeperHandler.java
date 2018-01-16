@@ -121,8 +121,8 @@ public class CreeperHandler
 		{
 			try
 			{
-				f_isFlaming = Explosion.class.getDeclaredField("isFlaming");
-				f_explosionSize = Explosion.class.getDeclaredField("explosionSize");
+				f_isFlaming = Explosion.class.getDeclaredField("causesFire");
+				f_explosionSize = Explosion.class.getDeclaredField("size");
 				f_POWERED = EntityCreeper.class.getDeclaredField("POWERED");
 				MainHandler.f_modifiers.set(f_explosionSize, f_explosionSize.getModifiers() & ~Modifier.FINAL);
 				f_isFlaming.setAccessible(true);
