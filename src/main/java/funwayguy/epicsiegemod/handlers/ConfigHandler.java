@@ -33,7 +33,7 @@ public class ConfigHandler
 		ESM_Settings.hideUpdates =			config.getBoolean("Hide Updates", CAT_MAIN, false, "Hides update notifications");
 		ESM_Settings.hardDay =				config.getInt("Hardcore Day Cycle", CAT_MAIN, 8, 0, Integer.MAX_VALUE, "The interval in which 'hard' days will occur where mob spawning is increased and lighting is ignored (0 = off, default = 8/full moon)");
 		ESM_Settings.Awareness =			config.getInt("Awareness Radius", CAT_MAIN, 64, 0, Integer.MAX_VALUE, "How far mobs can see potential targets");
-		ESM_Settings.Xray =					config.getBoolean("Xray Mobs", CAT_MAIN, true, "Allows mobs to see targets through walls");
+		ESM_Settings.Xray =					config.getInt("Xray Mobs", CAT_MAIN, 64, 0, Integer.MAX_VALUE, "Distance mobs can sense targets through walls");
 		ESM_Settings.TargetCap =			config.getInt("Pathing Cap", CAT_MAIN, 16, 0, 128, "Maximum number of attackers per target");
 		ESM_Settings.VillagerTarget =		config.getBoolean("Villager Targeting", CAT_MAIN, true, "Allows mobs to attack villagers as they would players");
 		ESM_Settings.Chaos =				config.getBoolean("Chaos Mode", CAT_MAIN, false, "Everyone one and everything is a target");

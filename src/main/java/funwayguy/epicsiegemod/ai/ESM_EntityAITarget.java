@@ -50,7 +50,8 @@ public abstract class ESM_EntityAITarget extends EntityAIBase
     /**
      * Returns whether an in-progress EntityAIBase should continue executing
      */
-    public boolean continueExecuting()
+    @Override
+    public boolean shouldContinueExecuting()
     {
         EntityLivingBase entitylivingbase = this.taskOwner.getAttackTarget();
 
@@ -131,6 +132,7 @@ public abstract class ESM_EntityAITarget extends EntityAIBase
     /**
      * Resets the task
      */
+    @Override
     public void resetTask()
     {
         this.taskOwner.setAttackTarget((EntityLivingBase)null);

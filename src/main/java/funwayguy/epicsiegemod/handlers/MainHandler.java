@@ -21,6 +21,7 @@ import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import org.apache.logging.log4j.Level;
 import funwayguy.epicsiegemod.ai.hooks.EntityAITasksProxy;
+import funwayguy.epicsiegemod.ai.hooks.EntitySensesProxy;
 import funwayguy.epicsiegemod.api.EsmTaskEvent;
 import funwayguy.epicsiegemod.api.ITaskAddition;
 import funwayguy.epicsiegemod.api.TaskRegistry;
@@ -59,6 +60,7 @@ public class MainHandler
 				try
 				{
 					f_tasks.set(entityLiving, new EntityAITasksProxy(entityLiving, entityLiving.tasks));
+					f_senses.set(entityLiving, new EntitySensesProxy(entityLiving));
 					f_targetTasks.set(entityLiving, new EntityAITasksProxy(entityLiving, entityLiving.targetTasks));
 				} catch(Exception e)
 				{

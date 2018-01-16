@@ -81,7 +81,8 @@ public class ESM_EntityAIAttackMelee extends EntityAIBase
     /**
      * Returns whether an in-progress EntityAIBase should continue executing
      */
-    public boolean continueExecuting()
+    @Override
+    public boolean shouldContinueExecuting()
     {
         EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
         return entitylivingbase == null ? false : (!entitylivingbase.isEntityAlive() ? false : (!this.longMemory ? !this.attacker.getNavigator().noPath() : (attacker instanceof EntityCreature && !((EntityCreature)this.attacker).isWithinHomeDistanceFromPosition(new BlockPos(entitylivingbase)) ? false : !(entitylivingbase instanceof EntityPlayer) || !((EntityPlayer)entitylivingbase).isSpectator() && !((EntityPlayer)entitylivingbase).isCreative())));

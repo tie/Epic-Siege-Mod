@@ -9,7 +9,7 @@ public class ESM_Settings
 	//Main
 	public static boolean hideUpdates;
 	public static int Awareness;
-	public static boolean Xray;
+	public static int Xray;
 	public static int TargetCap;
 	public static boolean VillagerTarget;
 	public static boolean Chaos;
