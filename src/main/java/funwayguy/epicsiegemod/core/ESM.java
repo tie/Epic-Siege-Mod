@@ -14,13 +14,10 @@ import org.apache.logging.log4j.Logger;
 import funwayguy.epicsiegemod.core.proxies.CommonProxy;
 import funwayguy.epicsiegemod.handlers.ConfigHandler;
 
-@Mod(modid = ESM.MODID, name = ESM.NAME, version = ESM.VERSION, guiFactory = "funwayguy.epicsiegemod.client.ESMGuiFactory")
+@Mod(modid = ESM.MODID, name = ESM.NAME, version = "@VERSION@", guiFactory = "funwayguy.epicsiegemod.client.ESMGuiFactory")
 public class ESM
 {
 	public static final String MODID = "epicsiegemod";
-    public static final String VERSION = "CI_MOD_VERSION";
-    public static final String BRANCH = "CI_MOD_BRANCH";
-    public static final String HASH = "CI_MOD_HASH";
 	public static final String NAME = "Epic Siege Mod";
 	public static final String PROXY = "funwayguy.epicsiegemod.core.proxies";
 	public static final String CHANNEL = "ESM_CH";

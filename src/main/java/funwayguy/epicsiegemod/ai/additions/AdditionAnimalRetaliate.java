@@ -30,6 +30,6 @@ public class AdditionAnimalRetaliate implements ITaskAddition
 	@Override
 	public EntityAIBase getAdditionalAI(EntityLiving entityLiving)
 	{
-		return new EntityAIHurtByTarget((EntityCreature)entityLiving, true, new Class<?>[0]);
+		return new EntityAIHurtByTarget((EntityCreature)entityLiving, true);
 	}
 }

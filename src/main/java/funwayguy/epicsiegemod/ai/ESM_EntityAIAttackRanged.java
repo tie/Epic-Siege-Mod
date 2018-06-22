@@ -1,5 +1,6 @@
 package funwayguy.epicsiegemod.ai;
 
+import funwayguy.epicsiegemod.core.ESM_Settings;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IRangedAttackMob;
@@ -23,18 +24,18 @@ public class ESM_EntityAIAttackRanged extends EntityAIBase
     private final int attackIntervalMin;
     /** The maximum time the AI has to wait before peforming another ranged attack. */
     private final int maxRangedAttackTime;
-    private final float attackRadius;
-    private final float maxAttackDistance;
+    //private final float attackRadius;
+    //private final float maxAttackDistance;
     private boolean strafingClockwise;
     private boolean strafingBackwards;
     private int strafingTime = -1;
 
-    public ESM_EntityAIAttackRanged(IRangedAttackMob attacker, double movespeed, int maxAttackTime, float maxAttackDistanceIn)
+    /*public ESM_EntityAIAttackRanged(IRangedAttackMob attacker, double movespeed, int maxAttackTime)
     {
-        this(attacker, movespeed, maxAttackTime, maxAttackTime, maxAttackDistanceIn);
-    }
+        this(attacker, movespeed, maxAttackTime, maxAttackTime);
+    }*/
 
-    public ESM_EntityAIAttackRanged(IRangedAttackMob attacker, double movespeed, int p_i1650_4_, int maxAttackTime, float maxAttackDistanceIn)
+    public ESM_EntityAIAttackRanged(IRangedAttackMob attacker, double movespeed, int p_i1650_4_, int maxAttackTime)
     {
         this.rangedAttackTime = -1;
 
@@ -49,8 +50,8 @@ public class ESM_EntityAIAttackRanged extends EntityAIBase
             this.entityMoveSpeed = movespeed;
             this.attackIntervalMin = p_i1650_4_;
             this.maxRangedAttackTime = maxAttackTime;
-            this.attackRadius = maxAttackDistanceIn;
-            this.maxAttackDistance = maxAttackDistanceIn * maxAttackDistanceIn;
+            //this.attackRadius = maxAttackDistanceIn;
+            //this.maxAttackDistance = maxAttackDistanceIn * maxAttackDistanceIn;
             this.setMutexBits(3);
         }
     }
@@ -109,9 +110,9 @@ public class ESM_EntityAIAttackRanged extends EntityAIBase
             this.seeTime = 0;
         }
 
-        if (d0 <= (double)this.maxAttackDistance && this.seeTime >= 20)
+        if (d0 <= (double)getAttackDistance() && this.seeTime >= 20)
         {
-            this.entityHost.getNavigator().clearPathEntity();
+            this.entityHost.getNavigator().clearPath();
         }
         else
         {
@@ -135,11 +136,11 @@ public class ESM_EntityAIAttackRanged extends EntityAIBase
 
         if (this.strafingTime > -1)
         {
-            if (d0 > (double)(this.maxAttackDistance * 0.75F))
+            if (d0 > (double)(getAttackDistance() * 0.75F))
             {
                 this.strafingBackwards = false;
             }
-            else if (d0 < (double)(this.maxAttackDistance * 0.25F))
+            else if (d0 < (double)(getAttackDistance() * 0.25F))
             {
                 this.strafingBackwards = true;
             }
@@ -156,20 +157,25 @@ public class ESM_EntityAIAttackRanged extends EntityAIBase
         
         if (--this.rangedAttackTime == 0)
         {
-            if (d0 > (double)this.maxAttackDistance || !flag)
+            if (d0 > (double)getAttackDistance() || !flag)
             {
                 return;
             }
 
-            float f = MathHelper.sqrt(d0) / this.attackRadius;
+            float f = MathHelper.sqrt(d0) / getAttackDistance();
             float lvt_5_1_ = MathHelper.clamp(f, 0.1F, 1.0F);
             this.rangedAttackEntityHost.attackEntityWithRangedAttack(this.attackTarget, lvt_5_1_);
             this.rangedAttackTime = MathHelper.floor(f * (float)(this.maxRangedAttackTime - this.attackIntervalMin) + (float)this.attackIntervalMin);
         }
         else if (this.rangedAttackTime < 0)
         {
-            float f2 = MathHelper.sqrt(d0) / this.attackRadius;
+            float f2 = MathHelper.sqrt(d0) / getAttackDistance();
             this.rangedAttackTime = MathHelper.floor(f2 * (float)(this.maxRangedAttackTime - this.attackIntervalMin) + (float)this.attackIntervalMin);
         }
+    }
+    
+    private float getAttackDistance()
+    {
+        return ESM_Settings.SkeletonDistance;
     }
 }

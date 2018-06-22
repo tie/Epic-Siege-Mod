@@ -2,10 +2,10 @@ package funwayguy.epicsiegemod.core;
 
 public class DimSettings
 {
-	public double dmgMult = 1.0F;
-	public double spdMult = 1.0F;
-	public double hpMult = 1.0F;
-	public double knockResist = 1.0F;
+	public double dmgMult;
+	public double spdMult;
+	public double hpMult;
+	public double knockResist;
 	
 	public DimSettings(double hpMult, double dmgMult, double spdMult, double knockResist)
 	{

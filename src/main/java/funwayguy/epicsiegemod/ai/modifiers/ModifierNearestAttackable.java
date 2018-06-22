@@ -11,7 +11,6 @@ import net.minecraft.entity.monster.EntitySpider;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import org.apache.logging.log4j.Level;
-import com.google.common.base.Predicate;
 import funwayguy.epicsiegemod.ai.ESM_EntityAINearestAttackableTarget;
 import funwayguy.epicsiegemod.ai.ESM_EntityAISpiderTarget;
 import funwayguy.epicsiegemod.api.ITaskModifier;
@@ -22,7 +21,7 @@ public class ModifierNearestAttackable implements ITaskModifier
 {
 	private static Field f_targetClass;
 	private static Field f_targetChance;
-	private static Field f_targetSelector;
+	//private static Field f_targetSelector;
 	
 	private static Field f_shouldCheckSight;
 	private static Field f_nearbyOnly;
@@ -64,7 +63,7 @@ public class ModifierNearestAttackable implements ITaskModifier
 			@SuppressWarnings("unchecked")
 			Class<? extends EntityLivingBase> tarClass = (Class<? extends EntityLivingBase>)f_targetClass.get(task);
 			int tarChance = f_targetChance.getInt(task);
-			Predicate<? super EntityLivingBase> selector = null;//(Predicate<? super EntityLivingBase>)f_targetSelector.get(task);
+			//Predicate<? super EntityLivingBase> selector = null;//(Predicate<? super EntityLivingBase>)f_targetSelector.get(task);
 			
 			boolean sight = f_shouldCheckSight.getBoolean(task);
 			boolean nearby = f_nearbyOnly.getBoolean(task);
@@ -76,7 +75,7 @@ public class ModifierNearestAttackable implements ITaskModifier
 					ai = new ESM_EntityAISpiderTarget((EntitySpider)host);
 				} else
 				{
-					ai = new ESM_EntityAINearestAttackableTarget(host, tarChance, sight, nearby, selector);
+					ai = new ESM_EntityAINearestAttackableTarget(host, tarChance, sight, nearby, null);
 				}
 				
 				if(ESM_Settings.Chaos)
@@ -108,10 +107,10 @@ public class ModifierNearestAttackable implements ITaskModifier
 		{
 			f_targetClass = EntityAINearestAttackableTarget.class.getDeclaredField("field_75307_b");
 			f_targetChance = EntityAINearestAttackableTarget.class.getDeclaredField("field_75308_c");
-			f_targetSelector = EntityAINearestAttackableTarget.class.getDeclaredField("field_82643_g");
+			//f_targetSelector = EntityAINearestAttackableTarget.class.getDeclaredField("field_82643_g");
 			f_targetClass.setAccessible(true);
 			f_targetChance.setAccessible(true);
-			f_targetSelector.setAccessible(true);
+			//f_targetSelector.setAccessible(true);
 			
 			f_shouldCheckSight = EntityAITarget.class.getDeclaredField("field_75297_f");
 			f_nearbyOnly = EntityAITarget.class.getDeclaredField("field_75303_a");
@@ -123,10 +122,10 @@ public class ModifierNearestAttackable implements ITaskModifier
 			{
 				f_targetClass = EntityAINearestAttackableTarget.class.getDeclaredField("targetClass");
 				f_targetChance = EntityAINearestAttackableTarget.class.getDeclaredField("targetChance");
-				f_targetSelector = EntityAINearestAttackableTarget.class.getDeclaredField("targetEntitySelector");
+				//f_targetSelector = EntityAINearestAttackableTarget.class.getDeclaredField("targetEntitySelector");
 				f_targetClass.setAccessible(true);
 				f_targetChance.setAccessible(true);
-				f_targetSelector.setAccessible(true);
+				//f_targetSelector.setAccessible(true);
 				
 				f_shouldCheckSight = EntityAITarget.class.getDeclaredField("shouldCheckSight");
 				f_nearbyOnly = EntityAITarget.class.getDeclaredField("nearbyOnly");

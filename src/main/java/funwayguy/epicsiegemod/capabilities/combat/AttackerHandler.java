@@ -1,14 +1,15 @@
 package funwayguy.epicsiegemod.capabilities.combat;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.List;
+
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 
 public class AttackerHandler implements IAttackerHandler
 {
-	private ArrayList<EntityLiving> attackers = new ArrayList<EntityLiving>();
+	private List<EntityLiving> attackers = new ArrayList<>();
 	
 	@Override
 	public boolean canAttack(EntityLivingBase target, EntityLiving attacker)
@@ -34,7 +35,7 @@ public class AttackerHandler implements IAttackerHandler
 	@Override
 	public void updateAttackers(EntityLivingBase target)
 	{
-		Collections.sort(attackers, new EntityAINearestAttackableTarget.Sorter(target));
+		attackers.sort(new EntityAINearestAttackableTarget.Sorter(target));
 		
 		for(int i = attackers.size() - 1; i >= 0; i--)
 		{

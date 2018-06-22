@@ -18,13 +18,12 @@ public class ModifierZombieAttack implements ITaskModifier
 	@Override
 	public EntityAIBase getReplacement(EntityLiving host, EntityAIBase entry)
 	{
-		double speed = 1D;
-		
 		try
 		{
-			speed = ModifierAttackMelee.f_speed.getDouble(entry);
-		} catch(Exception e){}
-		
-		return new ESM_EntityAIZombieAttack((EntityZombie)host, speed, true);
+			return new ESM_EntityAIZombieAttack((EntityZombie)host, ModifierAttackMelee.f_speed.getDouble(entry), true);
+		} catch(Exception e)
+		{
+			return new ESM_EntityAIZombieAttack((EntityZombie)host, 1D, true);
+		}
 	}
 }

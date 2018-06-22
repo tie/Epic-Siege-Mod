@@ -13,10 +13,10 @@ import funwayguy.epicsiegemod.ai.utils.PredicateExplosives;
 public class ESM_EntityAIAvoidExplosion extends EntityAIBase
 {
     /** The entity we are attached to */
-    protected EntityCreature theEntity;
+    private EntityCreature theEntity;
     private double farSpeed;
     private double nearSpeed;
-    protected Entity closestLivingEntity;
+    private Entity closestLivingEntity;
     private float avoidDistance;
     /** The PathEntity of our entity */
     private Path entityPathEntity;
@@ -40,6 +40,11 @@ public class ESM_EntityAIAvoidExplosion extends EntityAIBase
      */
     public boolean shouldExecute()
     {
+        if(this.theEntity.ticksExisted % 10 != 0)
+        {
+            return false;
+        }
+        
         List<Entity> list = this.theEntity.world.getEntitiesWithinAABB(Entity.class, this.theEntity.getEntityBoundingBox().grow((double)this.avoidDistance, 3.0D, (double)this.avoidDistance), explosiveSelector);
 
         if (list.isEmpty())
@@ -55,7 +60,7 @@ public class ESM_EntityAIAvoidExplosion extends EntityAIBase
             {
                 return false;
             }
-            else if (this.closestLivingEntity.getDistanceSq(vec3d.x, vec3d.y, vec3d.z) < this.closestLivingEntity.getDistanceSqToEntity(this.theEntity))
+            else if (this.closestLivingEntity.getDistanceSq(vec3d.x, vec3d.y, vec3d.z) < this.closestLivingEntity.getDistanceSq(this.theEntity))
             {
                 return false;
             }
@@ -98,7 +103,7 @@ public class ESM_EntityAIAvoidExplosion extends EntityAIBase
      */
     public void updateTask()
     {
-        if (this.theEntity.getDistanceSqToEntity(this.closestLivingEntity) < 49.0D)
+        if (this.theEntity.getDistanceSq(this.closestLivingEntity) < 49.0D)
         {
             this.theEntity.getNavigator().setSpeed(this.nearSpeed);
         }

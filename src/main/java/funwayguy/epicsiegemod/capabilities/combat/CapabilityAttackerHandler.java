@@ -1,6 +1,5 @@
 package funwayguy.epicsiegemod.capabilities.combat;
 
-import java.util.concurrent.Callable;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
@@ -29,13 +28,6 @@ public class CapabilityAttackerHandler
 			public void readNBT(Capability<IAttackerHandler> capability, IAttackerHandler instance, EnumFacing side, NBTBase nbt)
 			{
 			}
-		}, new Callable<IAttackerHandler>()
-		{
-			@Override
-			public IAttackerHandler call() throws Exception
-			{
-				return new AttackerHandler();
-			}
-		});
+		}, AttackerHandler::new);
 	}
 }

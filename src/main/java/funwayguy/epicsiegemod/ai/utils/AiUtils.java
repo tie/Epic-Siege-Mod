@@ -17,12 +17,13 @@ public class AiUtils
 		IBlockState state = world.getBlockState(pos);
 		ItemStack heldItem = entity.getHeldItem(EnumHand.MAIN_HAND);
 		
-        float f = heldItem == null? 1F : heldItem.getStrVsBlock(state);
+        float f = heldItem.isEmpty()? 1F : heldItem.getDestroySpeed(state);
+        
         if (f > 1.0F)
         {
             int i = EnchantmentHelper.getEfficiencyModifier(entity);
 
-            if (i > 0 && heldItem != null)
+            if (i > 0 && !heldItem.isEmpty())
             {
                 f += (float)(i * i + 1);
             }
@@ -35,7 +36,7 @@ public class AiUtils
 
         if (entity.isPotionActive(MobEffects.MINING_FATIGUE))
         {
-            float f1 = 1.0F;
+            float f1;
 
             switch (entity.getActivePotionEffect(MobEffects.MINING_FATIGUE).getAmplifier())
             {
@@ -80,7 +81,7 @@ public class AiUtils
 		}
 		
 		ItemStack heldItem = entity.getHeldItem(EnumHand.MAIN_HAND);
-		boolean canHarvest = state.getMaterial().isToolNotRequired() || (heldItem != null && heldItem.canHarvestBlock(state));
+		boolean canHarvest = state.getMaterial().isToolNotRequired() || (!heldItem.isEmpty() && heldItem.canHarvestBlock(state));
 		
 		return getBreakSpeed(entity, world, pos) / hardness / (canHarvest? 30F : 100F);
 	}

@@ -13,12 +13,12 @@ public class ESM_EntityAIPillarUp extends EntityAIBase
 	/**
 	 * Potential surfaces zombies can initialise pillaring on
 	 */
-	static final EnumFacing[] placeSurface = new EnumFacing[]{EnumFacing.DOWN,EnumFacing.NORTH,EnumFacing.EAST,EnumFacing.SOUTH,EnumFacing.WEST};
-	public int placeDelay = 15;
-	public EntityLiving builder;
+	private static final EnumFacing[] placeSurface = new EnumFacing[]{EnumFacing.DOWN,EnumFacing.NORTH,EnumFacing.EAST,EnumFacing.SOUTH,EnumFacing.WEST};
+	private int placeDelay = 15;
+	private EntityLiving builder;
 	public EntityLivingBase target;
 	
-	BlockPos blockPos;
+	private BlockPos blockPos;
 	
 	public ESM_EntityAIPillarUp(EntityLiving entity)
 	{
@@ -102,7 +102,6 @@ public class ESM_EntityAIPillarUp extends EntityAIBase
 		if(placeDelay > 0 || target == null)
 		{
 			placeDelay--;
-			return;
 		} else if(blockPos != null)
 		{
 			placeDelay = 15;

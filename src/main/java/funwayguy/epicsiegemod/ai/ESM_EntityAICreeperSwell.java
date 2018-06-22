@@ -9,12 +9,12 @@ import funwayguy.epicsiegemod.core.ESM_Settings;
 public class ESM_EntityAICreeperSwell extends EntityAIBase
 {
     /** The creeper that is swelling. */
-    EntityCreeper creeper;
+    private EntityCreeper creeper;
     /** The creeper's attack target. This is used for the changing of the creeper's state. */
-    EntityLivingBase attackTarget;
-    CreeperHooks creeperHooks;
-    boolean detLocked = false;
-    int blastSize = -1;
+    private EntityLivingBase attackTarget;
+    private CreeperHooks creeperHooks;
+    private boolean detLocked = false;
+    private int blastSize = -1;
     
     public ESM_EntityAICreeperSwell(EntityCreeper creeper)
     {
@@ -38,17 +38,13 @@ public class ESM_EntityAICreeperSwell extends EntityAIBase
         	blastSize = creeperHooks.getExplosionSize(); // Powered state is ignored for now
         }
         
-        return this.creeper.getCreeperState() > 0 || canBreachEntity(target) || (target != null && this.creeper.getDistanceSqToEntity(target) < blastSize * blastSize);
+        return this.creeper.getCreeperState() > 0 || canBreachEntity(target) || (target != null && this.creeper.getDistanceSq(target) < blastSize * blastSize);
     }
     
-    public boolean canBreachEntity(EntityLivingBase target)
+    private boolean canBreachEntity(EntityLivingBase target)
     {
-    	if(ESM_Settings.CreeperBreaching && creeper.ticksExisted > 60 && target != null && !creeper.isRiding() && !creeper.hasPath() && creeper.getDistanceToEntity(target) < 64)
-        {
-        	return true;
-        }
-    	
-    	return false;
+        return ESM_Settings.CreeperBreaching && creeper.ticksExisted > 60 && target != null && !creeper.isRiding() && !creeper.hasPath() && creeper.getDistance(target) < 64;
+    
     }
     
     /**
@@ -91,7 +87,7 @@ public class ESM_EntityAICreeperSwell extends EntityAIBase
         {
             this.creeper.setCreeperState(-1);
         }
-        else if (this.creeper.getDistanceSqToEntity(this.attackTarget) > finalBlastSize * finalBlastSize && !breaching)
+        else if (this.creeper.getDistanceSq(this.attackTarget) > finalBlastSize * finalBlastSize && !breaching)
         {
             this.creeper.setCreeperState(-1);
         }

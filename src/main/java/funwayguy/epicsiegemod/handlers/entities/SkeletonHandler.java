@@ -81,13 +81,12 @@ public class SkeletonHandler
 					replaceArrowAttack(shooter, target, arrow.getDamage(), PotionUtils.getPotionTypeFromNBT(arrow.writeToNBT(new NBTTagCompound())));
 					arrow.setDead();
 					event.setCanceled(true);
-					return;
 				}
 			}
 		}
 	}
 	
-	public static void replaceArrowAttack(EntityLiving shooter, EntityLivingBase targetEntity, double par2, PotionType potions)
+	private static void replaceArrowAttack(EntityLiving shooter, EntityLivingBase targetEntity, double par2, PotionType potions)
 	{
 		EntityTippedArrow entityarrow = new EntityTippedArrow(shooter.world, shooter);
 		ItemStack itemTip = new ItemStack(Items.TIPPED_ARROW);
@@ -104,7 +103,7 @@ public class SkeletonHandler
         if (d3 >= 1.0E-7D)
         {
             float f4 = (float)d3 * 0.2F;
-        	entityarrow.setThrowableHeading(d0, d1 + (double)f4, d2, fireSpeed, ESM_Settings.SkeletonAccuracy);
+        	entityarrow.shoot(d0, d1 + (double)f4, d2, fireSpeed, ESM_Settings.SkeletonAccuracy);
         }
     	
         //EntityArrow entityarrow = new EntityArrow(shooter.worldObj, shooter, targetEntity, 1.6F, (float)(14 - shooter.worldObj.difficultySetting * 4));
@@ -122,7 +121,7 @@ public class SkeletonHandler
             entityarrow.setKnockbackStrength(j);
         }
         
-        if (shooter.isBurning() || EnchantmentHelper.getEnchantmentLevel(Enchantments.FLAME, shooter.getHeldItem(EnumHand.MAIN_HAND)) > 0 || (shooter instanceof EntitySkeleton && shooter instanceof EntityWitherSkeleton))
+        if (shooter.isBurning() || EnchantmentHelper.getEnchantmentLevel(Enchantments.FLAME, shooter.getHeldItem(EnumHand.MAIN_HAND)) > 0 || shooter instanceof EntityWitherSkeleton)
         {
             entityarrow.setFire(100);
         }

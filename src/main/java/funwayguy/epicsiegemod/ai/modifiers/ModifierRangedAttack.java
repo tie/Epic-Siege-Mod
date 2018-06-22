@@ -9,7 +9,6 @@ import org.apache.logging.log4j.Level;
 import funwayguy.epicsiegemod.ai.ESM_EntityAIAttackRanged;
 import funwayguy.epicsiegemod.api.ITaskModifier;
 import funwayguy.epicsiegemod.core.ESM;
-import funwayguy.epicsiegemod.core.ESM_Settings;
 
 public class ModifierRangedAttack implements ITaskModifier
 {
@@ -20,12 +19,8 @@ public class ModifierRangedAttack implements ITaskModifier
 	@Override
 	public boolean isValid(EntityLiving entityLiving, EntityAIBase task)
 	{
-		if(entityLiving instanceof IRangedAttackMob && task.getClass() == EntityAIAttackRanged.class)
-		{
-			return true;
-		}
+		return entityLiving instanceof IRangedAttackMob && task.getClass() == EntityAIAttackRanged.class;
 		
-		return false;
 	}
 	
 	@Override
@@ -33,11 +28,10 @@ public class ModifierRangedAttack implements ITaskModifier
 	{
 		try
 		{
-			return new ESM_EntityAIAttackRanged((IRangedAttackMob)host, f_entityMoveSpeed.getDouble(entry), f_attackIntervalMin.getInt(entry), f_maxRangedAttackTime.getInt(entry), ESM_Settings.SkeletonDistance);
+			return new ESM_EntityAIAttackRanged((IRangedAttackMob)host, f_entityMoveSpeed.getDouble(entry), f_attackIntervalMin.getInt(entry), f_maxRangedAttackTime.getInt(entry));
 		} catch(Exception e)
 		{
-			ESM.logger.log(Level.ERROR, "Unable to replace ranged attack", e);
-			return new ESM_EntityAIAttackRanged((IRangedAttackMob)host, 1, 1, 1, ESM_Settings.SkeletonDistance);
+			return new ESM_EntityAIAttackRanged((IRangedAttackMob)host, 1, 1, 1);
 		}
 	}
 	

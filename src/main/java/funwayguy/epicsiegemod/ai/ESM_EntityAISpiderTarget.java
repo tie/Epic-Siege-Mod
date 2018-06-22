@@ -4,7 +4,7 @@ import net.minecraft.entity.monster.EntitySpider;
 
 public class ESM_EntityAISpiderTarget extends ESM_EntityAINearestAttackableTarget
 {
-	EntitySpider spider;
+	private final EntitySpider spider;
 	
 	public ESM_EntityAISpiderTarget(EntitySpider spider)
 	{
@@ -16,6 +16,6 @@ public class ESM_EntityAISpiderTarget extends ESM_EntityAINearestAttackableTarge
     public boolean shouldExecute()
     {
         float f = this.spider.getBrightness();
-        return f >= 0.5F ? false : super.shouldExecute();
+        return !(f >= 0.5F) && super.shouldExecute();
     }
 }

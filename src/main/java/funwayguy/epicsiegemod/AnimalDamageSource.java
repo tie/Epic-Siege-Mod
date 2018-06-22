@@ -5,7 +5,6 @@ import net.minecraft.util.EntityDamageSource;
 
 public class AnimalDamageSource extends EntityDamageSource
 {
-	
 	public AnimalDamageSource(String typeName, Entity entitySource)
 	{
 		super(typeName, entitySource);

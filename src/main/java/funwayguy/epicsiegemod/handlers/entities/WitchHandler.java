@@ -1,5 +1,6 @@
 package funwayguy.epicsiegemod.handlers.entities;
 
+import funwayguy.epicsiegemod.core.ESM;
 import net.minecraft.entity.monster.EntityWitch;
 import net.minecraft.entity.projectile.EntityPotion;
 import net.minecraft.init.Items;
@@ -69,7 +70,7 @@ public class WitchHandler
 						}
 					} catch(Exception e)
 					{
-						effect = null;
+						ESM.logger.error("Unable to read potion type " + type[0] + ":" + type[1] + ":" + type[2] + ":" + type[3]);
 					}
 				}
 			}

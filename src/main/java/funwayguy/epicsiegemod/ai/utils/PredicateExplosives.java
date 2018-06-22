@@ -7,7 +7,7 @@ import com.google.common.base.Predicate;
 
 public class PredicateExplosives implements Predicate<Entity>
 {
-	Entity host;
+	private final Entity host;
 	
 	public PredicateExplosives(Entity host)
 	{

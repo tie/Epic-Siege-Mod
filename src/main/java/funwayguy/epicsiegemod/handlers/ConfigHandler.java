@@ -107,7 +107,7 @@ public class ConfigHandler
 				"minecraft:fence",
 				"minecraft:planks"
 		};
-		ESM_Settings.ZombieGriefBlocks = new ArrayList<String>(Arrays.asList(config.getStringList("General Griefable Blocks", CAT_ADVANCED, defGrief, "What blocks will be targeted for destruction when idle (Light sources included by default. Format: 'minecraft:wool:1')")));
+		ESM_Settings.ZombieGriefBlocks = new ArrayList<>(Arrays.asList(config.getStringList("General Griefable Blocks", CAT_ADVANCED, defGrief, "What blocks will be targeted for destruction when idle (Light sources included by default. Format: 'minecraft:wool:1')")));
 		
 		ESM_Settings.demolitionList.clear();
 		for(String s : config.getStringList("Demolition Mobs", CAT_ADVANCED, new String[]{"minecraft:zombie"}, "List of mobs that can drop live TNT"))

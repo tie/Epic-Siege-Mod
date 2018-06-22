@@ -15,9 +15,9 @@ import funwayguy.epicsiegemod.core.ESM_Settings;
 
 public class ESM_EntityAIGrief extends EntityAIBase
 {
-	EntityLiving entityLiving;
-	BlockPos markedLoc;
-	int digTick = 0;
+	private EntityLiving entityLiving;
+	private BlockPos markedLoc;
+	private int digTick = 0;
 	
 	public ESM_EntityAIGrief(EntityLiving entity)
 	{
@@ -45,7 +45,7 @@ public class ESM_EntityAIGrief extends EntityAIBase
 		
 		if((ESM_Settings.ZombieGriefBlocks.contains(regName.toString()) || state.getLightValue(entityLiving.world, tarPos) > 0) && state.getBlockHardness(entityLiving.world, tarPos) >= 0 && !state.getMaterial().isLiquid())
 		{
-			if(!ESM_Settings.ZombieDiggerTools || (item != null && item.getItem().canHarvestBlock(state, item)) || state.getMaterial().isToolNotRequired())
+			if(!ESM_Settings.ZombieDiggerTools || (!item.isEmpty() && item.getItem().canHarvestBlock(state, item)) || state.getMaterial().isToolNotRequired())
 			{
 				candidate = tarPos;
 			}
@@ -75,14 +75,14 @@ public class ESM_EntityAIGrief extends EntityAIBase
 		IBlockState state = entityLiving.world.getBlockState(markedLoc);
 		ResourceLocation regName = Block.REGISTRY.getNameForObject(state.getBlock());
 		
-		if(state.getBlock() == Blocks.AIR || (!ESM_Settings.ZombieGriefBlocks.contains(regName) && !ESM_Settings.ZombieGriefBlocks.contains(regName.toString()) && state.getLightValue(entityLiving.world, markedLoc) <= 0))
+		if(state.getBlock() == Blocks.AIR || (!ESM_Settings.ZombieGriefBlocks.contains(regName.toString()) && !ESM_Settings.ZombieGriefBlocks.contains(regName.toString()) && state.getLightValue(entityLiving.world, markedLoc) <= 0))
 		{
 			markedLoc = null;
 			return false;
 		}
 		
 		ItemStack item = entityLiving.getHeldItemMainhand();
-		return !ESM_Settings.ZombieDiggerTools || (item != null && item.getItem().canHarvestBlock(state, item)) || state.getMaterial().isToolNotRequired();
+		return !ESM_Settings.ZombieDiggerTools || (!item.isEmpty() && item.getItem().canHarvestBlock(state, item)) || state.getMaterial().isToolNotRequired();
 	}
 	
 	@Override
@@ -116,7 +116,7 @@ public class ESM_EntityAIGrief extends EntityAIBase
 			if(markedLoc != null)
 			{
 				ItemStack item = entityLiving.getHeldItemMainhand();
-				boolean canHarvest = state.getMaterial().isToolNotRequired() || (item != null && item.getItem().canHarvestBlock(state, item));
+				boolean canHarvest = state.getMaterial().isToolNotRequired() || (!item.isEmpty() && item.getItem().canHarvestBlock(state, item));
 				entityLiving.world.destroyBlock(markedLoc, canHarvest);
 				markedLoc = null;
 			} else
@@ -134,7 +134,7 @@ public class ESM_EntityAIGrief extends EntityAIBase
 		}
 	}
 	
-	public boolean canHarvest(EntityLiving entity, BlockPos pos)
+	/*public boolean canHarvest(EntityLiving entity, BlockPos pos)
 	{
 		IBlockState state = entity.world.getBlockState(pos);
 		
@@ -147,6 +147,6 @@ public class ESM_EntityAIGrief extends EntityAIBase
 		}
 		
 		ItemStack held = entity.getHeldItem(EnumHand.MAIN_HAND);
-		return held != null && held.getItem().canHarvestBlock(state, held);
-	}
+		return !held.isEmpty() && held.getItem().canHarvestBlock(state, held);
+	}*/
 }

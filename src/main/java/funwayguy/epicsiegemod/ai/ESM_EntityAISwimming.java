@@ -36,12 +36,11 @@ public class ESM_EntityAISwimming extends EntityAIBase
 		} else if(path != null && path.getFinalPathPoint() != null && path.getFinalPathPoint().y < pos.getY())
 		{
 			return false;
-		} else if(target != null && target.getPosition().getY() < pos.getY() && host.getDistanceToEntity(target) < 8F)
+		} else
 		{
-			return false;
+			return target == null || target.getPosition().getY() >= pos.getY() || !(host.getDistance(target) < 8F);
 		}
 		
-		return true;
 	}
 	
     public void updateTask()

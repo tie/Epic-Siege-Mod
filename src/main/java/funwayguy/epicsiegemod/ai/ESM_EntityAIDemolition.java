@@ -3,7 +3,6 @@ package funwayguy.epicsiegemod.ai;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.item.EntityTNTPrimed;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.Item;
@@ -33,7 +32,7 @@ public class ESM_EntityAIDemolition extends EntityAIBase
 		
 		boolean flag = (host.getHeldItemMainhand() != null && host.getHeldItemMainhand().getItem() == Item.getItemFromBlock(Blocks.TNT)) || (host.getHeldItemOffhand() != null && host.getHeldItemOffhand().getItem() == Item.getItemFromBlock(Blocks.TNT));
 		
-		return flag && host.getAttackTarget() != null && host.getAttackTarget().getDistanceToEntity(host) < 4F;
+		return flag && host.getAttackTarget() != null && host.getAttackTarget().getDistance(host) < 4F;
 	}
 	
 	@Override
@@ -48,6 +47,6 @@ public class ESM_EntityAIDemolition extends EntityAIBase
 		delay = 200;
 		EntityTNTPrimed tnt = new EntityTNTPrimed(host.world, host.posX, host.posY, host.posZ, host);
 		host.world.spawnEntity(tnt);
-        host.world.playSound((EntityPlayer)null, tnt.posX, tnt.posY, tnt.posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
+        host.world.playSound(null, tnt.posX, tnt.posY, tnt.posZ, SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
 	}
 }

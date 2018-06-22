@@ -14,7 +14,7 @@ import funwayguy.epicsiegemod.api.TaskRegistry;
  */
 public class EntityAITasksProxy extends EntityAITasks
 {
-	EntityLiving host;
+	private final EntityLiving host;
 	
 	public EntityAITasksProxy(EntityLiving host, EntityAITasks original)
 	{

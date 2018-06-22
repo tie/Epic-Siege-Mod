@@ -40,13 +40,8 @@ public class PlayerHandler
 		
 		EntityPlayer player = (EntityPlayer)event.getEntity();
 		
-		boolean hard = false;
 		int day = (int)(player.world.getWorldTime()/24000);
-		
-		if(!hard && ESM_Settings.hardDay != 0 && day != 0 && day%ESM_Settings.hardDay == 0)
-		{
-			hard = true;
-		}
+		boolean hard = ESM_Settings.hardDay != 0 && day != 0 && day%ESM_Settings.hardDay == 0;
 		
 		Random rand = player.getRNG();
 		
@@ -65,11 +60,11 @@ public class PlayerHandler
                 {
 	                try
 	                {
-	                	EntityLiving entityliving = (EntityLiving)spawnlistentry.entityClass.getConstructor(new Class[] {World.class}).newInstance(new Object[] {player.world});
+	                	EntityLiving entityliving = spawnlistentry.entityClass.getConstructor(new Class[] {World.class}).newInstance(player.world);
 	
 	                    entityliving.setLocationAndAngles((double)x, (double)y, (double)z, rand.nextFloat() * 360.0F, 0.0F);
 	
-	                    Result canSpawn = ForgeEventFactory.canEntitySpawn(entityliving, player.world, x, y, z, false);
+	                    Result canSpawn = ForgeEventFactory.canEntitySpawn(entityliving, player.world, x, y, z, null);
 	                    if (canSpawn == Result.ALLOW || (canSpawn == Result.DEFAULT && entityliving.getCanSpawnHere()))
 	                    {
 	                    	player.world.spawnEntity(entityliving);

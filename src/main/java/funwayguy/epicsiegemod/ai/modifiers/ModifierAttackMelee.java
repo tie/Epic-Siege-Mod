@@ -23,14 +23,13 @@ public class ModifierAttackMelee implements ITaskModifier
 	@Override
 	public EntityAIBase getReplacement(EntityLiving host, EntityAIBase entry)
 	{
-		double speed = 1D;
-		
 		try
 		{
-			speed = f_speed.getDouble(entry);
-		} catch(Exception e){}
-		
-		return new ESM_EntityAIAttackMelee(host, speed, true);
+			return new ESM_EntityAIAttackMelee(host, f_speed.getDouble(entry), true);
+		} catch(Exception e)
+		{
+			return new ESM_EntityAIAttackMelee(host, 1D, true);
+		}
 	}
 	
 	static

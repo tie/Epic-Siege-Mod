@@ -19,7 +19,7 @@ public class EndermanHandler
 		
 		if(ESM_Settings.EndermanPlayerTele && enderman.getAttackTarget() != null && enderman.getRNG().nextFloat() < 0.5F)
 		{
-			if(enderman.getAttackTarget().getDistanceToEntity(enderman) <= 2F)
+			if(enderman.getAttackTarget().getDistance(enderman) <= 2F)
 			{
 				event.setCanceled(true);
 				enderman.getAttackTarget().setPositionAndUpdate(event.getTargetX(), event.getTargetY(), event.getTargetZ());

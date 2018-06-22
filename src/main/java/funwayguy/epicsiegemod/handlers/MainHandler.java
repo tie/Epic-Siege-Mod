@@ -26,7 +26,6 @@ import funwayguy.epicsiegemod.api.EsmTaskEvent;
 import funwayguy.epicsiegemod.api.ITaskAddition;
 import funwayguy.epicsiegemod.api.TaskRegistry;
 import funwayguy.epicsiegemod.capabilities.combat.CapabilityAttackerHandler;
-import funwayguy.epicsiegemod.capabilities.combat.IAttackerHandler;
 import funwayguy.epicsiegemod.capabilities.combat.ProviderAttackerHandler;
 import funwayguy.epicsiegemod.capabilities.modified.CapabilityModifiedHandler;
 import funwayguy.epicsiegemod.capabilities.modified.ProviderModifiedHandler;
@@ -40,7 +39,7 @@ public class MainHandler
 	private static Field f_tasks;
 	private static Field f_targetTasks;
 	private static Field f_senses;
-	private static Field f_navigator;
+	//private static Field f_navigator;
 	
 	@SubscribeEvent
 	public void onEntityConstruct(EntityJoinWorldEvent event)
@@ -96,7 +95,7 @@ public class MainHandler
 			}
 			
 			IAttributeInstance att = entityLiving.getAttributeMap().getAttributeInstance(SharedMonsterAttributes.FOLLOW_RANGE);
-			if(att != null && att.getBaseValue() < ESM_Settings.Awareness)
+			if(att.getBaseValue() < ESM_Settings.Awareness)
 			{
 				att.setBaseValue(ESM_Settings.Awareness);
 			}
@@ -121,8 +120,7 @@ public class MainHandler
 	{
 		if(event.getTarget() != null && event.getEntityLiving() instanceof EntityLiving && event.getTarget().hasCapability(CapabilityAttackerHandler.ATTACKER_HANDLER_CAPABILITY, null))
 		{
-			IAttackerHandler handler = event.getTarget().getCapability(CapabilityAttackerHandler.ATTACKER_HANDLER_CAPABILITY, null);
-			handler.addAttacker(event.getTarget(), (EntityLiving)event.getEntityLiving());
+			event.getTarget().getCapability(CapabilityAttackerHandler.ATTACKER_HANDLER_CAPABILITY, null).addAttacker(event.getTarget(), (EntityLiving)event.getEntityLiving());
 		}
 	}
 	
@@ -137,8 +135,7 @@ public class MainHandler
 		if(event.getEntityLiving().ticksExisted%20 == 0 && event.getEntityLiving().hasCapability(CapabilityAttackerHandler.ATTACKER_HANDLER_CAPABILITY, null))
 		{
 			// Culls the attacker count once every second (relative to the lifetime of the target)
-			IAttackerHandler handler = event.getEntityLiving().getCapability(CapabilityAttackerHandler.ATTACKER_HANDLER_CAPABILITY, null);
-			handler.updateAttackers(event.getEntityLiving());
+			event.getEntityLiving().getCapability(CapabilityAttackerHandler.ATTACKER_HANDLER_CAPABILITY, null).updateAttackers(event.getEntityLiving());
 		}
 	}
 	
@@ -169,13 +166,13 @@ public class MainHandler
 			f_tasks = EntityLiving.class.getDeclaredField("field_70714_bg");
 			f_targetTasks = EntityLiving.class.getDeclaredField("field_70715_bh");
 			f_senses = EntityLiving.class.getDeclaredField("field_70723_bA");
-			f_navigator = EntityLiving.class.getDeclaredField("field_70699_by");
+			//f_navigator = EntityLiving.class.getDeclaredField("field_70699_by");
 			f_modifiers.set(f_tasks, f_tasks.getModifiers() & ~Modifier.FINAL);
 			f_modifiers.set(f_targetTasks, f_targetTasks.getModifiers() & ~Modifier.FINAL);
 			f_tasks.setAccessible(true);
 			f_targetTasks.setAccessible(true);
 			f_senses.setAccessible(true);
-			f_navigator.setAccessible(true);
+			//f_navigator.setAccessible(true);
 			hooksReady = true;
 		} catch(Exception e1)
 		{
@@ -184,13 +181,13 @@ public class MainHandler
 				f_tasks = EntityLiving.class.getDeclaredField("tasks");
 				f_targetTasks = EntityLiving.class.getDeclaredField("targetTasks");
 				f_senses = EntityLiving.class.getDeclaredField("senses");
-				f_navigator = EntityLiving.class.getDeclaredField("navigator");
+				//f_navigator = EntityLiving.class.getDeclaredField("navigator");
 				f_modifiers.set(f_tasks, f_tasks.getModifiers() & ~Modifier.FINAL);
 				f_modifiers.set(f_targetTasks, f_targetTasks.getModifiers() & ~Modifier.FINAL);
 				f_tasks.setAccessible(true);
 				f_targetTasks.setAccessible(true);
 				f_senses.setAccessible(true);
-				f_navigator.setAccessible(true);
+				//f_navigator.setAccessible(true);
 				hooksReady = true;
 			} catch(Exception e2)
 			{

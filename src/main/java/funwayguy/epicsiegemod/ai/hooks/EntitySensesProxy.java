@@ -1,17 +1,17 @@
 package funwayguy.epicsiegemod.ai.hooks;
 
+import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntitySenses;
-import com.google.common.collect.Lists;
 import funwayguy.epicsiegemod.core.ESM_Settings;
 
 public class EntitySensesProxy extends EntitySenses
 {
-    EntityLiving entityObj;
-    List<Entity> seenEntities = Lists.<Entity>newArrayList();
-    List<Entity> unseenEntities = Lists.<Entity>newArrayList();
+    private final EntityLiving entityObj;
+    private List<Entity> seenEntities = new ArrayList<>();
+    private List<Entity> unseenEntities = new ArrayList<>();
     
 	public EntitySensesProxy(EntityLiving entityObjIn)
 	{
@@ -46,7 +46,7 @@ public class EntitySensesProxy extends EntitySenses
         else
         {
             this.entityObj.world.profiler.startSection("canSee");
-            boolean flag = (entityIn.getDistanceToEntity(entityObj) <= ESM_Settings.Xray) || this.entityObj.canEntityBeSeen(entityIn);
+            boolean flag = (entityIn.getDistance(entityObj) <= ESM_Settings.Xray) || this.entityObj.canEntityBeSeen(entityIn);
             this.entityObj.world.profiler.endSection();
 
             if (flag)

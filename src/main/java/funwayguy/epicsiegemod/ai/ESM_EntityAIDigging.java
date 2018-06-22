@@ -16,11 +16,11 @@ import funwayguy.epicsiegemod.core.ESM_Settings;
 
 public class ESM_EntityAIDigging extends EntityAIBase
 {
-	EntityLivingBase target;
-	EntityLiving digger;
-	BlockPos curBlock;
-	int scanTick = 0;
-	int digTick = 0;
+	private EntityLivingBase target;
+	private EntityLiving digger;
+	private BlockPos curBlock;
+	private int scanTick = 0;
+	private int digTick = 0;
 	
 	public ESM_EntityAIDigging(EntityLiving digger)
 	{
@@ -33,7 +33,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
 	{
 		target = digger.getAttackTarget();
 		
-		if(target == null || !target.isEntityAlive() || !digger.getNavigator().noPath() || digger.getDistanceToEntity(target) < 1D)
+		if(target == null || !target.isEntityAlive() || !digger.getNavigator().noPath() || digger.getDistance(target) < 1D)
 		{
 			return false;
 		}
@@ -48,7 +48,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
 	public void startExecuting()
 	{
 		super.startExecuting();
-		digger.getNavigator().clearPathEntity();
+		digger.getNavigator().clearPath();
 	}
 	
 	@Override
@@ -73,7 +73,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
 		}
 		
 		digger.getLookHelper().setLookPosition(target.posX, target.posY + (double)target.getEyeHeight(), target.posZ, (float)digger.getHorizontalFaceSpeed(), (float)digger.getVerticalFaceSpeed());
-		digger.getNavigator().clearPathEntity();
+		digger.getNavigator().clearPath();
 		
 		digTick++;
 		float str = AiUtils.getBlockStrength(digger, digger.world, curBlock) * (digTick + 1F);
@@ -85,7 +85,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
 			this.resetTask();
 		} else if(str >= 1F)
 		{
-			boolean canHarvest = state.getMaterial().isToolNotRequired() || (heldItem != null && heldItem.canHarvestBlock(state));
+			boolean canHarvest = state.getMaterial().isToolNotRequired() || (!heldItem.isEmpty() && heldItem.canHarvestBlock(state));
 			digger.world.destroyBlock(curBlock, canHarvest);
 			digger.getNavigator().setPath(digger.getNavigator().getPathToEntityLiving(target), digger.getMoveHelper().getSpeed());
 			this.resetTask();
@@ -97,7 +97,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
 		}
 	}
 	
-	public BlockPos getNextBlock(EntityLiving entityLiving, EntityLivingBase target, double dist)
+	private BlockPos getNextBlock(EntityLiving entityLiving, EntityLivingBase target, double dist)
 	{
         int digWidth = MathHelper.ceil(entityLiving.width);
         int digHeight = MathHelper.ceil(entityLiving.height);
@@ -126,14 +126,14 @@ public class ESM_EntityAIDigging extends EntityAIBase
 			} else if(p2.getY() - p1.getY() < 2D)
 			{
 				rayOffset = rayOrigin.addVector(0D, -dist, 0D);
-			} else
+			}/* else
 			{
-				//rayOffset = rayOrigin.add(digger.getLook(1F).scale(dist));
-			}
-		} else
+				rayOffset = rayOrigin.add(digger.getLook(1F).scale(dist));
+			}*/ // Forgot what this did
+		}/* else
 		{
 			//rayOffset = rayOrigin.add(digger.getLook(1F).scale(dist));
-		}
+		}*/ // Forgot what this did
 		
 		RayTraceResult ray = entityLiving.world.rayTraceBlocks(rayOrigin, rayOffset, false, true, false);
 		scanTick = (scanTick + 1)%passMax;
@@ -152,7 +152,7 @@ public class ESM_EntityAIDigging extends EntityAIBase
 		return null;
 	}
 	
-	public boolean canHarvest(EntityLiving entity, BlockPos pos)
+	private boolean canHarvest(EntityLiving entity, BlockPos pos)
 	{
 		IBlockState state = entity.world.getBlockState(pos);
 		
@@ -165,6 +165,6 @@ public class ESM_EntityAIDigging extends EntityAIBase
 		}
 		
 		ItemStack held = entity.getHeldItem(EnumHand.MAIN_HAND);
-		return held != null && held.getItem().canHarvestBlock(state, held);
+		return !held.isEmpty() && held.getItem().canHarvestBlock(state, held);
 	}
 }

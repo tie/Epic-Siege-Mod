@@ -1,6 +1,8 @@
 package funwayguy.epicsiegemod.client.gui;
 
 import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
@@ -16,9 +18,9 @@ public class ESMGuiConfig extends GuiConfig
 		super(parent, getCategories(ConfigHandler.config), ESM.MODID, false, false, ESM.NAME);
 	}
 	
-	public static ArrayList<IConfigElement> getCategories(Configuration config)
+	private static List<IConfigElement> getCategories(Configuration config)
 	{
-		ArrayList<IConfigElement> cats = new ArrayList<IConfigElement>();
+		List<IConfigElement> cats = new ArrayList<>();
 		
 		for(String s : config.getCategoryNames())
 		{

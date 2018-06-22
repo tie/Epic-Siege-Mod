@@ -6,7 +6,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;
@@ -17,9 +16,9 @@ import net.minecraft.util.math.MathHelper;
 public abstract class ESM_EntityAITarget extends EntityAIBase
 {
     /** The entity that this task belongs to */
-    protected final EntityLiving taskOwner;
+    private final EntityLiving taskOwner;
     /** If true, EntityAI targets must be able to be seen (cannot be blocked by walls) to be suitable targets. */
-    protected boolean shouldCheckSight;
+    private boolean shouldCheckSight;
     /** When true, only entities that can be reached with minimal effort will be targetted. */
     private boolean nearbyOnly;
     /** When nearbyOnly is true: 0 -> No target, but OK to search; 1 -> Nearby target found; 2 -> Target too far. */
@@ -31,13 +30,13 @@ public abstract class ESM_EntityAITarget extends EntityAIBase
      * see the target
      */
     private int targetUnseenTicks;
-    protected EntityLivingBase field_188509_g;
-    protected int field_188510_h;
+    private EntityLivingBase field_188509_g;
+    private int field_188510_h;
 
-    public ESM_EntityAITarget(EntityLiving creature, boolean checkSight)
+    /*public ESM_EntityAITarget(EntityLiving creature, boolean checkSight)
     {
         this(creature, checkSight, false);
-    }
+    }*/
 
     public ESM_EntityAITarget(EntityLiving creature, boolean checkSight, boolean onlyNearby)
     {
@@ -81,7 +80,7 @@ public abstract class ESM_EntityAITarget extends EntityAIBase
             {
                 double d0 = this.getTargetDistance();
 
-                if (this.taskOwner.getDistanceSqToEntity(entitylivingbase) > d0 * d0)
+                if (this.taskOwner.getDistanceSq(entitylivingbase) > d0 * d0)
                 {
                     return false;
                 }
@@ -113,10 +112,9 @@ public abstract class ESM_EntityAITarget extends EntityAIBase
         }
     }
 
-    protected double getTargetDistance()
+    public double getTargetDistance()
     {
-        IAttributeInstance iattributeinstance = this.taskOwner.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
-        return iattributeinstance == null ? 16.0D : iattributeinstance.getAttributeValue();
+        return this.taskOwner.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).getAttributeValue();
     }
 
     /**
@@ -135,14 +133,14 @@ public abstract class ESM_EntityAITarget extends EntityAIBase
     @Override
     public void resetTask()
     {
-        this.taskOwner.setAttackTarget((EntityLivingBase)null);
+        this.taskOwner.setAttackTarget(null);
         this.field_188509_g = null;
     }
 
     /**
      * A static method used to see if an entity is a suitable target through a number of checks.
      */
-    public static boolean isSuitableTarget(EntityLiving attacker, EntityLivingBase target, boolean includeInvincibles, boolean checkSight)
+    private static boolean isSuitableTarget(EntityLiving attacker, EntityLivingBase target, boolean includeInvincibles, boolean checkSight)
     {
         if (target == null)
         {
@@ -168,7 +166,7 @@ public abstract class ESM_EntityAITarget extends EntityAIBase
         {
             if (attacker instanceof IEntityOwnable && ((IEntityOwnable)attacker).getOwnerId() != null)
             {
-                if (target instanceof IEntityOwnable && ((IEntityOwnable)attacker).getOwnerId().equals(target.getUniqueID()))
+                if (target instanceof IEntityOwnable && target.getUniqueID().equals(((IEntityOwnable)attacker).getOwnerId()))
                 {
                     return false;
                 }
@@ -214,11 +212,8 @@ public abstract class ESM_EntityAITarget extends EntityAIBase
                 {
                     this.targetSearchStatus = this.canEasilyReach(target) ? 1 : 2;
                 }
-
-                if (this.targetSearchStatus == 2)
-                {
-                    return false;
-                }
+    
+                return this.targetSearchStatus != 2;
             }
 
             return true;
@@ -230,7 +225,7 @@ public abstract class ESM_EntityAITarget extends EntityAIBase
      */
     private boolean canEasilyReach(EntityLivingBase target)
     {
-        this.targetSearchDelay = 10 + this.taskOwner.getRNG().nextInt(5);
+        this.targetSearchDelay = 10 + this.taskOwner.getRNG().nextInt(Math.max(5, (int)this.taskOwner.getDistance(target) - 10));
         Path pathentity = this.taskOwner.getNavigator().getPathToEntityLiving(target);
 
         if (pathentity == null)

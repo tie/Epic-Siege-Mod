@@ -1,3 +1,0 @@
-echo "Downloading dependencies..."
-mkdir -p libs
-curl -k -o make_logs https://gist.githubusercontent.com/Funwayguy/e9de7c85dffc301346bd9ee6fd3acf86/raw/epicsiegemod_make_logs

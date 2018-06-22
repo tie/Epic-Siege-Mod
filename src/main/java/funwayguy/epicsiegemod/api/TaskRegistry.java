@@ -1,17 +1,14 @@
 package funwayguy.epicsiegemod.api;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public final class TaskRegistry
 {
 	public static final TaskRegistry INSTANCE = new TaskRegistry();
 	
-	private ArrayList<ITaskAddition> additions = new ArrayList<ITaskAddition>();
-	private ArrayList<ITaskModifier> modifiers = new ArrayList<ITaskModifier>();
-	
-	private TaskRegistry()
-	{
-	}
+	private List<ITaskAddition> additions = new ArrayList<>();
+	private List<ITaskModifier> modifiers = new ArrayList<>();
 	
 	public void registerTaskModifier(ITaskModifier mod)
 	{
@@ -30,14 +27,14 @@ public final class TaskRegistry
 	}
 	
 	@SuppressWarnings("unchecked")
-	public ArrayList<ITaskModifier> getAllModifiers()
+	public List<ITaskModifier> getAllModifiers()
 	{
-		return (ArrayList<ITaskModifier>)modifiers.clone();
+		return modifiers;
 	}
 	
 	@SuppressWarnings("unchecked")
-	public ArrayList<ITaskAddition> getAllAdditions()
+	public List<ITaskAddition> getAllAdditions()
 	{
-		return (ArrayList<ITaskAddition>)additions.clone();
+		return additions;
 	}
 }

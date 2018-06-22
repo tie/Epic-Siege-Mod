@@ -2,6 +2,8 @@ package funwayguy.epicsiegemod.core;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
 import net.minecraft.util.ResourceLocation;
 
 public class ESM_Settings
@@ -16,12 +18,12 @@ public class ESM_Settings
 	public static boolean AllowSleep;
 	public static int ResistanceCoolDown;
 	public static int hardDay = 8;
-	public static ArrayList<ResourceLocation> AIExempt = new ArrayList<ResourceLocation>();
+	public static List<ResourceLocation> AIExempt = new ArrayList<>();
 	
-	public static HashMap<Integer, DimSettings> dimSettings = new HashMap<Integer, DimSettings>();
-	public static ArrayList<ResourceLocation> diggerList = new ArrayList<ResourceLocation>();
-	public static ArrayList<ResourceLocation> demolitionList = new ArrayList<ResourceLocation>();
-	public static ArrayList<ResourceLocation> pillarList = new ArrayList<ResourceLocation>();
+	public static HashMap<Integer, DimSettings> dimSettings = new HashMap<>();
+	public static List<ResourceLocation> diggerList = new ArrayList<>();
+	public static List<ResourceLocation> demolitionList = new ArrayList<>();
+	public static List<ResourceLocation> pillarList = new ArrayList<>();
 	
 	//Witch
 	public static String[] customPotions = new String[0];
@@ -40,8 +42,8 @@ public class ESM_Settings
 	//Zombie
 	public static boolean ZombieInfectious;
 	public static boolean ZombieDiggerTools;
-	public static ArrayList<String> ZombieGriefBlocks = new ArrayList<String>();
-	public static ArrayList<String> ZombieDigBlacklist = new ArrayList<String>();
+	public static List<String> ZombieGriefBlocks = new ArrayList<>();
+	public static List<String> ZombieDigBlacklist = new ArrayList<>();
 	public static boolean ZombieSwapList;
 	
 	//Enderman
@@ -51,7 +53,7 @@ public class ESM_Settings
 	public static int SpiderWebChance;
 	
 	//Advanced
-	public static ArrayList<String> MobBombs = new ArrayList<String>();
+	public static ArrayList<String> MobBombs = new ArrayList<>();
 	public static int MobBombRarity;
 	public static boolean MobBombAll;
 	public static boolean WitherSkeletons;

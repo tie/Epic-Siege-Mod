@@ -10,26 +10,23 @@ import net.minecraft.pathfinding.Path;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import funwayguy.epicsiegemod.core.ESM_Settings;
 
 public class ESM_EntityAIAttackMelee extends EntityAIBase
 {
-    World worldObj;
-    protected EntityLiving attacker;
+    private EntityLiving attacker;
     /** An amount of decrementing ticks that allows the entity to attack once the tick reaches 0. */
     int attackTick;
     /** The speed with which the mob will approach the target */
-    double speedTowardsTarget;
+    private double speedTowardsTarget;
     /** When true, the mob will continue chasing its target, even if it can't find a path to them right now. */
-    boolean longMemory;
+    private boolean longMemory;
     /** The PathEntity of our entity. */
-    Path entityPathEntity;
+    private Path entityPathEntity;
     private int delayCounter;
     private double targetX;
     private double targetY;
     private double targetZ;
-    protected final int field_188493_g = 20;
     private int failedPathFindingPenalty = 0;
     private boolean canPenalize = false;
     private boolean strafeClockwise = false;
@@ -37,7 +34,7 @@ public class ESM_EntityAIAttackMelee extends EntityAIBase
     public ESM_EntityAIAttackMelee(EntityLiving creature, double speedIn, boolean useLongMemory)
     {
         this.attacker = creature;
-        this.worldObj = creature.world;
+        //this.worldObj = creature.world;
         this.speedTowardsTarget = speedIn;
         this.longMemory = useLongMemory;
         this.setMutexBits(3);
@@ -85,7 +82,7 @@ public class ESM_EntityAIAttackMelee extends EntityAIBase
     public boolean shouldContinueExecuting()
     {
         EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
-        return entitylivingbase == null ? false : (!entitylivingbase.isEntityAlive() ? false : (!this.longMemory ? !this.attacker.getNavigator().noPath() : (attacker instanceof EntityCreature && !((EntityCreature)this.attacker).isWithinHomeDistanceFromPosition(new BlockPos(entitylivingbase)) ? false : !(entitylivingbase instanceof EntityPlayer) || !((EntityPlayer)entitylivingbase).isSpectator() && !((EntityPlayer)entitylivingbase).isCreative())));
+        return entitylivingbase != null && (entitylivingbase.isEntityAlive() && (!this.longMemory ? !this.attacker.getNavigator().noPath() : ((!(attacker instanceof EntityCreature) || ((EntityCreature)this.attacker).isWithinHomeDistanceFromPosition(new BlockPos(entitylivingbase))) && (!(entitylivingbase instanceof EntityPlayer) || !((EntityPlayer)entitylivingbase).isSpectator() && !((EntityPlayer)entitylivingbase).isCreative()))));
     }
 
     /**
@@ -106,10 +103,10 @@ public class ESM_EntityAIAttackMelee extends EntityAIBase
 
         if (entitylivingbase instanceof EntityPlayer && (((EntityPlayer)entitylivingbase).isSpectator() || ((EntityPlayer)entitylivingbase).isCreative()))
         {
-            this.attacker.setAttackTarget((EntityLivingBase)null);
+            this.attacker.setAttackTarget(null);
         }
 
-        this.attacker.getNavigator().clearPathEntity();
+        this.attacker.getNavigator().clearPath();
     }
 
     /**
@@ -118,6 +115,12 @@ public class ESM_EntityAIAttackMelee extends EntityAIBase
     public void updateTask()
     {
         EntityLivingBase entitylivingbase = this.attacker.getAttackTarget();
+        
+        if(entitylivingbase == null)
+        {
+            return;
+        }
+        
         this.attacker.getLookHelper().setLookPositionWithEntity(entitylivingbase, 30.0F, 30.0F);
         double d0 = this.attacker.getDistanceSq(entitylivingbase.posX, entitylivingbase.getEntityBoundingBox().minY, entitylivingbase.posZ);
         double d1 = this.func_179512_a(entitylivingbase);
@@ -186,7 +189,7 @@ public class ESM_EntityAIAttackMelee extends EntityAIBase
         }
     }
 
-    protected double func_179512_a(EntityLivingBase attackTarget)
+    private double func_179512_a(EntityLivingBase attackTarget)
     {
         return (double)(this.attacker.width * 2.0F * this.attacker.width * 2.0F + attackTarget.width);
     }

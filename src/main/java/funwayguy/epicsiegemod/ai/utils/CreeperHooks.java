@@ -9,7 +9,7 @@ import funwayguy.epicsiegemod.core.ESM;
 
 public class CreeperHooks
 {
-	public static final DataParameter<Boolean> POWERED;
+	private static final DataParameter<Boolean> POWERED;
 	private static Field blastSize = null;
 	
 	private EntityCreeper creeper;
@@ -29,9 +29,9 @@ public class CreeperHooks
 		return creeper.getDataManager().get(POWERED);
 	}
 	
-	public void setPowered()
+	public void setPowered(boolean state)
 	{
-		creeper.getDataManager().set(POWERED, true);
+		creeper.getDataManager().set(POWERED, state);
 	}
 	
 	public int getExplosionSize()
@@ -41,6 +41,7 @@ public class CreeperHooks
 			return blastSize.getInt(creeper);
 		} catch(Exception e)
 		{
+			ESM.logger.log(Level.ERROR, "Unable to get creeper blast radius", e);
 			return 3;
 		}
 	}
@@ -50,7 +51,10 @@ public class CreeperHooks
 		try
 		{
 			blastSize.setInt(creeper, value);
-		} catch(Exception e){}
+		} catch(Exception e)
+		{
+			ESM.logger.log(Level.ERROR, "Unable to set creeper blast radius", e);
+		}
 	}
 	
 	static
