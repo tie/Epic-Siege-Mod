@@ -1,7 +1,16 @@
 package funwayguy.epicsiegemod.handlers;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
+import funwayguy.epicsiegemod.ai.hooks.EntityAITasksProxy;
+import funwayguy.epicsiegemod.ai.hooks.EntitySensesProxy;
+import funwayguy.epicsiegemod.api.EsmTaskEvent;
+import funwayguy.epicsiegemod.api.ITaskAddition;
+import funwayguy.epicsiegemod.api.TaskRegistry;
+import funwayguy.epicsiegemod.capabilities.combat.CapabilityAttackerHandler;
+import funwayguy.epicsiegemod.capabilities.combat.ProviderAttackerHandler;
+import funwayguy.epicsiegemod.capabilities.modified.CapabilityModifiedHandler;
+import funwayguy.epicsiegemod.capabilities.modified.ProviderModifiedHandler;
+import funwayguy.epicsiegemod.core.ESM;
+import funwayguy.epicsiegemod.core.ESM_Settings;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -20,17 +29,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import org.apache.logging.log4j.Level;
-import funwayguy.epicsiegemod.ai.hooks.EntityAITasksProxy;
-import funwayguy.epicsiegemod.ai.hooks.EntitySensesProxy;
-import funwayguy.epicsiegemod.api.EsmTaskEvent;
-import funwayguy.epicsiegemod.api.ITaskAddition;
-import funwayguy.epicsiegemod.api.TaskRegistry;
-import funwayguy.epicsiegemod.capabilities.combat.CapabilityAttackerHandler;
-import funwayguy.epicsiegemod.capabilities.combat.ProviderAttackerHandler;
-import funwayguy.epicsiegemod.capabilities.modified.CapabilityModifiedHandler;
-import funwayguy.epicsiegemod.capabilities.modified.ProviderModifiedHandler;
-import funwayguy.epicsiegemod.core.ESM;
-import funwayguy.epicsiegemod.core.ESM_Settings;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 public class MainHandler
 {
@@ -61,10 +62,20 @@ public class MainHandler
 					f_tasks.set(entityLiving, new EntityAITasksProxy(entityLiving, entityLiving.tasks));
 					f_senses.set(entityLiving, new EntitySensesProxy(entityLiving));
 					f_targetTasks.set(entityLiving, new EntityAITasksProxy(entityLiving, entityLiving.targetTasks));
+					
+					/*if(entityLiving.getNavigator() instanceof PathNavigateGround && entityLiving instanceof EntityAnimal)
+					{
+						f_navigator.set(entityLiving, new ProxyNavigator(entityLiving, entityLiving.world));
+					}*/
 				} catch(Exception e)
 				{
 					ESM.logger.log(Level.ERROR, "Unable to set AI hooks in " + entityLiving.getName(), e);
+					return;
 				}
+			} else
+			{
+				// AI exempt
+				return;
 			}
 			
 			for(ITaskAddition add : TaskRegistry.INSTANCE.getAllAdditions())

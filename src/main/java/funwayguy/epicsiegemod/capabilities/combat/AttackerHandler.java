@@ -3,6 +3,7 @@ package funwayguy.epicsiegemod.capabilities.combat;
 import java.util.ArrayList;
 import java.util.List;
 
+import funwayguy.epicsiegemod.core.ESM_Settings;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
@@ -14,7 +15,7 @@ public class AttackerHandler implements IAttackerHandler
 	@Override
 	public boolean canAttack(EntityLivingBase target, EntityLiving attacker)
 	{
-		return this.getAttackers() < 8;
+		return this.getAttackers() < ESM_Settings.TargetCap;
 	}
 	
 	@Override
@@ -39,7 +40,7 @@ public class AttackerHandler implements IAttackerHandler
 		
 		for(int i = attackers.size() - 1; i >= 0; i--)
 		{
-			if(attackers.size() > 8)
+			if(attackers.size() > ESM_Settings.TargetCap)
 			{
 				attackers.remove(i);
 				continue;

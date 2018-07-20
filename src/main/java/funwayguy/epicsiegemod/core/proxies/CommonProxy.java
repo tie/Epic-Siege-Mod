@@ -1,5 +1,6 @@
 package funwayguy.epicsiegemod.core.proxies;
 
+import funwayguy.epicsiegemod.ai.modifiers.*;
 import net.minecraftforge.common.MinecraftForge;
 import funwayguy.epicsiegemod.ai.additions.AdditionAnimalAttack;
 import funwayguy.epicsiegemod.ai.additions.AdditionAnimalRetaliate;
@@ -8,15 +9,6 @@ import funwayguy.epicsiegemod.ai.additions.AdditionDemolition;
 import funwayguy.epicsiegemod.ai.additions.AdditionDigger;
 import funwayguy.epicsiegemod.ai.additions.AdditionGrief;
 import funwayguy.epicsiegemod.ai.additions.AdditionPillaring;
-import funwayguy.epicsiegemod.ai.modifiers.ModifierAttackMelee;
-import funwayguy.epicsiegemod.ai.modifiers.ModifierBowAttack;
-import funwayguy.epicsiegemod.ai.modifiers.ModifierCreeperSwell;
-import funwayguy.epicsiegemod.ai.modifiers.ModifierNearestAttackable;
-import funwayguy.epicsiegemod.ai.modifiers.ModifierNoPanic;
-import funwayguy.epicsiegemod.ai.modifiers.ModifierRangedAttack;
-import funwayguy.epicsiegemod.ai.modifiers.ModifierSwimming;
-import funwayguy.epicsiegemod.ai.modifiers.ModifierVillagerAvoid;
-import funwayguy.epicsiegemod.ai.modifiers.ModifierZombieAttack;
 import funwayguy.epicsiegemod.api.TaskRegistry;
 import funwayguy.epicsiegemod.capabilities.combat.CapabilityAttackerHandler;
 import funwayguy.epicsiegemod.capabilities.modified.CapabilityModifiedHandler;
@@ -58,6 +50,7 @@ public class CommonProxy
 		TaskRegistry.INSTANCE.registerTaskModifier(new ModifierZombieAttack());
 		TaskRegistry.INSTANCE.registerTaskModifier(new ModifierRangedAttack());
 		TaskRegistry.INSTANCE.registerTaskModifier(new ModifierBowAttack());
+		TaskRegistry.INSTANCE.registerTaskModifier(new ModifierWander()); // TODO: Remove once animals stop being stupid
 		
 		TaskRegistry.INSTANCE.registerTaskAddition(new AdditionAnimalRetaliate());
 		TaskRegistry.INSTANCE.registerTaskAddition(new AdditionAnimalAttack());

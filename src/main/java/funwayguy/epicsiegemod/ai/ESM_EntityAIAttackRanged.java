@@ -5,6 +5,7 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IRangedAttackMob;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.math.MathHelper;
 
 public class ESM_EntityAIAttackRanged extends EntityAIBase
@@ -29,6 +30,7 @@ public class ESM_EntityAIAttackRanged extends EntityAIBase
     private boolean strafingClockwise;
     private boolean strafingBackwards;
     private int strafingTime = -1;
+    private int navDelay = 0;
 
     /*public ESM_EntityAIAttackRanged(IRangedAttackMob attacker, double movespeed, int maxAttackTime)
     {
@@ -100,7 +102,7 @@ public class ESM_EntityAIAttackRanged extends EntityAIBase
     {
         double d0 = this.entityHost.getDistanceSq(this.attackTarget.posX, this.attackTarget.getEntityBoundingBox().minY, this.attackTarget.posZ);
         boolean flag = this.entityHost.canEntityBeSeen(this.attackTarget);//this.entityHost.getEntitySenses().canSee(this.attackTarget);
-
+        
         if (flag)
         {
             ++this.seeTime;
@@ -109,14 +111,31 @@ public class ESM_EntityAIAttackRanged extends EntityAIBase
         {
             this.seeTime = 0;
         }
-
+        
+        this.navDelay--;
+        boolean onTarget = false;
+        
+        if (this.entityHost.getNavigator().getPath() != null)
+        {
+            PathPoint finalPathPoint = this.entityHost.getNavigator().getPath().getFinalPathPoint();
+    
+            if(finalPathPoint != null && attackTarget.getDistanceSq(finalPathPoint.x, finalPathPoint.y, finalPathPoint.z) < (d0 > 1024 ? 16 : 1)) // If further than 32 blocks, reduce the accuracy to within a chunk
+            {
+                onTarget = true;
+            } else
+            {
+                this.navDelay = Math.max(10, (int)d0 - 6);
+            }
+        }
+        
         if (d0 <= (double)getAttackDistance() && this.seeTime >= 20)
         {
             this.entityHost.getNavigator().clearPath();
         }
-        else
+        else if(!onTarget && this.navDelay <= 0)
         {
             this.entityHost.getNavigator().tryMoveToEntityLiving(this.attackTarget, this.entityMoveSpeed);
+            this.navDelay = Math.max(10, (int)d0 - 6);
         }
         
         if (this.strafingTime >= 20)
@@ -132,6 +151,9 @@ public class ESM_EntityAIAttackRanged extends EntityAIBase
             }
 
             this.strafingTime = 0;
+        } else
+        {
+            this.strafingTime++;
         }
 
         if (this.strafingTime > -1)

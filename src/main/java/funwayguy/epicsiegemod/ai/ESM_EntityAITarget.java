@@ -225,7 +225,7 @@ public abstract class ESM_EntityAITarget extends EntityAIBase
      */
     private boolean canEasilyReach(EntityLivingBase target)
     {
-        this.targetSearchDelay = 10 + this.taskOwner.getRNG().nextInt(Math.max(5, (int)this.taskOwner.getDistance(target) - 10));
+        this.targetSearchDelay = Math.max(10 + this.taskOwner.getRNG().nextInt(5), (int)this.taskOwner.getDistance(target) - 16);
         Path pathentity = this.taskOwner.getNavigator().getPathToEntityLiving(target);
 
         if (pathentity == null)

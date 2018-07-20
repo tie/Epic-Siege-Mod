@@ -1,14 +1,18 @@
 package funwayguy.epicsiegemod.handlers;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import funwayguy.epicsiegemod.ai.ESM_EntityAIPillarUp;
+import funwayguy.epicsiegemod.core.ESM;
+import funwayguy.epicsiegemod.core.ESM_Settings;
+import net.minecraft.block.Block;
+import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.config.Configuration;
 import org.apache.logging.log4j.Level;
-import funwayguy.epicsiegemod.core.ESM;
-import funwayguy.epicsiegemod.core.ESM_Settings;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class ConfigHandler
 {
@@ -74,6 +78,43 @@ public class ConfigHandler
 		for(String s : config.getStringList("Digging Mobs", CAT_ADVANCED, new String[]{"minecraft:zombie"}, "List of mobs that can dig through blocks"))
 		{
 			ESM_Settings.diggerList.add(new ResourceLocation(s));
+		}
+		
+		String[] pillarBlock = config.getString("Pillaring Block", CAT_ADVANCED, "minecraft:cobblestone:0", "The block zombies use to pillar up with").split(":");
+		
+		if(pillarBlock.length == 2)
+		{
+			ResourceLocation res = new ResourceLocation(pillarBlock[0], pillarBlock[1]);
+			Block b = Block.REGISTRY.getObject(res);
+			
+			if(b == null || b == Blocks.AIR)
+			{
+				ESM_EntityAIPillarUp.pillarBlock = Blocks.COBBLESTONE.getDefaultState();
+			} else
+			{
+				ESM_EntityAIPillarUp.pillarBlock = b.getDefaultState();
+			}
+		} else if(pillarBlock.length == 3)
+		{
+			ResourceLocation res = new ResourceLocation(pillarBlock[0], pillarBlock[1]);
+			Block b = Block.REGISTRY.getObject(res);
+			
+			if(b == null || b == Blocks.AIR)
+			{
+				ESM_EntityAIPillarUp.pillarBlock = Blocks.COBBLESTONE.getDefaultState();
+			} else
+			{
+				try
+				{
+					ESM_EntityAIPillarUp.pillarBlock = b.getStateFromMeta(Integer.parseInt(pillarBlock[2]));
+				} catch(Exception e)
+				{
+					ESM_EntityAIPillarUp.pillarBlock = b.getDefaultState();
+				}
+			}
+		} else
+		{
+			ESM_EntityAIPillarUp.pillarBlock = Blocks.COBBLESTONE.getDefaultState();
 		}
 		
 		ESM_Settings.ZombieDiggerTools =	config.getBoolean("Digging Tools Only", CAT_ADVANCED, true, "Digging mobs require the proper tools to dig");

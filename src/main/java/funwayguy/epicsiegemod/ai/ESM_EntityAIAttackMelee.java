@@ -7,6 +7,7 @@ import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.entity.passive.IAnimals;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.pathfinding.Path;
+import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -28,7 +29,7 @@ public class ESM_EntityAIAttackMelee extends EntityAIBase
     private double targetY;
     private double targetZ;
     private int failedPathFindingPenalty = 0;
-    private boolean canPenalize = false;
+    //private boolean canPenalize = false;
     private boolean strafeClockwise = false;
 
     public ESM_EntityAIAttackMelee(EntityLiving creature, double speedIn, boolean useLongMemory)
@@ -57,12 +58,12 @@ public class ESM_EntityAIAttackMelee extends EntityAIBase
         }
         else
         {
-            if (canPenalize)
+            //if (canPenalize)
             {
                 if (--this.delayCounter <= 0)
                 {
                     this.entityPathEntity = this.attacker.getNavigator().getPathToEntityLiving(entitylivingbase);
-                    this.delayCounter = 4 + this.attacker.getRNG().nextInt(7);
+                    this.delayCounter = Math.max(4 + this.attacker.getRNG().nextInt(7), (int)this.attacker.getDistance(entitylivingbase) - 16);
                     return this.entityPathEntity != null;
                 }
                 else
@@ -70,8 +71,8 @@ public class ESM_EntityAIAttackMelee extends EntityAIBase
                     return true;
                 }
             }
-            this.entityPathEntity = this.attacker.getNavigator().getPathToEntityLiving(entitylivingbase);
-            return this.entityPathEntity != null;
+            //this.entityPathEntity = this.attacker.getNavigator().getPathToEntityLiving(entitylivingbase);
+            //return this.entityPathEntity != null;
         }
     }
 
@@ -132,34 +133,32 @@ public class ESM_EntityAIAttackMelee extends EntityAIBase
             this.targetY = entitylivingbase.getEntityBoundingBox().minY;
             this.targetZ = entitylivingbase.posZ;
             this.delayCounter = 4 + this.attacker.getRNG().nextInt(7);
-
-            if (this.canPenalize)
+            boolean onTarget = false;
+            
+            if (this.attacker.getNavigator().getPath() != null)
             {
-                this.delayCounter += failedPathFindingPenalty;
-                if (this.attacker.getNavigator().getPath() != null)
+                PathPoint finalPathPoint = this.attacker.getNavigator().getPath().getFinalPathPoint();
+                
+                if (finalPathPoint != null && entitylivingbase.getDistanceSq(finalPathPoint.x, finalPathPoint.y, finalPathPoint.z) < (d0 > 1024 ? 16 : 1)) // If further than 32 blocks, reduce the accuracy to within a chunk
                 {
-                    net.minecraft.pathfinding.PathPoint finalPathPoint = this.attacker.getNavigator().getPath().getFinalPathPoint();
-                    if (finalPathPoint != null && entitylivingbase.getDistanceSq(finalPathPoint.x, finalPathPoint.y, finalPathPoint.z) < 1)
-                        failedPathFindingPenalty = 0;
-                    else
-                        failedPathFindingPenalty += 10;
+                    failedPathFindingPenalty = 0; // Because we're not updating the path, the existing delay will suffice
+                    onTarget = true; // Path is still on target and doesn't require updating
                 }
                 else
                 {
-                    failedPathFindingPenalty += 10;
+                    // Path is off target. Update and delay next round
+                    failedPathFindingPenalty += Math.max(10, attacker.getDistance(entitylivingbase) - 6);
                 }
             }
-
-            if (d0 > 1024.0D)
+            else
             {
-                this.delayCounter += 10;
-            }
-            else if (d0 > 256.0D)
-            {
-                this.delayCounter += 5;
+                // New path needs to be created. Add delay inbetween attempts
+                failedPathFindingPenalty +=Math.max(10, attacker.getDistance(entitylivingbase) - 6);
             }
             
-            if(!this.attacker.getNavigator().tryMoveToEntityLiving(entitylivingbase, this.speedTowardsTarget * (this.attacker.getCustomNameTag().equalsIgnoreCase("Vash505")? 1.25F : 1F)))
+            this.delayCounter += failedPathFindingPenalty;
+            
+            if(!onTarget && !this.attacker.getNavigator().tryMoveToEntityLiving(entitylivingbase, this.speedTowardsTarget * (this.attacker.getCustomNameTag().equalsIgnoreCase("Vash505")? 1.25F : 1F)))
             {
                 this.delayCounter += 15;
             }

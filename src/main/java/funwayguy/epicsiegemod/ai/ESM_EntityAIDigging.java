@@ -83,13 +83,13 @@ public class ESM_EntityAIDigging extends EntityAIBase
 		if(digger.world.isAirBlock(curBlock))
 		{
 			this.resetTask();
-		} else if(str >= 1F)
+		} else if(str >= 1F) // Block has been broken.
 		{
 			boolean canHarvest = state.getMaterial().isToolNotRequired() || (!heldItem.isEmpty() && heldItem.canHarvestBlock(state));
 			digger.world.destroyBlock(curBlock, canHarvest);
-			digger.getNavigator().setPath(digger.getNavigator().getPathToEntityLiving(target), digger.getMoveHelper().getSpeed());
+			digger.getNavigator().setPath(digger.getNavigator().getPathToEntityLiving(target), digger.getMoveHelper().getSpeed()); // This is fine. We only run it after a block breaks
 			this.resetTask();
-		} else if(digTick%5 == 0)
+		} else if(digTick%5 == 0) // Just keeping digging...
 		{
 			digger.world.playSound(null, curBlock, state.getBlock().getSoundType(state, digger.world, curBlock, digger).getHitSound(), SoundCategory.BLOCKS, 1F, 1F);
 			digger.swingArm(EnumHand.MAIN_HAND);

@@ -64,11 +64,13 @@ public class CreeperHooks
 		try
 		{
 			blastSize = EntityCreeper.class.getDeclaredField("field_82226_g");
+			blastSize.setAccessible(true);
 		} catch(Exception e1)
 		{
 			try
 			{
 				blastSize = EntityCreeper.class.getDeclaredField("explosionRadius");
+				blastSize.setAccessible(true);
 			} catch(Exception e2)
 			{
 				ESM.logger.log(Level.ERROR, "Unable to set Creeper hooks");

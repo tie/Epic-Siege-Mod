@@ -1,5 +1,6 @@
 package funwayguy.epicsiegemod.ai;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -10,6 +11,7 @@ import net.minecraft.util.math.MathHelper;
 
 public class ESM_EntityAIPillarUp extends EntityAIBase
 {
+	public static IBlockState pillarBlock = Blocks.COBBLESTONE.getDefaultState();
 	/**
 	 * Potential surfaces zombies can initialise pillaring on
 	 */
@@ -110,10 +112,10 @@ public class ESM_EntityAIPillarUp extends EntityAIBase
 			
 			if(builder.world.getBlockState(blockPos).getMaterial().isReplaceable())
 			{
-				builder.world.setBlockState(blockPos, Blocks.COBBLESTONE.getDefaultState());
+				builder.world.setBlockState(blockPos, pillarBlock);
 			}
 			
-			builder.getNavigator().setPath(builder.getNavigator().getPathToEntityLiving(target), builder.getMoveHelper().getSpeed());
+			builder.getNavigator().setPath(builder.getNavigator().getPathToEntityLiving(target), builder.getMoveHelper().getSpeed()); // Only called every 15 ticks, at short range and not repeated on success
 		}
 	}
 
