@@ -3,8 +3,6 @@ package funwayguy.epicsiegemod.handlers;
 import funwayguy.epicsiegemod.ai.ESM_EntityAIPillarUp;
 import funwayguy.epicsiegemod.core.ESM;
 import funwayguy.epicsiegemod.core.ESM_Settings;
-import net.minecraft.block.Block;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.MobEffects;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.util.ResourceLocation;
@@ -80,42 +78,35 @@ public class ConfigHandler
 			ESM_Settings.diggerList.add(new ResourceLocation(s));
 		}
 		
-		String[] pillarBlock = config.getString("Pillaring Block", CAT_ADVANCED, "minecraft:cobblestone:0", "The block zombies use to pillar up with").split(":");
+		String pbTemp = config.getString("Pillaring Block", CAT_ADVANCED, "minecraft:cobblestone:0", "The block zombies use to pillar up with");
+		String[] pillarBlock = pbTemp.split(":");
 		
-		if(pillarBlock.length == 2)
+		if(pillarBlock.length == 2 || pillarBlock.length == 3)
 		{
-			ResourceLocation res = new ResourceLocation(pillarBlock[0], pillarBlock[1]);
-			Block b = Block.REGISTRY.getObject(res);
+			ESM_EntityAIPillarUp.blockName = new ResourceLocation(pillarBlock[0], pillarBlock[1]);
 			
-			if(b == null || b == Blocks.AIR)
-			{
-				ESM_EntityAIPillarUp.pillarBlock = Blocks.COBBLESTONE.getDefaultState();
-			} else
-			{
-				ESM_EntityAIPillarUp.pillarBlock = b.getDefaultState();
-			}
-		} else if(pillarBlock.length == 3)
-		{
-			ResourceLocation res = new ResourceLocation(pillarBlock[0], pillarBlock[1]);
-			Block b = Block.REGISTRY.getObject(res);
-			
-			if(b == null || b == Blocks.AIR)
-			{
-				ESM_EntityAIPillarUp.pillarBlock = Blocks.COBBLESTONE.getDefaultState();
-			} else
+			if(pillarBlock.length == 3)
 			{
 				try
 				{
-					ESM_EntityAIPillarUp.pillarBlock = b.getStateFromMeta(Integer.parseInt(pillarBlock[2]));
+					ESM_EntityAIPillarUp.blockMeta = Integer.parseInt(pillarBlock[2]);
 				} catch(Exception e)
 				{
-					ESM_EntityAIPillarUp.pillarBlock = b.getDefaultState();
+					ESM.logger.error("Unable to parse pillar block metadata from: " + pbTemp, e);
+					ESM_EntityAIPillarUp.blockMeta = -1;
 				}
+			} else
+			{
+				ESM_EntityAIPillarUp.blockMeta = -1;
 			}
 		} else
 		{
-			ESM_EntityAIPillarUp.pillarBlock = Blocks.COBBLESTONE.getDefaultState();
+			ESM.logger.error("Incorrectly formatted pillar block config: " + pbTemp);
+			ESM_EntityAIPillarUp.blockName = new ResourceLocation("minecraft:cobblestone");
+			ESM_EntityAIPillarUp.blockMeta = -1;
 		}
+		
+		ESM_EntityAIPillarUp.updateBlock = true;
 		
 		ESM_Settings.ZombieDiggerTools =	config.getBoolean("Digging Tools Only", CAT_ADVANCED, true, "Digging mobs require the proper tools to dig");
 		ESM_Settings.ZombieSwapList =		config.getBoolean("Invert Digging Blacklist", CAT_ADVANCED, false, "Use the digging blacklist as a whitelist instead");

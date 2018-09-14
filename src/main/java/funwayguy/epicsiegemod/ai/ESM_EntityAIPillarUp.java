@@ -1,17 +1,24 @@
 package funwayguy.epicsiegemod.ai;
 
+import funwayguy.epicsiegemod.core.ESM;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 
 public class ESM_EntityAIPillarUp extends EntityAIBase
 {
-	public static IBlockState pillarBlock = Blocks.COBBLESTONE.getDefaultState();
+	public static ResourceLocation blockName = new ResourceLocation("minecraft:cobblestone");
+	public static int blockMeta = -1;
+	public static boolean updateBlock = false;
+	
+	private static IBlockState pillarBlock = Blocks.COBBLESTONE.getDefaultState();
 	/**
 	 * Potential surfaces zombies can initialise pillaring on
 	 */
@@ -90,6 +97,12 @@ public class ESM_EntityAIPillarUp extends EntityAIBase
 	public void startExecuting()
 	{
 		placeDelay = 15;
+		
+		if(updateBlock)
+		{
+			updateBlock = false;
+			updatePillarBlock();
+		}
 	}
 	
 	@Override
@@ -124,4 +137,31 @@ public class ESM_EntityAIPillarUp extends EntityAIBase
     {
         return false;
     }
+    
+    @SuppressWarnings("deprecation")
+    private static void updatePillarBlock()
+	{
+		try
+		{
+			Block b = Block.REGISTRY.getObject(blockName);
+			
+			if(b == Blocks.AIR)
+			{
+				pillarBlock = Blocks.COBBLESTONE.getDefaultState();
+			} else
+			{
+				if(blockMeta < 0)
+				{
+					pillarBlock = b.getDefaultState();
+				} else
+				{
+					pillarBlock = b.getStateFromMeta(blockMeta);
+				}
+			}
+		} catch(Exception e)
+		{
+			ESM.logger.error("Unable to read pillaring block from config", e);
+			pillarBlock = Blocks.COBBLESTONE.getDefaultState();
+		}
+	}
 }
