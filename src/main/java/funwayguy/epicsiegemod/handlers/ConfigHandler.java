@@ -61,7 +61,7 @@ public class ConfigHandler
 		ESM_Settings.MobBombAll =			config.getBoolean("All Creeper Jockeys", CAT_CREEPER, true, "Ignores the listing and allows any mob to have a Creeper rider");
 		
 		// === SKELETON ===
-		ESM_Settings.SkeletonAccuracy =		config.getInt("Arrow Error", CAT_SKELETON, 0, 0, Integer.MAX_VALUE, "How likely Skeletons are to miss their target");
+		ESM_Settings.SkeletonAccuracy =		config.getFloat(Arrow Error", CAT_SKELETON, 0F, 0F, Float.MAX_VALUE, "How likely Skeletons are to miss their target");
 		ESM_Settings.SkeletonDistance =		config.getInt("Fire Distance", CAT_SKELETON, 64, 1, Integer.MAX_VALUE, "How far away can Skeletons shoot from");
 		ESM_Settings.WitherSkeletonRarity = config.getInt("Wither Skeleton Chance", CAT_SKELETON, 10, 0, 100, "The chance a skeleton will spawn as Wither in other dimensions");
 		

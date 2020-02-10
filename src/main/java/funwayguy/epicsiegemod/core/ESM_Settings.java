@@ -37,7 +37,7 @@ public class ESM_Settings
 	
 	//Skeleton
 	public static int SkeletonDistance;
-	public static int SkeletonAccuracy;
+	public static float SkeletonAccuracy;
 	
 	//Zombie
 	public static boolean ZombieInfectious;
